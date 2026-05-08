@@ -1,0 +1,14 @@
+{
+  "symbol": "6668.TW",
+  "model_type": "PPO",
+  "training_accuracy": 80.6,
+  "validation_accuracy": 76.5,
+  "backtest_accuracy": 71.5,
+  "win_rate": 68.7,
+  "sharpe_ratio": 1.44,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-01-26 17:47:55",
+  "history": []
+}

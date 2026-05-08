@@ -1,0 +1,736 @@
+﻿====================================================================================================
+批量运行所有台股交易信号生成器
+====================================================================================================
+生成时间: 2026-01-12 12:41:18
+总共 60 个台股
+====================================================================================================
+
+进度: [1/60]
+
+====================================================================================================
+运行: 1101 台泥
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_1101.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [2/60]
+
+====================================================================================================
+运行: 1303 南亞
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_1303.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [3/60]
+
+====================================================================================================
+运行: 1519 台股
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_1519.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [4/60]
+
+====================================================================================================
+运行: 1605 華新
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_1605.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [5/60]
+
+====================================================================================================
+运行: 2303 聯電
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_2303.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [6/60]
+
+====================================================================================================
+运行: 2308 台達電
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_2308.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [7/60]
+
+====================================================================================================
+运行: 2313 華通
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_2313.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [8/60]
+
+====================================================================================================
+运行: 2317 鴻海
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_2317.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [9/60]
+
+====================================================================================================
+运行: 2327 國巨
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_2327.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [10/60]
+
+====================================================================================================
+运行: 2330 台積電
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_2330.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [11/60]
+
+====================================================================================================
+运行: 2337 旺宏
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_2337.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [12/60]
+
+====================================================================================================
+运行: 2344 華邦電
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_2344.py", line 62
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [13/60]
+
+====================================================================================================
+运行: 2345 台股
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_2345.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [14/60]
+
+====================================================================================================
+运行: 2360 致茂
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_2360.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [15/60]
+
+====================================================================================================
+运行: 2368 金像電
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_2368.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [16/60]
+
+====================================================================================================
+运行: 2376 台股
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_2376.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [17/60]
+
+====================================================================================================
+运行: 2382 廣達
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_2382.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [18/60]
+
+====================================================================================================
+运行: 2383 台光電
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_2383.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [19/60]
+
+====================================================================================================
+运行: 2385 台股
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_2385.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [20/60]
+
+====================================================================================================
+运行: 2408 南亞科
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_2408.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [21/60]
+
+====================================================================================================
+运行: 2409 友達
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_2409.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [22/60]
+
+====================================================================================================
+运行: 2449 京元電子
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_2449.py", line 29
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [23/60]
+
+====================================================================================================
+运行: 2451 創見資訊
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_2451.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [24/60]
+
+====================================================================================================
+运行: 2454 聯發科
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_2454.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [25/60]
+
+====================================================================================================
+运行: 2603 長榮
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_2603.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [26/60]
+
+====================================================================================================
+运行: 2884 玉山金
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_2884.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [27/60]
+
+====================================================================================================
+运行: 3006 晶豪科
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_3006.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [28/60]
+
+====================================================================================================
+运行: 3030 德律
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_3030.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [29/60]
+
+====================================================================================================
+运行: 3017 台股
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_3017.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [30/60]
+
+====================================================================================================
+运行: 3231 緯創
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_3231.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [31/60]
+
+====================================================================================================
+运行: 3363 上詮
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_3363.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [32/60]
+
+====================================================================================================
+运行: 3443 創意
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_3443.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [33/60]
+
+====================================================================================================
+运行: 3449 鈺德
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_3449.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [34/60]
+
+====================================================================================================
+运行: 3481 群創
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_3481.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [35/60]
+
+====================================================================================================
+运行: 3653 健策
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_3653.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [36/60]
+
+====================================================================================================
+运行: 3661 世芯-KY
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_3661.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [37/60]
+
+====================================================================================================
+运行: 3711 日月光投控
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_3711.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [38/60]
+
+====================================================================================================
+运行: 3715 台股
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_3715.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [39/60]
+
+====================================================================================================
+运行: 4540 全球傳動
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_4540.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [40/60]
+
+====================================================================================================
+运行: 4746 台股
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_4746.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [41/60]
+
+====================================================================================================
+运行: 4938 台股
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_4938.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [42/60]
+
+====================================================================================================
+运行: 5483 台股
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_5483.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [43/60]
+
+====================================================================================================
+运行: 6209 台股
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_6209.py", line 62
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [44/60]
+
+====================================================================================================
+运行: 6163 華電網
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_6163.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [45/60]
+
+====================================================================================================
+运行: 6239 力成
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_6239.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [46/60]
+
+====================================================================================================
+运行: 6269 台股
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_6269.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [47/60]
+
+====================================================================================================
+运行: 6442 兆豐金控
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_6442.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [48/60]
+
+====================================================================================================
+运行: 6443 台股
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_6443.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [49/60]
+
+====================================================================================================
+运行: 6477 安集
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_6477.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [50/60]
+
+====================================================================================================
+运行: 6515 台股
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_6515.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [51/60]
+
+====================================================================================================
+运行: 6669 緯穎
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_6669.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [52/60]
+
+====================================================================================================
+运行: 6770 力積電
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_6770.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [53/60]
+
+====================================================================================================
+运行: 6781 AES-KY
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_6781.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [54/60]
+
+====================================================================================================
+运行: 6805 台股
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_6805.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [55/60]
+
+====================================================================================================
+运行: 7769 霖揚
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_7769.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [56/60]
+
+====================================================================================================
+运行: 8021 尖點
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_8021.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [57/60]
+
+====================================================================================================
+运行: 8110 台股
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_8110.py", line 29
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [58/60]
+
+====================================================================================================
+运行: 8131 福懋科
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_8131.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [59/60]
+
+====================================================================================================
+运行: 8150 南茂
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_8150.py", line 30
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+进度: [60/60]
+
+====================================================================================================
+运行: 8210 勤誠
+====================================================================================================
+[X] 运行失败:
+  File "C:\Users\Silvi\Projects\trading-bot\get_trading_signal_8210.py", line 61
+    from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+IndentationError: unexpected indent
+
+
+====================================================================================================
+批量运行完成!
+====================================================================================================
+成功运行: 0/60
+失败数量: 60
+
+失败的股票:
+   - 1101 台泥
+   - 1303 南亞
+   - 1519 台股
+   - 1605 華新
+   - 2303 聯電
+   - 2308 台達電
+   - 2313 華通
+   - 2317 鴻海
+   - 2327 國巨
+   - 2330 台積電
+   - 2337 旺宏
+   - 2344 華邦電
+   - 2345 台股
+   - 2360 致茂
+   - 2368 金像電
+   - 2376 台股
+   - 2382 廣達
+   - 2383 台光電
+   - 2385 台股
+   - 2408 南亞科
+   - 2409 友達
+   - 2449 京元電子
+   - 2451 創見資訊
+   - 2454 聯發科
+   - 2603 長榮
+   - 2884 玉山金
+   - 3006 晶豪科
+   - 3030 德律
+   - 3017 台股
+   - 3231 緯創
+   - 3363 上詮
+   - 3443 創意
+   - 3449 鈺德
+   - 3481 群創
+   - 3653 健策
+   - 3661 世芯-KY
+   - 3711 日月光投控
+   - 3715 台股
+   - 4540 全球傳動
+   - 4746 台股
+   - 4938 台股
+   - 5483 台股
+   - 6209 台股
+   - 6163 華電網
+   - 6239 力成
+   - 6269 台股
+   - 6442 兆豐金控
+   - 6443 台股
+   - 6477 安集
+   - 6515 台股
+   - 6669 緯穎
+   - 6770 力積電
+   - 6781 AES-KY
+   - 6805 台股
+   - 7769 霖揚
+   - 8021 尖點
+   - 8110 台股
+   - 8131 福懋科
+   - 8150 南茂
+   - 8210 勤誠
+
+所有台股信号生成完成!

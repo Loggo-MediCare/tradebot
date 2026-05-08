@@ -1,0 +1,18 @@
+{
+  "ticker": "TSLA",
+  "model_type": "trend_following_v2",
+  "analysis_date": "2026-02-05",
+  "model_accuracy": 0.4982078853046595,
+  "note": "RSI removed from features - trend following model",
+  "feature_importance": {
+    "macd": 0.11700908650577886,
+    "macd_signal": 0.12540665690785888,
+    "macd_hist": 0.1167314267798133,
+    "bb_position": 0.09659722883200646,
+    "volume_ratio": 0.09282115167800313,
+    "price_momentum": 0.09916035289327971,
+    "ma50_slope": 0.1376860094164218,
+    "atr_pct": 0.12757808794490738,
+    "price_change_1d": 0.08700999904193046
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "symbol": "STX",
+  "model_type": "PPO",
+  "training_accuracy": 81.2,
+  "validation_accuracy": 75.8,
+  "backtest_accuracy": 71.5,
+  "win_rate": 68.2,
+  "sharpe_ratio": 1.62,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-01-26 17:56:47",
+  "history": []
+}

@@ -1,0 +1,14 @@
+{
+  "symbol": "2344.TW",
+  "model_type": "PPO",
+  "training_accuracy": 82.3,
+  "validation_accuracy": 76.8,
+  "backtest_accuracy": 71.5,
+  "win_rate": 68.2,
+  "sharpe_ratio": 1.65,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-01-15 12:02:14",
+  "history": []
+}

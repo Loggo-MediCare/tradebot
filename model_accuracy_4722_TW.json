@@ -1,0 +1,14 @@
+{
+  "symbol": "4722.TW",
+  "model_type": "PPO",
+  "training_accuracy": 83.2,
+  "validation_accuracy": 82.2,
+  "backtest_accuracy": 79.3,
+  "win_rate": 71.3,
+  "sharpe_ratio": 1.43,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-01-15 15:53:36",
+  "history": []
+}

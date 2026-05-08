@@ -1,0 +1,22 @@
+{
+  "ticker": "2330.TW",
+  "analysis_date": "2025-12-25",
+  "model_accuracy": 0.5156,
+  "feature_importance": {
+    "MA_200": 0.134121,
+    "MA_50": 0.087383,
+    "OBV_MA": 0.085104,
+    "MA50_slope": 0.077356,
+    "MA_20": 0.075371,
+    "OBV": 0.073152,
+    "volatility": 0.065177,
+    "ATR": 0.059577,
+    "macd_signal": 0.055222,
+    "price_change_20d": 0.051338,
+    "macd": 0.046571,
+    "macd_hist": 0.039468,
+    "D": 0.033587,
+    "bb_position": 0.030914,
+    "rsi": 0.029764
+  }
+}

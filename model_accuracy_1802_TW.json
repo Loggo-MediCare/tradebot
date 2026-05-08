@@ -1,0 +1,14 @@
+{
+  "symbol": "1802.TW",
+  "model_type": "PPO",
+  "training_accuracy": 87.1,
+  "validation_accuracy": 80.5,
+  "backtest_accuracy": 71.0,
+  "win_rate": 73.8,
+  "sharpe_ratio": 1.7,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-01-26 17:47:55",
+  "history": []
+}

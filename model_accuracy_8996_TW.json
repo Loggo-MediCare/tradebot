@@ -1,0 +1,14 @@
+{
+  "symbol": "8996.TW",
+  "model_type": "PPO",
+  "training_accuracy": 80.6,
+  "validation_accuracy": 70.9,
+  "backtest_accuracy": 69.2,
+  "win_rate": 66.0,
+  "sharpe_ratio": 1.81,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-01-26 17:47:55",
+  "history": []
+}

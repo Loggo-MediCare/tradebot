@@ -1,0 +1,47 @@
+{
+  "installMethod": "unknown",
+  "autoUpdates": true,
+  "cachedStatsigGates": {
+    "tengu_log_1p_events": true,
+    "tengu_disable_bypass_permissions_mode": false,
+    "tengu_tool_pear": false,
+    "tengu_enable_versioned_plugins": false,
+    "tengu_vscode_review_upsell": false,
+    "tengu_web_tasks": true,
+    "tengu_backstage_only": false,
+    "code_slack_app_install_banner": false,
+    "tengu_c4w_usage_limit_notifications_enabled": true,
+    "tengu_thinkback": false,
+    "tengu_prompt_suggestion": true,
+    "tengu_ant_attribution_header_new": true
+  },
+  "cachedDynamicConfigs": {
+    "tengu_1p_event_batch_config": {
+      "scheduledDelayMillis": 5000,
+      "maxExportBatchSize": 200,
+      "maxQueueSize": 8192
+    }
+  },
+  "cachedGrowthBookFeatures": {
+    "strawberry_granite_flag": "N/A",
+    "persimmon_marble_flag": "N/A"
+  },
+  "userID": "a9a4a6dcc95823975169c7a1dfec4ed3a9af39562156a6c21deff1e7cbe48191",
+  "firstStartTime": "2025-12-07T21:05:12.037Z",
+  "sonnet45MigrationComplete": true,
+  "opus45MigrationComplete": true,
+  "oauthAccount": {
+    "accountUuid": "af52dee4-2788-452d-96d4-7561f7e6c6b5",
+    "emailAddress": "pattatek@gmail.com",
+    "organizationUuid": "f9a10baa-1529-4193-992a-4b46fc8c0a7f",
+    "hasExtraUsageEnabled": false,
+    "displayName": " LABVIEW VI "
+  },
+  "s1mAccessCache": {
+    "f9a10baa-1529-4193-992a-4b46fc8c0a7f": {
+      "hasAccess": false,
+      "timestamp": 1766398960906
+    }
+  },
+  "thinkingMigrationComplete": true
+}

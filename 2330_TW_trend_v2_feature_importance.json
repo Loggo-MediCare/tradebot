@@ -1,0 +1,18 @@
+{
+  "ticker": "2330.TW",
+  "model_type": "trend_following_v2",
+  "analysis_date": "2026-02-05",
+  "model_accuracy": 0.4898336414048059,
+  "note": "RSI removed from features - trend following model",
+  "feature_importance": {
+    "macd": 0.11461327901877483,
+    "macd_signal": 0.13019593386928302,
+    "macd_hist": 0.11487198439728603,
+    "bb_position": 0.10520367101162245,
+    "volume_ratio": 0.09156271507892783,
+    "price_momentum": 0.10658815103531175,
+    "ma50_slope": 0.1223072488263398,
+    "atr_pct": 0.1224426785253048,
+    "price_change_1d": 0.09221433823714952
+  }
+}

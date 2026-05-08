@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Models
+*.pkl
+*.model
+
+# Data
+*.csv
+*.xlsx
+*.parquet
+
+# Logs
+*.log
+
+# Backup
+*.bak
+backups/
+
+# VSCode
+.vscode/
+
+# PDFs
+*.pdf
+
+# Windows
+nul

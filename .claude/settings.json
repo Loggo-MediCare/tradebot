@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(..venvScriptspython.exe train_2327_taiwan_improved.py)",
+      "Bash(ren:*)"
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "symbol": "1101.TW",
+  "model_type": "PPO",
+  "training_accuracy": 81.5,
+  "validation_accuracy": 77.6,
+  "backtest_accuracy": 77.9,
+  "win_rate": 58.0,
+  "sharpe_ratio": 1.48,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-01-15 15:53:22",
+  "history": []
+}
