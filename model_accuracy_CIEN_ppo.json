@@ -1,0 +1,8 @@
+{
+  "symbol": "CIEN",
+  "ticker": "CIEN",
+  "model_type": "PPO",
+  "validation_accuracy": 49.82,
+  "backtest_accuracy": 49.82,
+  "last_updated": "2026-05-21 10:18:25"
+}

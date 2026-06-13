@@ -1,0 +1,12 @@
+{
+  "symbol": "2426.TW",
+  "company": "鼎元 (Tyntek)",
+  "model_type": "XGBoost",
+  "training_accuracy": 97.01789264413519,
+  "validation_accuracy": 68.05555555555556,
+  "backtest_accuracy": 68.05555555555556,
+  "overfitting_gap": 28.962337088579627,
+  "threshold": 0.035,
+  "last_updated": "2026-03-14 03:52:50",
+  "notes": "Taiwan semiconductor stock + 3.5% threshold"
+}

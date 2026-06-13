@@ -1,0 +1,15 @@
+{
+  "symbol": "4746",
+  "model_type": "XGBoost",
+  "training_accuracy": 97.38317757009347,
+  "validation_accuracy": 50.467289719626166,
+  "backtest_accuracy": 50.467289719626166,
+  "backtest_return": -35.52104206085205,
+  "win_rate": 50.467289719626166,
+  "sharpe_ratio": null,
+  "total_signals": 535,
+  "correct_signals": 269,
+  "live_accuracy": null,
+  "last_updated": "2026-03-20 22:24:27",
+  "history": []
+}

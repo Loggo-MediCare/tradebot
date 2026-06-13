@@ -1,0 +1,8 @@
+{
+  "symbol": "SNOW",
+  "model_type": "XGBoost",
+  "training_accuracy": 97.12389380530973,
+  "validation_accuracy": 56.63716814159292,
+  "backtest_accuracy": 56.63716814159292,
+  "last_updated": "2026-02-25 17:05:41"
+}

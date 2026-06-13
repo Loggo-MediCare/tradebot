@@ -1,0 +1,9 @@
+{
+  "symbol": "1773",
+  "ticker": "1773.TW",
+  "model_type": "XGBoost",
+  "training_accuracy": 93.64,
+  "validation_accuracy": 65.15,
+  "backtest_accuracy": 65.15,
+  "last_updated": "2026-05-18 12:26:08"
+}

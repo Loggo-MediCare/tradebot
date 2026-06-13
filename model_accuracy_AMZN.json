@@ -1,0 +1,15 @@
+{
+  "symbol": "AMZN",
+  "model_type": "PPO",
+  "training_accuracy": 53.754802654558155,
+  "validation_accuracy": 53.754802654558155,
+  "backtest_accuracy": 53.754802654558155,
+  "backtest_return": 1661.0839995574952,
+  "win_rate": 53.754802654558155,
+  "sharpe_ratio": null,
+  "total_signals": 2863,
+  "correct_signals": 1539,
+  "live_accuracy": null,
+  "last_updated": "2026-05-25 03:16:26",
+  "history": []
+}

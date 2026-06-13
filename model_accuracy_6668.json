@@ -1,0 +1,9 @@
+{
+  "symbol": "6668",
+  "ticker": "6668.TW",
+  "model_type": "XGBoost",
+  "training_accuracy": 95.47,
+  "validation_accuracy": 55.88,
+  "backtest_accuracy": 55.88,
+  "last_updated": "2026-05-21 04:09:49"
+}

@@ -1,0 +1,8 @@
+{
+  "symbol": "SMR",
+  "model_type": "XGBoost",
+  "training_accuracy": 98.8543371522095,
+  "validation_accuracy": 53.59477124183007,
+  "backtest_accuracy": 53.59477124183007,
+  "last_updated": "2026-02-25 19:52:15"
+}

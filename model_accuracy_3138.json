@@ -1,0 +1,9 @@
+{
+  "symbol": "3138",
+  "ticker": "3138.TW",
+  "model_type": "XGBoost",
+  "training_accuracy": 93.36,
+  "validation_accuracy": 45.37,
+  "backtest_accuracy": 45.37,
+  "last_updated": "2026-05-19 14:21:33"
+}

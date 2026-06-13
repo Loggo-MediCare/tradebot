@@ -1,0 +1,9 @@
+{
+  "symbol": "PLTR",
+  "model_type": "XGBoost",
+  "training_accuracy": 98.70828848223897,
+  "validation_accuracy": 66.95278969957081,
+  "backtest_accuracy": 66.95278969957081,
+  "last_updated": "2026-03-04 02:35:10",
+  "notes": "Optimized with 4.0% gain threshold. Compared with PPO (63.5%). Winner: XGBoost"
+}

@@ -1,0 +1,8 @@
+{
+  "symbol": "AXON",
+  "model_type": "XGBoost",
+  "training_accuracy": 94.04704752760442,
+  "validation_accuracy": 59.309021113243766,
+  "backtest_accuracy": 59.309021113243766,
+  "last_updated": "2026-02-26 05:05:13"
+}

@@ -1,0 +1,9 @@
+{
+  "symbol": "2609",
+  "ticker": "2609.TW",
+  "model_type": "XGBoost",
+  "training_accuracy": 93.5,
+  "validation_accuracy": 70.99,
+  "backtest_accuracy": 70.99,
+  "last_updated": "2026-06-08 15:08:05"
+}

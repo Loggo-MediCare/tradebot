@@ -1,0 +1,9 @@
+{
+  "symbol": "2308",
+  "ticker": "2308.TW",
+  "model_type": "XGBoost",
+  "training_accuracy": 93.14,
+  "validation_accuracy": 54.41,
+  "backtest_accuracy": 54.41,
+  "last_updated": "2026-06-08 14:57:38"
+}

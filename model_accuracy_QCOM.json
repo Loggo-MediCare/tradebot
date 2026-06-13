@@ -1,0 +1,8 @@
+{
+  "symbol": "QCOM",
+  "model_type": "XGBoost",
+  "training_accuracy": 93.5,
+  "validation_accuracy": 66.49,
+  "backtest_accuracy": 66.49,
+  "last_updated": "2026-05-21 03:55:18"
+}

@@ -1,0 +1,8 @@
+{
+  "symbol": "2202.HK",
+  "model_type": "XGBoost",
+  "training_accuracy": 95.06726457399103,
+  "validation_accuracy": 60.756972111553786,
+  "backtest_accuracy": 60.756972111553786,
+  "last_updated": "2026-02-28 03:57:18"
+}

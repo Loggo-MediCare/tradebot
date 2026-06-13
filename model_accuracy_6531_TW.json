@@ -1,0 +1,9 @@
+{
+  "symbol": "6531",
+  "ticker": "6531.TW",
+  "model_type": "XGBoost",
+  "training_accuracy": 96.41,
+  "validation_accuracy": 57.74,
+  "backtest_accuracy": 57.74,
+  "last_updated": "2026-05-19 10:15:58"
+}

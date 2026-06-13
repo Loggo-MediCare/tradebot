@@ -1,0 +1,9 @@
+{
+  "symbol": "rhm",
+  "ticker": "RHM",
+  "model_type": "XGBoost",
+  "training_accuracy": 99.16,
+  "validation_accuracy": 80.67,
+  "backtest_accuracy": 80.67,
+  "last_updated": "2026-05-21 04:58:45"
+}

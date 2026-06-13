@@ -1,0 +1,9 @@
+{
+  "symbol": "3714",
+  "ticker": "3714.TW",
+  "model_type": "XGBoost",
+  "training_accuracy": 97.18,
+  "validation_accuracy": 49.03,
+  "backtest_accuracy": 49.03,
+  "last_updated": "2026-05-18 13:05:22"
+}

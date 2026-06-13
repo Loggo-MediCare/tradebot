@@ -1,0 +1,8 @@
+{
+  "symbol": "8438",
+  "ticker": "8438.TW",
+  "model_type": "PPO",
+  "validation_accuracy": 65.14,
+  "backtest_accuracy": 65.14,
+  "last_updated": "2026-05-21 04:26:37"
+}

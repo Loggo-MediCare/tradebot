@@ -1,0 +1,8 @@
+{
+  "symbol": "3663",
+  "ticker": "3663.TWO",
+  "model_type": "PPO",
+  "validation_accuracy": 36.7,
+  "backtest_accuracy": 36.7,
+  "last_updated": "2026-05-19 10:01:26"
+}

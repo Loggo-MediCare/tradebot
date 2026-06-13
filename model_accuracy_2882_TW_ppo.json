@@ -1,0 +1,8 @@
+{
+  "symbol": "2882",
+  "ticker": "2882.TW",
+  "model_type": "PPO",
+  "validation_accuracy": 69.95,
+  "backtest_accuracy": 69.95,
+  "last_updated": "2026-06-08 15:10:11"
+}

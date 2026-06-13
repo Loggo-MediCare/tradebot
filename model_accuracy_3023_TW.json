@@ -1,0 +1,9 @@
+{
+  "symbol": "3023",
+  "ticker": "3023.TW",
+  "model_type": "XGBoost",
+  "training_accuracy": 92.77,
+  "validation_accuracy": 62.61,
+  "backtest_accuracy": 62.61,
+  "last_updated": "2026-05-19 09:46:58"
+}

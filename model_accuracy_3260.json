@@ -1,0 +1,9 @@
+{
+  "symbol": "3260",
+  "ticker": "3260.TWO",
+  "model_type": "XGBoost",
+  "training_accuracy": 92.86,
+  "validation_accuracy": 58.8,
+  "backtest_accuracy": 58.8,
+  "last_updated": "2026-05-21 03:26:46"
+}

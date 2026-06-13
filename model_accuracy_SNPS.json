@@ -1,0 +1,8 @@
+{
+  "symbol": "SNPS",
+  "model_type": "XGBoost",
+  "training_accuracy": 92.8,
+  "validation_accuracy": 58.42,
+  "backtest_accuracy": 58.42,
+  "last_updated": "2026-05-08 16:47:16"
+}

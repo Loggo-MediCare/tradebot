@@ -1,0 +1,9 @@
+{
+  "symbol": "amkr",
+  "ticker": "AMKR",
+  "model_type": "XGBoost",
+  "training_accuracy": 92.76,
+  "validation_accuracy": 58.77,
+  "backtest_accuracy": 58.77,
+  "last_updated": "2026-05-21 04:53:01"
+}

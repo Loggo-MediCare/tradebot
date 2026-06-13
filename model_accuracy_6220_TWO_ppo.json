@@ -1,0 +1,8 @@
+{
+  "symbol": "6220",
+  "ticker": "6220.TWO",
+  "model_type": "PPO",
+  "validation_accuracy": 70.83,
+  "backtest_accuracy": 70.83,
+  "last_updated": "2026-05-21 04:01:08"
+}

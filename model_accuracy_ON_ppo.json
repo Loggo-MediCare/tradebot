@@ -1,0 +1,8 @@
+{
+  "symbol": "ON",
+  "model_type": "PPO",
+  "training_accuracy": 63.12,
+  "validation_accuracy": 63.12,
+  "backtest_accuracy": 63.12,
+  "last_updated": "2026-05-08 17:06:32"
+}

@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Models
+*.pkl
+*.model
+*.joblib
+
+# Data
+*.csv
+*.xlsx
+*.xls
+*.parquet
+
+# Logs
+*.log
+*.txt
+
+# Backup
+*.bak
+backups/
+backups_before_enhanced_scoring/
+
+# VSCode
+.vscode/
+
+# PDFs
+*.pdf
+
+# Images
+*.png
+
+# Windows
+nul
+
+#sub models
+FinRL-trained-model-repository/
+
+# Secrets / local env
+.env
+
+# Caches / scratch
+.cache_yfinance/
+TMP/
+0260206T093147Z-1-001/

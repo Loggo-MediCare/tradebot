@@ -1,0 +1,8 @@
+{
+  "symbol": "MPWR",
+  "model_type": "PPO",
+  "training_accuracy": 56.74,
+  "validation_accuracy": 56.74,
+  "backtest_accuracy": 56.74,
+  "last_updated": "2026-05-08 16:56:55"
+}

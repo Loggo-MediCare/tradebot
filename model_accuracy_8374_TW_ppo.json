@@ -1,0 +1,8 @@
+{
+  "symbol": "8374",
+  "ticker": "8374.TW",
+  "model_type": "PPO",
+  "validation_accuracy": 35.05,
+  "backtest_accuracy": 35.05,
+  "last_updated": "2026-05-18 15:02:42"
+}

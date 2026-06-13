@@ -1,0 +1,8 @@
+{
+  "symbol": "GEV",
+  "model_type": "PPO",
+  "training_accuracy": 59.6,
+  "validation_accuracy": 59.6,
+  "backtest_accuracy": 59.6,
+  "last_updated": "2026-05-08 17:11:25"
+}

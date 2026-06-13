@@ -1,0 +1,7 @@
+{
+  "symbol": "AMAT",
+  "model_type": "PPO",
+  "validation_accuracy": 43.26,
+  "backtest_accuracy": 43.26,
+  "last_updated": "2026-05-19 10:31:12"
+}

@@ -1,0 +1,8 @@
+{
+  "symbol": "6538",
+  "ticker": "6538.TWO",
+  "model_type": "PPO",
+  "validation_accuracy": 70.68,
+  "backtest_accuracy": 70.68,
+  "last_updated": "2026-05-19 10:28:04"
+}

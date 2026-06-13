@@ -1,0 +1,8 @@
+{
+  "symbol": "RDW",
+  "model_type": "XGBoost",
+  "training_accuracy": 96.8936678614098,
+  "validation_accuracy": 62.857142857142854,
+  "backtest_accuracy": 62.857142857142854,
+  "last_updated": "2026-02-25 19:52:13"
+}

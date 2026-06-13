@@ -1,0 +1,8 @@
+{
+  "symbol": "MCHP",
+  "model_type": "PPO",
+  "training_accuracy": 67.38,
+  "validation_accuracy": 67.38,
+  "backtest_accuracy": 67.38,
+  "last_updated": "2026-05-08 16:42:20"
+}

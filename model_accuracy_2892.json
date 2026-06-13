@@ -1,0 +1,9 @@
+{
+  "symbol": "2892",
+  "ticker": "2892.TW",
+  "model_type": "XGBoost",
+  "training_accuracy": 95.26,
+  "validation_accuracy": 85.05,
+  "backtest_accuracy": 85.05,
+  "last_updated": "2026-06-08 15:20:14"
+}

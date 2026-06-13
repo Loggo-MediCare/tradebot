@@ -1,0 +1,9 @@
+{
+  "code": "INTC",
+  "ticker": "INTC",
+  "ppo_return": 0.0,
+  "bah_return": 135.3,
+  "test_start": "2026-03-16",
+  "test_end": "2026-06-09",
+  "computed_at": "2026-06-10 03:04:52"
+}

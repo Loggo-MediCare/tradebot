@@ -1,0 +1,14 @@
+{
+  "symbol": "MU",
+  "model_type": "XGBoost",
+  "training_accuracy": 43.392857142857146,
+  "validation_accuracy": null,
+  "backtest_accuracy": 69.56,
+  "win_rate": 100.0,
+  "sharpe_ratio": null,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-19 23:07:13",
+  "history": []
+}

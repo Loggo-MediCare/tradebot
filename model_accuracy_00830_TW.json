@@ -1,0 +1,9 @@
+{
+  "symbol": "00830",
+  "ticker": "00830.TW",
+  "model_type": "XGBoost",
+  "training_accuracy": 97.51,
+  "validation_accuracy": 50.64,
+  "backtest_accuracy": 50.64,
+  "last_updated": "2026-06-09 05:51:31"
+}

@@ -1,0 +1,8 @@
+{
+  "symbol": "DECK",
+  "model_type": "XGBoost",
+  "training_accuracy": 93.85964912280701,
+  "validation_accuracy": 36.77042801556421,
+  "backtest_accuracy": 36.77042801556421,
+  "last_updated": "2026-02-25 19:52:16"
+}

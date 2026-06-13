@@ -1,0 +1,8 @@
+{
+  "symbol": "SMCI",
+  "model_type": "XGBoost",
+  "training_accuracy": 94.44444444444444,
+  "validation_accuracy": 57.19844357976653,
+  "backtest_accuracy": 57.19844357976653,
+  "last_updated": "2026-02-26 05:11:59"
+}

@@ -1,0 +1,8 @@
+{
+  "symbol": "7610",
+  "ticker": "7610.TW",
+  "model_type": "PPO",
+  "validation_accuracy": 70.37,
+  "backtest_accuracy": 70.37,
+  "last_updated": "2026-05-18 18:12:01"
+}

@@ -1,0 +1,9 @@
+{
+  "symbol": "1514",
+  "ticker": "1514.TW",
+  "model_type": "XGBoost",
+  "training_accuracy": 92.23,
+  "validation_accuracy": 49.18,
+  "backtest_accuracy": 49.18,
+  "last_updated": "2026-05-21 03:24:20"
+}

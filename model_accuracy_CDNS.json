@@ -1,0 +1,8 @@
+{
+  "symbol": "CDNS",
+  "model_type": "XGBoost",
+  "training_accuracy": 92.44639376218323,
+  "validation_accuracy": 54.280155642023345,
+  "backtest_accuracy": 54.280155642023345,
+  "last_updated": "2026-02-25 19:52:23"
+}

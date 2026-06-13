@@ -1,0 +1,9 @@
+{
+  "symbol": "2303",
+  "ticker": "2303.TW",
+  "model_type": "XGBoost",
+  "training_accuracy": 93.19,
+  "validation_accuracy": 67.03,
+  "backtest_accuracy": 67.03,
+  "last_updated": "2026-06-08 14:56:21"
+}

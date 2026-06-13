@@ -1,0 +1,8 @@
+{
+  "symbol": "GOOGL",
+  "model_type": "PPO",
+  "training_accuracy": 40.76782449725777,
+  "validation_accuracy": 40.76782449725777,
+  "backtest_accuracy": 40.76782449725777,
+  "last_updated": "2026-05-04 03:48:14"
+}

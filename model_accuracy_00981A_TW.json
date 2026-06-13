@@ -1,0 +1,9 @@
+{
+  "symbol": "00981A",
+  "ticker": "00981A.TW",
+  "model_type": "XGBoost",
+  "training_accuracy": 98.02,
+  "validation_accuracy": 58.82,
+  "backtest_accuracy": 58.82,
+  "last_updated": "2026-06-08 13:51:31"
+}

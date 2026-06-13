@@ -1,0 +1,7 @@
+{
+  "symbol": "MSFT",
+  "model_type": "PPO",
+  "validation_accuracy": 73.05,
+  "backtest_accuracy": 73.05,
+  "last_updated": "2026-05-20 21:35:56"
+}

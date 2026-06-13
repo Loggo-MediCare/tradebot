@@ -1,0 +1,8 @@
+{
+  "symbol": "MCHP",
+  "model_type": "XGBoost",
+  "training_accuracy": 93.24,
+  "validation_accuracy": 54.74,
+  "backtest_accuracy": 54.74,
+  "last_updated": "2026-05-08 16:37:33"
+}

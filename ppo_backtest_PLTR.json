@@ -1,0 +1,9 @@
+{
+  "code": "PLTR",
+  "ticker": "PLTR",
+  "ppo_return": 0.0,
+  "bah_return": -7.63,
+  "test_start": "2026-03-27",
+  "test_end": "2026-06-09",
+  "computed_at": "2026-06-10 03:02:38"
+}

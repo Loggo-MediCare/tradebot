@@ -1,0 +1,8 @@
+{
+  "symbol": "GLW",
+  "ticker": "GLW",
+  "model_type": "PPO",
+  "validation_accuracy": 57.27,
+  "backtest_accuracy": 57.27,
+  "last_updated": "2026-05-21 10:25:55"
+}

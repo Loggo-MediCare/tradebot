@@ -1,0 +1,8 @@
+{
+  "symbol": "3624",
+  "ticker": "3624.TWO",
+  "model_type": "PPO",
+  "validation_accuracy": 33.58,
+  "backtest_accuracy": 33.58,
+  "last_updated": "2026-05-18 12:09:04"
+}

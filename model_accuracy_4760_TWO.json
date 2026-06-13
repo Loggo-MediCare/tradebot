@@ -1,0 +1,8 @@
+{
+  "symbol": "4760.TWO",
+  "model_type": "PPO",
+  "training_accuracy": 44.18145956607495,
+  "validation_accuracy": 44.18145956607495,
+  "backtest_accuracy": 44.18145956607495,
+  "last_updated": "2026-05-28 15:05:53"
+}

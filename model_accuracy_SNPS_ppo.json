@@ -1,0 +1,8 @@
+{
+  "symbol": "SNPS",
+  "model_type": "PPO",
+  "training_accuracy": 61.7,
+  "validation_accuracy": 61.7,
+  "backtest_accuracy": 61.7,
+  "last_updated": "2026-05-08 16:52:07"
+}

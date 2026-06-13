@@ -1,0 +1,9 @@
+{
+  "symbol": "8222",
+  "ticker": "8222.TW",
+  "model_type": "XGBoost",
+  "training_accuracy": 94.18,
+  "validation_accuracy": 61.34,
+  "backtest_accuracy": 61.34,
+  "last_updated": "2026-05-21 04:21:08"
+}

@@ -1,0 +1,8 @@
+{
+  "symbol": "2313.TW",
+  "model_type": "XGBoost",
+  "training_accuracy": 93.81393083292743,
+  "validation_accuracy": 55.05836575875487,
+  "backtest_accuracy": 55.05836575875487,
+  "last_updated": "2026-05-25 01:07:29"
+}

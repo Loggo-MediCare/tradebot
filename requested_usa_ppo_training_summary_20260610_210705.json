@@ -1,0 +1,86 @@
+[
+  {
+    "ticker": "RKLB",
+    "name": "Rocket Lab USA",
+    "success": false,
+    "reason": "empty Yahoo data"
+  },
+  {
+    "ticker": "ASTS",
+    "name": "AST SpaceMobile",
+    "success": false,
+    "reason": "empty Yahoo data"
+  },
+  {
+    "ticker": "FLY",
+    "name": "FLY",
+    "success": false,
+    "reason": "empty Yahoo data"
+  },
+  {
+    "ticker": "SATS",
+    "name": "EchoStar / SATS",
+    "success": false,
+    "reason": "empty Yahoo data"
+  },
+  {
+    "ticker": "PL",
+    "name": "Planet Labs",
+    "success": false,
+    "reason": "empty Yahoo data"
+  },
+  {
+    "ticker": "AMZN",
+    "name": "Amazon",
+    "success": false,
+    "reason": "empty Yahoo data"
+  },
+  {
+    "ticker": "TMUS",
+    "name": "T-Mobile US",
+    "success": false,
+    "reason": "empty Yahoo data"
+  },
+  {
+    "ticker": "QCOM",
+    "name": "Qualcomm",
+    "success": false,
+    "reason": "empty Yahoo data"
+  },
+  {
+    "ticker": "FLYX",
+    "name": "flyExclusive",
+    "success": false,
+    "reason": "empty Yahoo data"
+  },
+  {
+    "ticker": "GOOGL",
+    "name": "Alphabet",
+    "success": false,
+    "reason": "empty Yahoo data"
+  },
+  {
+    "ticker": "BAC",
+    "name": "Bank of America",
+    "success": false,
+    "reason": "empty Yahoo data"
+  },
+  {
+    "ticker": "DXYZ",
+    "name": "Destiny Tech100",
+    "success": false,
+    "reason": "empty Yahoo data"
+  },
+  {
+    "ticker": "XOVR",
+    "name": "XOVR",
+    "success": false,
+    "reason": "empty Yahoo data"
+  },
+  {
+    "ticker": "VCX",
+    "name": "VCX",
+    "success": false,
+    "reason": "empty Yahoo data"
+  }
+]

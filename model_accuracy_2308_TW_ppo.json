@@ -1,0 +1,8 @@
+{
+  "symbol": "2308",
+  "ticker": "2308.TW",
+  "model_type": "PPO",
+  "validation_accuracy": 53.01,
+  "backtest_accuracy": 53.01,
+  "last_updated": "2026-06-08 14:57:38"
+}

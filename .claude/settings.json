@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(cd \"c:\\\\Users\\\\Silvi\\\\Downloads\\\\trading-bot_20260427\\\\trading-bot\"; $env:PYTHONIOENCODING='utf-8'; python train_ibm_xgboost.py 2>&1)",
+      "PowerShell(cd \"c:\\\\Users\\\\Silvi\\\\Downloads\\\\trading-bot_20260427\\\\trading-bot\"; $env:PYTHONIOENCODING='utf-8'; python train_dell_improved.py 2>&1)",
+      "PowerShell(cd \"c:\\\\Users\\\\Silvi\\\\Downloads\\\\trading-bot_20260427\\\\trading-bot\"; $env:PYTHONIOENCODING='utf-8'; python train_ibm_improved.py 2>&1)",
+      "PowerShell(cd \"c:\\\\Users\\\\Silvi\\\\Downloads\\\\trading-bot_20260427\\\\trading-bot\"; $env:PYTHONIOENCODING='utf-8'; python fool_dashboard.py --tw 2>&1)",
+      "Bash(ls ppo_3293* ppo_1425* ppo_6104*)",
+      "Read(//c/Users/Silvi/Projects/**)",
+      "Bash(python \"fool_dashboard.py\")",
+      "Bash(awk '/美股 Western/{f=1} /🎯 傻瓜儀表板 — 台股/{f=0} f' _fool_full.txt)",
+      "Bash(awk '/def _get_observation/{f=1} f{print NR\": \"$0} /return obs/{if\\(f\\)exit}' get_trading_signal_5274.py)"
+    ]
+  }
+}

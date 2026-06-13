@@ -1,0 +1,14 @@
+{
+  "symbol": "6770.TW",
+  "model_type": "PPO",
+  "training_accuracy": 87.8,
+  "validation_accuracy": 80.2,
+  "backtest_accuracy": 81.6,
+  "win_rate": 57.7,
+  "sharpe_ratio": 2.26,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-01-15 15:53:36",
+  "history": []
+}

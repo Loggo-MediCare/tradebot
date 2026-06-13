@@ -1,0 +1,8 @@
+{
+  "symbol": "MRVL",
+  "model_type": "XGBoost",
+  "training_accuracy": 92.84,
+  "validation_accuracy": 55.26,
+  "backtest_accuracy": 55.26,
+  "last_updated": "2026-05-08 16:27:52"
+}

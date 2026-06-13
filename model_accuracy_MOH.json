@@ -1,0 +1,9 @@
+{
+  "symbol": "MOH",
+  "model_type": "XGBoost",
+  "training_accuracy": 97.10467706013362,
+  "validation_accuracy": 72.77580071174377,
+  "backtest_accuracy": 72.77580071174377,
+  "last_updated": "2026-03-04 16:26:58",
+  "notes": "Optimized with 4.0% gain threshold"
+}

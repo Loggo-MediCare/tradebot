@@ -1,0 +1,10 @@
+{
+  "symbol": "stx",
+  "model_type": "SAC",
+  "training_accuracy": 0.03551136363636364,
+  "validation_accuracy": 0.03551136363636364,
+  "backtest_accuracy": 0.03551136363636364,
+  "total_return": 961.2303057861329,
+  "total_trades": 1,
+  "last_updated": "2026-03-18 07:55:11"
+}

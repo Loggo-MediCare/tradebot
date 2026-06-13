@@ -1,0 +1,18 @@
+{
+  "ticker": "2881.TW",
+  "model_type": "trend_following_v2",
+  "analysis_date": "2026-02-05",
+  "model_accuracy": 0.5138632162661737,
+  "note": "RSI removed from features - trend following model",
+  "feature_importance": {
+    "macd": 0.1110786899540655,
+    "macd_signal": 0.12034511207961669,
+    "macd_hist": 0.11906770856816422,
+    "bb_position": 0.10071085433919648,
+    "volume_ratio": 0.09967378007718097,
+    "price_momentum": 0.1040771556745053,
+    "ma50_slope": 0.12073379045043306,
+    "atr_pct": 0.12875390034652032,
+    "price_change_1d": 0.09555900851031757
+  }
+}

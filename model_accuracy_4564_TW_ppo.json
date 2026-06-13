@@ -1,0 +1,8 @@
+{
+  "symbol": "4564",
+  "ticker": "4564.TW",
+  "model_type": "PPO",
+  "validation_accuracy": 71.4,
+  "backtest_accuracy": 71.4,
+  "last_updated": "2026-05-21 03:44:35"
+}

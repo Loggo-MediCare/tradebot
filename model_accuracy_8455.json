@@ -1,0 +1,9 @@
+{
+  "symbol": "8455",
+  "ticker": "8455.TWO",
+  "model_type": "XGBoost",
+  "training_accuracy": 94.95,
+  "validation_accuracy": 69.2,
+  "backtest_accuracy": 69.2,
+  "last_updated": "2026-05-18 14:51:27"
+}

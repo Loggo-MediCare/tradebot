@@ -1,0 +1,14 @@
+{
+    "symbol": "6223.TWO",
+    "model_type": "PPO",
+    "backtest_accuracy": 54.6,
+    "training_accuracy": null,
+    "validation_accuracy": null,
+    "win_rate": null,
+    "sharpe_ratio": null,
+    "total_signals": 0,
+    "correct_signals": 0,
+    "live_accuracy": null,
+    "last_updated": "2026-02-02 12:00:00",
+    "history": []
+}

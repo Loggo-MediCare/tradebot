@@ -1,0 +1,9 @@
+{
+  "symbol": "BAX",
+  "model_type": "XGBoost",
+  "training_accuracy": 98.57461024498888,
+  "validation_accuracy": 75.44483985765125,
+  "backtest_accuracy": 75.44483985765125,
+  "last_updated": "2026-03-04 16:27:01",
+  "notes": "Optimized with 4.0% gain threshold"
+}

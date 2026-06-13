@@ -1,0 +1,8 @@
+{
+  "symbol": "6442",
+  "ticker": "6442.TW",
+  "model_type": "PPO",
+  "validation_accuracy": 51.56,
+  "backtest_accuracy": 51.56,
+  "last_updated": "2026-05-18 12:07:32"
+}

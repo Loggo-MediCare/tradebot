@@ -1,0 +1,8 @@
+{
+  "symbol": "URI",
+  "model_type": "XGBoost",
+  "training_accuracy": 93.28,
+  "validation_accuracy": 61.93,
+  "backtest_accuracy": 61.93,
+  "last_updated": "2026-05-08 16:56:56"
+}

@@ -1,0 +1,9 @@
+{
+  "symbol": "2851",
+  "ticker": "2851.TW",
+  "model_type": "XGBoost",
+  "training_accuracy": 96.59,
+  "validation_accuracy": 78.77,
+  "backtest_accuracy": 78.77,
+  "last_updated": "2026-05-19 15:48:00"
+}

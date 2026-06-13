@@ -1,0 +1,8 @@
+{
+  "symbol": "6526",
+  "ticker": "6526.TW",
+  "model_type": "PPO",
+  "validation_accuracy": 66.1,
+  "backtest_accuracy": 66.1,
+  "last_updated": "2026-05-21 04:09:48"
+}

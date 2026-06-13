@@ -1,0 +1,8 @@
+{
+  "symbol": "3090",
+  "ticker": "3090.TW",
+  "model_type": "PPO",
+  "validation_accuracy": 31.38,
+  "backtest_accuracy": 31.38,
+  "last_updated": "2026-05-19 10:24:24"
+}

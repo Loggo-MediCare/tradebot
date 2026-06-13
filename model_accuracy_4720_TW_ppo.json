@@ -1,0 +1,8 @@
+{
+  "symbol": "4720.TW",
+  "model_type": "PPO",
+  "training_accuracy": 27.22117202268431,
+  "validation_accuracy": 27.22117202268431,
+  "backtest_accuracy": 27.22117202268431,
+  "last_updated": "2026-04-29 20:57:22"
+}

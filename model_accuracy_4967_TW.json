@@ -1,0 +1,9 @@
+{
+  "symbol": "4967",
+  "ticker": "4967.TW",
+  "model_type": "XGBoost",
+  "training_accuracy": 92.59,
+  "validation_accuracy": 60.25,
+  "backtest_accuracy": 60.25,
+  "last_updated": "2026-05-21 03:55:41"
+}

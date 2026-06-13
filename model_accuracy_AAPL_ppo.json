@@ -1,0 +1,7 @@
+{
+  "symbol": "AAPL",
+  "model_type": "PPO",
+  "validation_accuracy": 32.62,
+  "backtest_accuracy": 32.62,
+  "last_updated": "2026-05-20 21:20:23"
+}

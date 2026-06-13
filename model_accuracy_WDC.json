@@ -1,0 +1,8 @@
+{
+  "symbol": "WDC",
+  "model_type": "XGBoost",
+  "training_accuracy": 94.07775768535262,
+  "validation_accuracy": 49.36708860759494,
+  "backtest_accuracy": 49.36708860759494,
+  "last_updated": "2026-05-04 03:48:16"
+}

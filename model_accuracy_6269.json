@@ -1,0 +1,9 @@
+{
+  "symbol": "6269",
+  "ticker": "6269.TW",
+  "model_type": "XGBoost",
+  "training_accuracy": 93.64,
+  "validation_accuracy": 55.54,
+  "backtest_accuracy": 55.54,
+  "last_updated": "2026-05-21 04:01:09"
+}

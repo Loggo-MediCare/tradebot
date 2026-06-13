@@ -1,0 +1,8 @@
+{
+  "symbol": "2451",
+  "model_type": "XGBoost",
+  "train_accuracy": 96.35343618513323,
+  "test_accuracy": 49.34579439252336,
+  "backtest_return": 10.775860443115235,
+  "last_updated": "2026-03-19 12:21:50"
+}

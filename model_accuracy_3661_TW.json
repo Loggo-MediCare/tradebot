@@ -1,0 +1,9 @@
+{
+  "symbol": "3661",
+  "ticker": "3661.TW",
+  "model_type": "XGBoost",
+  "training_accuracy": 93.09,
+  "validation_accuracy": 45.19,
+  "backtest_accuracy": 45.19,
+  "last_updated": "2026-05-21 03:39:51"
+}

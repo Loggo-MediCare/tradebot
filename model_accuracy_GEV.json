@@ -1,0 +1,8 @@
+{
+  "symbol": "GEV",
+  "model_type": "XGBoost",
+  "training_accuracy": 99.04,
+  "validation_accuracy": 48.57,
+  "backtest_accuracy": 48.57,
+  "last_updated": "2026-05-08 17:06:33"
+}

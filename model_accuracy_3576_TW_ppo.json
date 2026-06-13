@@ -1,0 +1,8 @@
+{
+  "symbol": "3576",
+  "ticker": "3576.TW",
+  "model_type": "PPO",
+  "validation_accuracy": 69.91,
+  "backtest_accuracy": 69.91,
+  "last_updated": "2026-05-21 03:34:45"
+}

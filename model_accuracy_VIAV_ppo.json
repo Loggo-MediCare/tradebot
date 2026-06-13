@@ -1,0 +1,8 @@
+{
+  "symbol": "VIAV",
+  "ticker": "VIAV",
+  "model_type": "PPO",
+  "validation_accuracy": 58.16,
+  "backtest_accuracy": 58.16,
+  "last_updated": "2026-05-21 10:28:00"
+}

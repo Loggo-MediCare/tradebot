@@ -1,0 +1,8 @@
+{
+  "symbol": "3615",
+  "ticker": "3615.TWO",
+  "model_type": "PPO",
+  "validation_accuracy": 64.95,
+  "backtest_accuracy": 64.95,
+  "last_updated": "2026-05-21 03:39:49"
+}

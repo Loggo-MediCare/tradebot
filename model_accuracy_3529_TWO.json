@@ -1,0 +1,8 @@
+{
+  "symbol": "3529.TWO",
+  "model_type": "XGBoost",
+  "training_accuracy": 94.25511197663097,
+  "validation_accuracy": 54.08560311284047,
+  "backtest_accuracy": 54.08560311284047,
+  "last_updated": "2026-05-25 09:42:17"
+}

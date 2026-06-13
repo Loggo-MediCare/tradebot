@@ -1,0 +1,8 @@
+{
+  "symbol": "2327",
+  "ticker": "2327.TW",
+  "model_type": "PPO",
+  "validation_accuracy": 62.02,
+  "backtest_accuracy": 62.02,
+  "last_updated": "2026-05-18 12:04:02"
+}

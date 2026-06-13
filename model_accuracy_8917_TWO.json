@@ -1,0 +1,9 @@
+{
+  "symbol": "8917.TWO",
+  "model_type": "XGBoost",
+  "training_accuracy": 99.58563535911603,
+  "validation_accuracy": 96.31675874769797,
+  "backtest_accuracy": 96.31675874769797,
+  "last_updated": "2026-03-10 05:12:49",
+  "notes": "Optimized with 3.5% gain threshold"
+}

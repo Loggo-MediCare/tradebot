@@ -1,0 +1,8 @@
+{
+  "symbol": "2890",
+  "ticker": "2890.TW",
+  "model_type": "PPO",
+  "validation_accuracy": 25.32,
+  "backtest_accuracy": 25.32,
+  "last_updated": "2026-06-08 15:15:18"
+}

@@ -1,0 +1,15 @@
+{
+  "symbol": "6426",
+  "model_type": "PPO",
+  "training_accuracy": 76.84210526315789,
+  "validation_accuracy": 76.84210526315789,
+  "backtest_accuracy": 76.84210526315789,
+  "backtest_return": 741.7612208366395,
+  "win_rate": 76.84210526315789,
+  "sharpe_ratio": null,
+  "total_signals": 190,
+  "correct_signals": 146,
+  "live_accuracy": null,
+  "last_updated": "2026-05-27 15:32:32",
+  "history": []
+}

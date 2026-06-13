@@ -1,0 +1,7 @@
+{
+  "symbol": "QCOM",
+  "model_type": "PPO",
+  "validation_accuracy": 33.16,
+  "backtest_accuracy": 33.16,
+  "last_updated": "2026-05-21 04:00:51"
+}

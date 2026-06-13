@@ -1,0 +1,8 @@
+{
+  "symbol": "3090.TW",
+  "model_type": "PPO",
+  "training_accuracy": 33.57664233576642,
+  "validation_accuracy": 33.57664233576642,
+  "backtest_accuracy": 33.57664233576642,
+  "last_updated": "2026-05-28 18:11:17"
+}

@@ -1,0 +1,8 @@
+{
+  "symbol": "3236",
+  "ticker": "3236.TWO",
+  "model_type": "PPO",
+  "validation_accuracy": 29.91,
+  "backtest_accuracy": 29.91,
+  "last_updated": "2026-05-18 12:48:30"
+}

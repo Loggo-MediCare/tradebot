@@ -1,0 +1,9 @@
+{
+  "symbol": "3581",
+  "ticker": "3581.TWO",
+  "model_type": "XGBoost",
+  "training_accuracy": 93.73,
+  "validation_accuracy": 57.35,
+  "backtest_accuracy": 57.35,
+  "last_updated": "2026-05-18 12:58:40"
+}

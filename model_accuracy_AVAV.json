@@ -1,0 +1,9 @@
+{
+  "symbol": "avav",
+  "ticker": "AVAV",
+  "model_type": "XGBoost",
+  "training_accuracy": 93.81,
+  "validation_accuracy": 56.32,
+  "backtest_accuracy": 56.32,
+  "last_updated": "2026-05-21 04:53:02"
+}

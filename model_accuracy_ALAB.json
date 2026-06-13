@@ -1,0 +1,9 @@
+{
+  "symbol": "alab",
+  "ticker": "ALAB",
+  "model_type": "XGBoost",
+  "training_accuracy": 98.58,
+  "validation_accuracy": 50.0,
+  "backtest_accuracy": 50.0,
+  "last_updated": "2026-05-21 04:53:00"
+}

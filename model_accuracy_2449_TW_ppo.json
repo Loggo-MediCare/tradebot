@@ -1,0 +1,8 @@
+{
+  "symbol": "2449",
+  "ticker": "2449.TW",
+  "model_type": "PPO",
+  "validation_accuracy": 58.29,
+  "backtest_accuracy": 58.29,
+  "last_updated": "2026-06-08 15:03:52"
+}

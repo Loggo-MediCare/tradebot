@@ -1,0 +1,8 @@
+{
+  "symbol": "PLTR",
+  "model_type": "XGBoost",
+  "training_accuracy": 96.7,
+  "validation_accuracy": 55.87,
+  "backtest_accuracy": 55.87,
+  "last_updated": "2026-05-19 10:50:27"
+}

@@ -1,0 +1,8 @@
+{
+  "symbol": "STLD",
+  "model_type": "XGBoost",
+  "training_accuracy": 93.11,
+  "validation_accuracy": 57.54,
+  "backtest_accuracy": 57.54,
+  "last_updated": "2026-05-08 17:11:26"
+}

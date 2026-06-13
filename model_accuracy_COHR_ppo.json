@@ -1,0 +1,8 @@
+{
+  "symbol": "COHR",
+  "ticker": "COHR",
+  "model_type": "PPO",
+  "validation_accuracy": 49.11,
+  "backtest_accuracy": 49.11,
+  "last_updated": "2026-05-21 10:22:19"
+}

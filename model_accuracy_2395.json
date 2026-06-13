@@ -1,0 +1,10 @@
+{
+  "symbol": "2395",
+  "model_type": "PPO",
+  "training_accuracy": 100.0,
+  "validation_accuracy": 100.0,
+  "backtest_accuracy": 100.0,
+  "total_return": 102.03389190673829,
+  "total_trades": 7,
+  "last_updated": "2026-03-14 18:53:32"
+}

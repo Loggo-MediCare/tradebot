@@ -1,0 +1,8 @@
+{
+  "symbol": "3147",
+  "ticker": "3147.TWO",
+  "model_type": "PPO",
+  "validation_accuracy": 67.83,
+  "backtest_accuracy": 67.83,
+  "last_updated": "2026-05-19 10:42:12"
+}

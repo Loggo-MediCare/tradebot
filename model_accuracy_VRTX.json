@@ -1,0 +1,9 @@
+{
+  "symbol": "VRTX",
+  "model_type": "XGBoost",
+  "training_accuracy": 96.93196976433971,
+  "validation_accuracy": 87.03374777975134,
+  "backtest_accuracy": 87.03374777975134,
+  "last_updated": "2026-03-11 04:39:59",
+  "notes": "Optimized with 4.0% gain threshold"
+}

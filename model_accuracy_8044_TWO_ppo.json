@@ -1,0 +1,8 @@
+{
+  "symbol": "8044",
+  "ticker": "8044.TWO",
+  "model_type": "PPO",
+  "validation_accuracy": 25.14,
+  "backtest_accuracy": 25.14,
+  "last_updated": "2026-05-19 10:25:48"
+}

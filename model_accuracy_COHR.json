@@ -1,0 +1,9 @@
+{
+  "symbol": "COHR",
+  "ticker": "COHR",
+  "model_type": "XGBoost",
+  "training_accuracy": 93.99,
+  "validation_accuracy": 49.3,
+  "backtest_accuracy": 49.3,
+  "last_updated": "2026-05-21 10:18:28"
+}

@@ -1,0 +1,8 @@
+{
+  "symbol": "ORCL",
+  "model_type": "XGBoost",
+  "training_accuracy": 93.5,
+  "validation_accuracy": 58.6,
+  "backtest_accuracy": 58.6,
+  "last_updated": "2026-05-20 21:35:57"
+}

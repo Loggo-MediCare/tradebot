@@ -1,0 +1,8 @@
+{
+  "symbol": "TSM",
+  "model_type": "XGBoost",
+  "training_accuracy": 92.2242314647378,
+  "validation_accuracy": 55.51537070524412,
+  "backtest_accuracy": 55.51537070524412,
+  "last_updated": "2026-05-04 04:03:12"
+}

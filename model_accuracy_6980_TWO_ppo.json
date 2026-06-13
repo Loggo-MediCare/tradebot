@@ -1,0 +1,8 @@
+{
+  "symbol": "6980",
+  "ticker": "6980.TWO",
+  "model_type": "PPO",
+  "validation_accuracy": 45.9,
+  "backtest_accuracy": 45.9,
+  "last_updated": "2026-05-19 14:21:29"
+}

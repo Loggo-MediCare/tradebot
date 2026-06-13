@@ -1,0 +1,8 @@
+{
+  "symbol": "SIMO",
+  "model_type": "XGBoost",
+  "training_accuracy": 92.71,
+  "validation_accuracy": 54.39,
+  "backtest_accuracy": 54.39,
+  "last_updated": "2026-05-19 10:54:46"
+}

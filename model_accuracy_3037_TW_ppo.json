@@ -1,0 +1,8 @@
+{
+  "symbol": "3037",
+  "ticker": "3037.TW",
+  "model_type": "PPO",
+  "validation_accuracy": 45.32,
+  "backtest_accuracy": 45.32,
+  "last_updated": "2026-05-19 09:57:11"
+}

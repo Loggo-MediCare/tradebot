@@ -1,0 +1,8 @@
+{
+  "symbol": "INTC",
+  "model_type": "XGBoost",
+  "training_accuracy": 93.68,
+  "validation_accuracy": 58.25,
+  "backtest_accuracy": 58.25,
+  "last_updated": "2026-05-21 03:49:47"
+}

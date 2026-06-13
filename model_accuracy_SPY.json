@@ -1,0 +1,8 @@
+{
+  "symbol": "SPY",
+  "model_type": "XGBoost",
+  "training_accuracy": 96.09,
+  "validation_accuracy": 84.91,
+  "backtest_accuracy": 84.91,
+  "last_updated": "2026-05-20 21:56:43"
+}

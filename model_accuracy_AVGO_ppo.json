@@ -1,0 +1,8 @@
+{
+  "symbol": "AVGO",
+  "model_type": "PPO",
+  "training_accuracy": 56.672760511883006,
+  "validation_accuracy": 56.672760511883006,
+  "backtest_accuracy": 56.672760511883006,
+  "last_updated": "2026-05-04 03:58:16"
+}

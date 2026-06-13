@@ -1,0 +1,8 @@
+{
+  "symbol": "NXPI",
+  "model_type": "PPO",
+  "training_accuracy": 34.04,
+  "validation_accuracy": 34.04,
+  "backtest_accuracy": 34.04,
+  "last_updated": "2026-05-08 16:47:15"
+}

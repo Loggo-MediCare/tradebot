@@ -1,0 +1,10 @@
+{
+  "symbol": "3017",
+  "ticker": "3017.TW",
+  "model_type": "PPO",
+  "training_accuracy": 50.09,
+  "validation_accuracy": 50.09,
+  "backtest_accuracy": 50.09,
+  "last_updated": "2026-05-18 12:40:59",
+  "note": "Using PPO (XGBoost 52.09% wins accuracy but PPO has better real return rate)"
+}

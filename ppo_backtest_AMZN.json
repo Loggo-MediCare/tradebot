@@ -1,0 +1,9 @@
+{
+  "code": "AMZN",
+  "ticker": "AMZN",
+  "ppo_return": 14.87,
+  "bah_return": 15.82,
+  "test_start": "2026-03-16",
+  "test_end": "2026-06-09",
+  "computed_at": "2026-06-10 02:43:41"
+}

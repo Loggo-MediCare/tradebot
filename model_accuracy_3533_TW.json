@@ -1,0 +1,9 @@
+{
+  "symbol": "3533",
+  "ticker": "3533.TW",
+  "model_type": "XGBoost",
+  "training_accuracy": 91.59,
+  "validation_accuracy": 58.8,
+  "backtest_accuracy": 58.8,
+  "last_updated": "2026-05-21 03:26:47"
+}

@@ -1,0 +1,9 @@
+{
+  "symbol": "2002",
+  "ticker": "2002.TW",
+  "model_type": "XGBoost",
+  "training_accuracy": 95.59,
+  "validation_accuracy": 56.81,
+  "backtest_accuracy": 56.81,
+  "last_updated": "2026-05-21 03:24:21"
+}

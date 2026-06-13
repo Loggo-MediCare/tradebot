@@ -1,0 +1,37 @@
+{
+  "history": [
+    {
+      "ts": "2026-05-30 04:11:24",
+      "net_gex": 762.0,
+      "raw": "POSITIVE",
+      "confirmed": "NEUTRAL"
+    },
+    {
+      "ts": "2026-05-30 04:20:12",
+      "net_gex": 825.9,
+      "raw": "POSITIVE",
+      "confirmed": "POSITIVE"
+    },
+    {
+      "ts": "2026-05-30 04:20:23",
+      "net_gex": 831.4,
+      "raw": "POSITIVE",
+      "confirmed": "POSITIVE"
+    },
+    {
+      "ts": "2026-05-30 04:33:44",
+      "net_gex": 1015.8,
+      "raw": "POSITIVE",
+      "confirmed": "POSITIVE"
+    },
+    {
+      "ts": "2026-05-30 04:34:44",
+      "net_gex": 1048.5,
+      "raw": "POSITIVE",
+      "confirmed": "POSITIVE"
+    }
+  ],
+  "confirmed_regime": "POSITIVE",
+  "pending_regime": null,
+  "pending_count": 0
+}

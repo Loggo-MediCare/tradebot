@@ -1,0 +1,8 @@
+{
+  "symbol": "GOOGL",
+  "model_type": "XGBoost",
+  "training_accuracy": 93.67088607594937,
+  "validation_accuracy": 59.85533453887884,
+  "backtest_accuracy": 59.85533453887884,
+  "last_updated": "2026-05-04 03:42:55"
+}

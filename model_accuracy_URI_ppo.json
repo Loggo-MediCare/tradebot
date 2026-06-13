@@ -1,0 +1,8 @@
+{
+  "symbol": "URI",
+  "model_type": "PPO",
+  "training_accuracy": 36.88,
+  "validation_accuracy": 36.88,
+  "backtest_accuracy": 36.88,
+  "last_updated": "2026-05-08 17:01:41"
+}

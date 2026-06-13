@@ -1,0 +1,7 @@
+{
+  "symbol": "INTC",
+  "model_type": "PPO",
+  "validation_accuracy": 63.48,
+  "backtest_accuracy": 63.48,
+  "last_updated": "2026-05-21 03:55:17"
+}

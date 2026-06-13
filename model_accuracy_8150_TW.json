@@ -1,0 +1,9 @@
+{
+  "symbol": "8150",
+  "ticker": "8150.TW",
+  "model_type": "XGBoost",
+  "training_accuracy": 93.23,
+  "validation_accuracy": 52.09,
+  "backtest_accuracy": 52.09,
+  "last_updated": "2026-05-18 13:21:41"
+}

@@ -1,0 +1,7 @@
+{
+  "symbol": "SPY",
+  "model_type": "PPO",
+  "validation_accuracy": 15.43,
+  "backtest_accuracy": 15.43,
+  "last_updated": "2026-05-20 22:04:33"
+}

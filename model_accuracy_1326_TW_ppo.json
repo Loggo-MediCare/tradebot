@@ -1,0 +1,8 @@
+{
+  "symbol": "1326",
+  "ticker": "1326.TW",
+  "model_type": "PPO",
+  "validation_accuracy": 27.14,
+  "backtest_accuracy": 27.14,
+  "last_updated": "2026-06-08 14:55:01"
+}

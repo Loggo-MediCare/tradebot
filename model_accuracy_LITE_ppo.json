@@ -1,0 +1,8 @@
+{
+  "symbol": "LITE",
+  "model_type": "PPO",
+  "training_accuracy": 49.42307692307693,
+  "validation_accuracy": 49.42307692307693,
+  "backtest_accuracy": 49.42307692307693,
+  "last_updated": "2026-05-04 04:03:11"
+}

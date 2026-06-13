@@ -1,0 +1,7 @@
+{
+  "symbol": "ORCL",
+  "model_type": "PPO",
+  "validation_accuracy": 35.28,
+  "backtest_accuracy": 35.28,
+  "last_updated": "2026-05-20 21:41:02"
+}

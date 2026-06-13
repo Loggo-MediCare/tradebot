@@ -1,0 +1,14 @@
+{
+    "symbol": "2002.TW",
+    "model_type": "PPO",
+    "backtest_accuracy": 73.4,
+    "training_accuracy": null,
+    "validation_accuracy": null,
+    "win_rate": null,
+    "sharpe_ratio": null,
+    "total_signals": 0,
+    "correct_signals": 0,
+    "live_accuracy": null,
+    "last_updated": "2026-02-03 12:00:00",
+    "history": []
+}

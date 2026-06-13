@@ -1,0 +1,8 @@
+{
+  "symbol": "4919.TW",
+  "model_type": "XGBoost",
+  "training_accuracy": 93.08,
+  "validation_accuracy": 52.8,
+  "backtest_accuracy": 52.8,
+  "last_updated": "2026-05-13 10:51:59"
+}

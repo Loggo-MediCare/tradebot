@@ -1,0 +1,24 @@
+{
+  "ticker": "8064.TWO",
+  "trained_at": "2026-05-20 11:41:57",
+  "models": {
+    "PPO": {
+      "roi": 0.0,
+      "acc": 55.64
+    },
+    "DQN": {
+      "roi": 6.48,
+      "acc": 55.45
+    },
+    "XGBoost": {
+      "roi": -19.81,
+      "acc": 54.95
+    },
+    "Hybrid RF→PPO": {
+      "roi": 0.0,
+      "acc": 55.64
+    }
+  },
+  "best_roi": "DQN",
+  "best_accuracy": "PPO"
+}

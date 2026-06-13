@@ -1,0 +1,8 @@
+{
+  "symbol": "3036",
+  "ticker": "3036.TW",
+  "model_type": "PPO",
+  "validation_accuracy": 62.11,
+  "backtest_accuracy": 62.11,
+  "last_updated": "2026-06-08 15:29:58"
+}

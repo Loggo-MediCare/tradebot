@@ -1,0 +1,8 @@
+{
+  "symbol": "BKR",
+  "model_type": "XGBoost",
+  "training_accuracy": 94.42,
+  "validation_accuracy": 61.49,
+  "backtest_accuracy": 61.49,
+  "last_updated": "2026-05-08 16:32:40"
+}

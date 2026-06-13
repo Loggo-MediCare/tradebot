@@ -1,0 +1,14 @@
+{
+  "symbol": "ONDS",
+  "model_type": "PPO",
+  "training_accuracy": 83.7,
+  "validation_accuracy": 75.0,
+  "backtest_accuracy": 74.6,
+  "win_rate": 71.4,
+  "sharpe_ratio": 2.1,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-01-15 15:53:36",
+  "history": []
+}

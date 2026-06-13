@@ -1,0 +1,8 @@
+{
+  "symbol": "SATL",
+  "model_type": "XGBoost",
+  "training_accuracy": 97.4937343358396,
+  "validation_accuracy": 52.5,
+  "backtest_accuracy": 52.5,
+  "last_updated": "2026-02-25 19:52:22"
+}

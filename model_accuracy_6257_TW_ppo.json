@@ -1,0 +1,8 @@
+{
+  "symbol": "6257",
+  "ticker": "6257.TW",
+  "model_type": "PPO",
+  "validation_accuracy": 60.92,
+  "backtest_accuracy": 60.92,
+  "last_updated": "2026-05-18 17:56:51"
+}

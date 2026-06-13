@@ -1,0 +1,9 @@
+{
+  "symbol": "8110.TW",
+  "model_type": "XGBoost",
+  "training_accuracy": 97.83609576427256,
+  "validation_accuracy": 72.24264705882352,
+  "backtest_accuracy": 72.24264705882352,
+  "last_updated": "2026-03-11 04:39:52",
+  "notes": "Optimized with 4.0% gain threshold"
+}

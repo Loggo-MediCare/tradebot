@@ -1,0 +1,7 @@
+{
+  "symbol": "AAOI",
+  "model_type": "PPO",
+  "validation_accuracy": 46.45,
+  "backtest_accuracy": 46.45,
+  "last_updated": "2026-05-21 04:02:52"
+}

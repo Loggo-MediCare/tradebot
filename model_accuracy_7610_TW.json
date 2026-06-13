@@ -1,0 +1,10 @@
+{
+  "symbol": "7610",
+  "ticker": "7610.TW",
+  "model_type": "XGBoost",
+  "training_accuracy": 93.85,
+  "validation_accuracy": 63.64,
+  "backtest_accuracy": 63.64,
+  "note": "Short-history model \u2014 limited data, treat with caution",
+  "last_updated": "2026-05-18 18:08:59"
+}

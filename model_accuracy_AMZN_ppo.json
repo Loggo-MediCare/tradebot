@@ -1,0 +1,7 @@
+{
+  "symbol": "AMZN",
+  "model_type": "PPO",
+  "validation_accuracy": 34.4,
+  "backtest_accuracy": 34.4,
+  "last_updated": "2026-05-20 21:30:46"
+}

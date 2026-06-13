@@ -1,0 +1,9 @@
+{
+  "symbol": "2385",
+  "ticker": "2385.TW",
+  "model_type": "XGBoost",
+  "training_accuracy": 94.68,
+  "validation_accuracy": 32.49,
+  "backtest_accuracy": 32.49,
+  "last_updated": "2026-05-21 03:24:24"
+}

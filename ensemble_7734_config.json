@@ -1,0 +1,51 @@
+{
+  "symbol": "7734.TWO",
+  "threshold": 0.5999999999999999,
+  "weights": {
+    "LR": 0.19512195121951217,
+    "LASSO": 0.19918699186991867,
+    "EN": 0.19918699186991867,
+    "ARIMA": 0.19105691056910568,
+    "LSTM": 0.21544715447154472
+  },
+  "accuracies": {
+    "LR": 0.5454545454545454,
+    "LASSO": 0.5568181818181818,
+    "EN": 0.5568181818181818,
+    "RF": 0.375,
+    "ARIMA": 0.5340909090909091,
+    "LSTM": 0.6022727272727273
+  },
+  "ensemble_accuracy": 0.625,
+  "lstm_threshold": 0.45,
+  "features": [
+    "close",
+    "rsi",
+    "macd",
+    "macd_signal",
+    "macd_hist",
+    "bb_pos",
+    "K",
+    "D",
+    "sma_10",
+    "sma_30",
+    "vol_ratio",
+    "ret_5d",
+    "ret_10d",
+    "ret_20d"
+  ],
+  "lstm_features": [
+    "close",
+    "rsi",
+    "macd",
+    "macd_signal",
+    "bb_pos",
+    "K",
+    "sma_10",
+    "sma_30",
+    "vol_ratio",
+    "ret_5d"
+  ],
+  "lookback": 10,
+  "last_updated": "2026-04-29 20:24:24"
+}
