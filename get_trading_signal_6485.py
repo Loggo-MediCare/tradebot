@@ -521,7 +521,7 @@ def get_trading_signal():
     # 顯示AI模型準確度
 
 
-    accuracy_display = get_model_accuracy_display('6485.TW')
+    accuracy_display = get_model_accuracy_display('6485.TWO')
 
 
     print(f"模型準確度: {accuracy_display}")
@@ -572,7 +572,7 @@ def get_trading_signal():
         # 使用 period 方式下载，auto_adjust=True 确保价格是最新的
 
 
-        df = yf.download('6485.TW', period='90d', progress=False, auto_adjust=True)
+        df = yf.download('6485.TWO', period='90d', progress=False, auto_adjust=True)
 
 
         if df.empty:
@@ -626,7 +626,7 @@ def get_trading_signal():
         try:
 
 
-            ticker_info = yf.Ticker('6485.TW').info
+            ticker_info = yf.Ticker('6485.TWO').info
 
 
             target_price = ticker_info.get('targetMeanPrice')
@@ -851,7 +851,7 @@ def get_trading_signal():
     # 7. 初始化动态权重计算器
 
 
-    weight_calc = DynamicWeightCalculator('6485.TW')
+    weight_calc = DynamicWeightCalculator('6485.TWO')
 
 
     buy_weights = weight_calc.get_buy_weights()
@@ -875,7 +875,7 @@ def get_trading_signal():
     from finbert_enhanced_scoring import calculate_sentiment_score, format_sentiment_output
 
 
-    sentiment_result = calculate_sentiment_score('6485.TW', verbose=False)
+    sentiment_result = calculate_sentiment_score('6485.TWO', verbose=False)
 
 
     if sentiment_result and sentiment_result['news_count'] > 0:
@@ -1091,7 +1091,7 @@ def get_trading_signal():
             buy_weights=buy_weights,
 
 
-            symbol='6485.TW'
+            symbol='6485.TWO'
 
 
         )
@@ -1718,7 +1718,7 @@ def get_trading_signal():
             try:
 
 
-                ticker_obj = yf.Ticker('6485.TW')
+                ticker_obj = yf.Ticker('6485.TWO')
 
 
                 info = ticker_obj.info
@@ -2015,7 +2015,7 @@ def get_trading_signal():
         'date': latest_date,
 
 
-        'symbol': '6485.TW',
+        'symbol': '6485.TWO',
 
 
         'current_price': current_price,
@@ -2081,7 +2081,7 @@ if __name__ == "__main__":
             import yfinance as yf
 
 
-            chart_df = yf.Ticker("6485.TW").history(period="6mo")
+            chart_df = yf.Ticker("6485.TWO").history(period="6mo")
 
 
             chart_df.columns = [c.lower() for c in chart_df.columns]
@@ -2090,7 +2090,7 @@ if __name__ == "__main__":
             chart_path = "6485_chart.png"
 
 
-            plot_candlestick(chart_df, "6485.TW", save_path=chart_path)
+            plot_candlestick(chart_df, "6485.TWO", save_path=chart_path)
 
 
         except Exception as e:
@@ -2123,7 +2123,7 @@ if __name__ == "__main__":
         # 顯示AI模型準確度摘要
 
 
-        print(f"   {get_model_accuracy_display('6485.TW')}")
+        print(f"   {get_model_accuracy_display('6485.TWO')}")
 
 
     else:

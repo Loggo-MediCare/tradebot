@@ -52,7 +52,7 @@
 📱 快速摘要:
 
 
-   股票: 3630.TW (新巨)
+   股票: 3630.TWO (新巨)
 
 
    日期: 2025-12-22
@@ -893,7 +893,7 @@ def get_trading_signal():
         # 使用 period 方式下载，auto_adjust=True 确保价格是最新的
 
 
-        df = yf.download('3630.TW', period='300d', progress=False, auto_adjust=True)  # 改为300天以计算200日均线
+        df = yf.download('3630.TWO', period='300d', progress=False, auto_adjust=True)  # 改为300天以计算200日均线
 
 
         if df.empty:
@@ -947,7 +947,7 @@ def get_trading_signal():
         try:
 
 
-            ticker_info = yf.Ticker('3630.TW').info
+            ticker_info = yf.Ticker('3630.TWO').info
 
 
             target_price = ticker_info.get('targetMeanPrice')
@@ -1052,7 +1052,7 @@ def get_trading_signal():
     action_value = float(action[0]) if isinstance(action, np.ndarray) else float(action)
 
 
-    ai_muted = should_mute_ai_signal('3630.TW', threshold=52)
+    ai_muted = should_mute_ai_signal('3630.TWO', threshold=52)
 
 
     if ai_muted:
@@ -1181,7 +1181,7 @@ def get_trading_signal():
     try:
 
 
-        profit_positive = evaluate_fundamentals_for_sell(yf, '3630.TW')['good']
+        profit_positive = evaluate_fundamentals_for_sell(yf, '3630.TWO')['good']
 
 
     except Exception:
@@ -1226,7 +1226,7 @@ def get_trading_signal():
     # 7. 初始化动态权重计算器
 
 
-    weight_calc = DynamicWeightCalculator('3630.TW')
+    weight_calc = DynamicWeightCalculator('3630.TWO')
 
 
     buy_weights = weight_calc.get_buy_weights()
@@ -1250,7 +1250,7 @@ def get_trading_signal():
     from finbert_enhanced_scoring import calculate_sentiment_score, format_sentiment_output
 
 
-    sentiment_result = calculate_sentiment_score('3630.TW', verbose=True)
+    sentiment_result = calculate_sentiment_score('3630.TWO', verbose=True)
 
 
     if sentiment_result and sentiment_result['news_count'] > 0:
@@ -1496,7 +1496,7 @@ def get_trading_signal():
             buy_weights=buy_weights,
 
 
-            symbol='3630.TW',
+            symbol='3630.TWO',
 
 
             price_change_pct=price_change_pct,
@@ -2189,7 +2189,7 @@ def get_trading_signal():
             # 获取公司基本面（超跌时才检查）
 
 
-            fundamentals = evaluate_fundamentals_for_sell(yf, '3630.TW')
+            fundamentals = evaluate_fundamentals_for_sell(yf, '3630.TWO')
 
 
             fundamentals_good_sell = fundamentals['good']
@@ -2285,7 +2285,7 @@ def get_trading_signal():
         # 🌱 基本面成長保護: Revenue Growth > 33% 或 EPS Growth > 100% 各降低賣出強度 8 分
 
 
-        _growth = calculate_growth_score_adjustment(yf, '3630.TW')
+        _growth = calculate_growth_score_adjustment(yf, '3630.TWO')
 
 
         if _growth['adjustment'] > 0 and sell_score > 0:
@@ -2450,7 +2450,7 @@ def get_trading_signal():
         'date': latest_date,
 
 
-        'symbol': '3630.TW',
+        'symbol': '3630.TWO',
 
 
         'current_price': current_price,

@@ -1,10 +1,4 @@
-﻿"""
-美股 ARM (Arm Holdings) AI 交易信号生成器
-======================================
-使用训练好的 Hybrid PPO + XGBoost 模型生成今日交易策略
-输出: 买入/卖出/持有 信号 + 建议价格
-"""
-
+﻿
 import os
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 import sys
