@@ -1,0 +1,14 @@
+{
+  "symbol": "4979.TWO",
+  "model_type": "Hybrid",
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 66.52,
+  "win_rate": 93.00833333333333,
+  "sharpe_ratio": null,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-21 18:28:25",
+  "history": []
+}

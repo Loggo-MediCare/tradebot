@@ -1,0 +1,14 @@
+{
+  "symbol": "1504.TW",
+  "model_type": "Hybrid",
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 57.53,
+  "win_rate": 38.78499908447266,
+  "sharpe_ratio": -1.911,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-20 12:43:18",
+  "history": []
+}

@@ -1,0 +1,14 @@
+{
+  "symbol": "3563.TW",
+  "model_type": "Hybrid",
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 61.98,
+  "win_rate": 66.92526977539063,
+  "sharpe_ratio": 1.5761,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-21 12:20:13",
+  "history": []
+}

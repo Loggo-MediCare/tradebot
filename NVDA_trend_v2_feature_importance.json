@@ -1,0 +1,18 @@
+{
+  "ticker": "NVDA",
+  "model_type": "trend_following_v2",
+  "analysis_date": "2026-02-05",
+  "model_accuracy": 0.45340501792114696,
+  "note": "RSI removed from features - trend following model",
+  "feature_importance": {
+    "macd": 0.11781538991332677,
+    "macd_signal": 0.12366203832058217,
+    "macd_hist": 0.11277200725888571,
+    "bb_position": 0.0938590325190802,
+    "volume_ratio": 0.09827927373584913,
+    "price_momentum": 0.10193605549294178,
+    "ma50_slope": 0.1289725198698225,
+    "atr_pct": 0.13262235642429498,
+    "price_change_1d": 0.09008132646521681
+  }
+}

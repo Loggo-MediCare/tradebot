@@ -1,0 +1,14 @@
+{
+  "symbol": "3694.TW",
+  "model_type": "Hybrid",
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 59.14,
+  "win_rate": 55.340667737325035,
+  "sharpe_ratio": -0.9186,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-21 13:24:29",
+  "history": []
+}

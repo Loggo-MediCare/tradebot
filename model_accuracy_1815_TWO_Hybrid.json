@@ -1,0 +1,14 @@
+{
+  "symbol": "1815.TWO",
+  "model_type": "Hybrid",
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 60.9,
+  "win_rate": 62.154666595458984,
+  "sharpe_ratio": null,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-06-02 14:15:18",
+  "history": []
+}

@@ -1,0 +1,14 @@
+{
+  "symbol": "6531.TW",
+  "model_type": "Hybrid",
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 58.23,
+  "win_rate": 52.25,
+  "sharpe_ratio": null,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-20 01:23:39",
+  "history": []
+}

@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GEX Scanner — Gamma Squeeze Detector</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #0a0e14;
+    --bg2: #0f1520;
+    --bg3: #151e2d;
+    --border: #1e2d42;
+    --border2: #243549;
+    --text: #c8d8f0;
+    --text2: #6b8aaa;
+    --text3: #3d5470;
+    --green: #00d4aa;
+    --green2: #00a882;
+    --red: #ff4d6a;
+    --red2: #cc2d47;
+    --amber: #ffaa00;
+    --amber2: #cc8800;
+    --blue: #4a9eff;
+    --blue2: #2070cc;
+    --purple: #a78bfa;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', monospace;
+    font-size: 14px;
+    min-height: 100vh;
+  }
+
+  .header {
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--bg2);
+  }
+
+  .header-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--green);
+  }
+
+  .header-sub {
+    font-size: 11px;
+    color: var(--text2);
+    letter-spacing: 0.05em;
+  }
+
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .main { padding: 20px 24px; max-width: 1100px; }
+
+  /* Input bar */
+  .input-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+  }
+
+  .ticker-input {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    color: var(--text);
+    padding: 10px 16px;
+    border-radius: 6px;
+    width: 120px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .ticker-input:focus { border-color: var(--green); }
+
+  .expiry-select {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    color: var(--text);
+    padding: 10px 12px;
+    border-radius: 6px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .scan-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: var(--green2);
+    color: #001a14;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .scan-btn:hover { background: var(--green); }
+  .scan-btn:active { transform: scale(0.97); }
+  .scan-btn:disabled { background: var(--bg3); color: var(--text3); cursor: not-allowed; }
+
+  .note {
+    font-size: 11px;
+    color: var(--text3);
+    margin-left: 8px;
+  }
+
+  /* Status bar */
+  .status-bar {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text2);
+    padding: 8px 12px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-bottom: 16px;
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Signal card */
+  .signal-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    background: var(--bg2);
+  }
+
+  .signal-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .signal-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    padding: 3px 10px;
+    border-radius: 3px;
+    text-transform: uppercase;
+  }
+
+  .badge-squeeze { background: #ff4d6a22; color: var(--red); border: 1px solid var(--red2); }
+  .badge-warning { background: #ffaa0022; color: var(--amber); border: 1px solid var(--amber2); }
+  .badge-neutral { background: #4a9eff22; color: var(--blue); border: 1px solid var(--blue2); }
+  .badge-cooling { background: #a78bfa22; color: var(--purple); border: 1px solid #6d5bc0; }
+
+  .signal-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .signal-body {
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.7;
+    border-left: 2px solid var(--border2);
+    padding-left: 12px;
+  }
+
+  /* Metrics grid */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .metric-card {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 14px;
+  }
+
+  .metric-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 4px;
+  }
+
+  .metric-value {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .metric-value.green { color: var(--green); }
+  .metric-value.red { color: var(--red); }
+  .metric-value.amber { color: var(--amber); }
+  .metric-value.blue { color: var(--blue); }
+
+  .metric-sub {
+    font-size: 10px;
+    color: var(--text3);
+    margin-top: 2px;
+  }
+
+  /* Options table */
+  .table-wrap {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+
+  .table-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text2);
+    padding: 10px 14px;
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+  }
+
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 8px 12px;
+    text-align: right;
+    background: var(--bg3);
+    border-bottom: 1px solid var(--border);
+  }
+  th:first-child { text-align: left; }
+
+  td {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    padding: 7px 12px;
+    text-align: right;
+    border-bottom: 1px solid var(--border);
+    color: var(--text2);
+    transition: background 0.1s;
+  }
+  td:first-child { text-align: left; color: var(--text); font-weight: 500; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg3); }
+
+  .highlight-row td { background: #ff4d6a0a; }
+  .highlight-row td:first-child { color: var(--red); }
+
+  .call-wall-row td { background: #ff4d6a12 !important; }
+  .call-wall-row td:first-child { color: var(--red) !important; }
+
+  .near-price-row td { background: #4a9eff0a; }
+
+  /* Bar vis */
+  .bar-cell { position: relative; }
+  .bar-bg {
+    position: absolute;
+    left: 0; top: 2px; bottom: 2px;
+    border-radius: 2px;
+    opacity: 0.25;
+    transition: width 0.3s;
+  }
+  .bar-text { position: relative; z-index: 1; }
+
+  /* GEX interpretation */
+  .gex-box {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+  }
+
+  .gex-box-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text2);
+    margin-bottom: 10px;
+  }
+
+  .gex-verdict {
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--text);
+  }
+
+  .tag {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    padding: 1px 7px;
+    border-radius: 3px;
+    margin: 0 3px;
+    vertical-align: middle;
+  }
+  .tag-red { background: #ff4d6a22; color: var(--red); }
+  .tag-green { background: #00d4aa22; color: var(--green); }
+  .tag-amber { background: #ffaa0022; color: var(--amber); }
+
+  /* Loading spinner */
+  .spinner {
+    display: inline-block;
+    width: 12px; height: 12px;
+    border: 2px solid var(--border2);
+    border-top-color: var(--green);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    vertical-align: middle;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .hidden { display: none !important; }
+
+  /* IV bar */
+  .iv-bar-wrap { display: flex; align-items: center; gap: 8px; }
+  .iv-bar-track { flex: 1; height: 4px; background: var(--border); border-radius: 2px; }
+  .iv-bar-fill { height: 100%; border-radius: 2px; transition: width 0.5s; }
+
+  /* Disclaimer */
+  .disclaimer {
+    font-size: 10px;
+    color: var(--text3);
+    padding: 12px 0;
+    border-top: 1px solid var(--border);
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="dot"></div>
+  <div>
+    <div class="header-title">GEX Scanner</div>
+    <div class="header-sub">Gamma Exposure · Delta Hedge Flow · Squeeze Detector</div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="input-bar">
+    <input class="ticker-input" id="tickerInput" type="text" value="MU" maxlength="6" placeholder="TICKER" />
+    <select class="expiry-select" id="expirySelect">
+      <option value="">載入中...</option>
+    </select>
+    <button class="scan-btn" id="scanBtn" onclick="runScan()">▶ SCAN</button>
+    <span class="note">資料來源：Yahoo Finance（即時）</span>
+  </div>
+
+  <div class="status-bar" id="statusBar">
+    <span id="statusText">輸入股票代號後點擊 SCAN</span>
+  </div>
+
+  <div id="results" class="hidden">
+
+    <!-- Metrics -->
+    <div class="metrics-grid" id="metricsGrid"></div>
+
+    <!-- GEX Signal -->
+    <div class="signal-card" id="signalCard">
+      <div class="signal-header">
+        <span class="signal-badge" id="signalBadge">—</span>
+        <span class="signal-title" id="signalTitle">—</span>
+      </div>
+      <div class="signal-body" id="signalBody">—</div>
+    </div>
+
+    <!-- GEX Verdict box -->
+    <div class="gex-box">
+      <div class="gex-box-title">⚡ Gamma Squeeze 判斷</div>
+      <div class="gex-verdict" id="gexVerdict">—</div>
+    </div>
+
+    <!-- Call Wall analysis -->
+    <div class="table-wrap">
+      <div class="table-title" id="callTableTitle">📞 Call OI 分佈（前20大 Strike）</div>
+      <table id="callTable">
+        <thead>
+          <tr>
+            <th>Strike</th>
+            <th>OI（口）</th>
+            <th>Volume</th>
+            <th>Vol/OI</th>
+            <th>IV</th>
+            <th>GEX 貢獻</th>
+          </tr>
+        </thead>
+        <tbody id="callTableBody"></tbody>
+      </table>
+    </div>
+
+    <!-- Put Wall -->
+    <div class="table-wrap">
+      <div class="table-title" id="putTableTitle">📉 Put OI 分佈（前10大 Strike）</div>
+      <table id="putTable">
+        <thead>
+          <tr>
+            <th>Strike</th>
+            <th>OI（口）</th>
+            <th>Volume</th>
+            <th>IV</th>
+            <th>角色</th>
+          </tr>
+        </thead>
+        <tbody id="putTableBody"></tbody>
+      </table>
+    </div>
+
+    <div class="disclaimer">
+      ⚠️ 本工具僅供學習與研究使用，不構成投資建議。選擇權數據存在延遲，GEX 計算為簡化估算，實際造市商部位無法從公開數據完全還原。
+    </div>
+  </div>
+</div>
+
+<script>
+const PROXY = 'https://query1.finance.yahoo.com/v7/finance/options/';
+const PROXY2 = 'https://query2.finance.yahoo.com/v7/finance/options/';
+
+let currentPrice = 0;
+let allExpiries = [];
+
+async function fetchOptions(ticker, date = '') {
+  const url = date
+    ? `${PROXY}${ticker}?date=${date}`
+    : `${PROXY}${ticker}`;
+  const url2 = date
+    ? `${PROXY2}${ticker}?date=${date}`
+    : `${PROXY2}${ticker}`;
+
+  // Try via cors proxy approach - use no-cors fetch won't work, need a real proxy
+  // Instead, use Yahoo Finance v8 which sometimes has looser CORS
+  const endpoints = [
+    `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}`,
+    url, url2
+  ];
+
+  // Use a CORS-friendly approach: fetch through a public CORS proxy
+  const corsProxy = 'https://api.allorigins.win/raw?url=';
+  const target = encodeURIComponent(date ? `${PROXY}${ticker}?date=${date}` : `${PROXY}${ticker}`);
+
+  const resp = await fetch(corsProxy + target);
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  const json = await resp.json();
+  return json;
+}
+
+async function fetchCurrentPrice(ticker) {
+  const proxy = 'https://api.allorigins.win/raw?url=';
+  const url = encodeURIComponent(`https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=1d`);
+  const resp = await fetch(proxy + url);
+  const json = await resp.json();
+  return json?.chart?.result?.[0]?.meta?.regularMarketPrice || 0;
+}
+
+async function loadExpiries() {
+  const ticker = document.getElementById('tickerInput').value.trim().toUpperCase();
+  if (!ticker) return;
+  setStatus('⟳', `載入 ${ticker} 到期日...`);
+  try {
+    const data = await fetchOptions(ticker);
+    const expiries = data?.optionChain?.result?.[0]?.expirationDates || [];
+    allExpiries = expiries;
+    const sel = document.getElementById('expirySelect');
+    sel.innerHTML = expiries.map(ts => {
+      const d = new Date(ts * 1000);
+      const label = d.toISOString().slice(0, 10);
+      const daysOut = Math.round((d - Date.now()) / 86400000);
+      return `<option value="${ts}">${label} (${daysOut}d)</option>`;
+    }).join('');
+    setStatus('✓', `找到 ${expiries.length} 個到期日，請選擇後點擊 SCAN`);
+  } catch(e) {
+    setStatus('✗', '無法載入到期日：' + e.message);
+  }
+}
+
+function setStatus(icon, msg, loading = false) {
+  document.getElementById('statusText').innerHTML =
+    (loading ? '<span class="spinner"></span> ' : icon + ' ') + msg;
+}
+
+async function runScan() {
+  const ticker = document.getElementById('tickerInput').value.trim().toUpperCase();
+  const expiryVal = document.getElementById('expirySelect').value;
+  if (!ticker || !expiryVal) return;
+
+  const btn = document.getElementById('scanBtn');
+  btn.disabled = true;
+  setStatus('', `掃描 ${ticker} 選擇權結構...`, true);
+  document.getElementById('results').classList.add('hidden');
+
+  try {
+    // Fetch price + options
+    const [priceResult, optData] = await Promise.all([
+      fetchCurrentPrice(ticker),
+      fetchOptions(ticker, expiryVal)
+    ]);
+
+    currentPrice = priceResult;
+    const chain = optData?.optionChain?.result?.[0];
+    if (!chain) throw new Error('無法取得選擇權數據');
+
+    const calls = chain.options?.[0]?.calls || [];
+    const puts  = chain.options?.[0]?.puts  || [];
+
+    if (calls.length === 0) throw new Error('此到期日無 Call 數據');
+
+    analyze(ticker, calls, puts, currentPrice, expiryVal);
+    setStatus('✓', `${ticker} @ $${currentPrice.toFixed(2)} — 分析完成`);
+    document.getElementById('results').classList.remove('hidden');
+
+  } catch(e) {
+    setStatus('✗', '錯誤：' + e.message);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function calcGEX(strike, oi, iv, price, isCall) {
+  // Simplified GEX = OI × Gamma × 100 × spot²
+  // Gamma ≈ N'(d1) / (spot × iv × sqrt(T))
+  // Use rough approximation for display
+  const T = 0.02; // ~7 days
+  const d1 = (Math.log(price / strike) + 0.5 * iv * iv * T) / (iv * Math.sqrt(T));
+  const gamma = Math.exp(-0.5 * d1 * d1) / (price * iv * Math.sqrt(T) * 2.507);
+  const gex = oi * gamma * 100 * price * price / 1e6; // in millions
+  return isCall ? gex : -gex;
+}
+
+function analyze(ticker, calls, puts, price, expiryTs) {
+  const expiryDate = new Date(expiryTs * 1000).toISOString().slice(0, 10);
+
+  // Sort calls by OI desc, take top 20
+  const sortedCalls = [...calls]
+    .filter(c => c.openInterest > 0)
+    .sort((a, b) => b.openInterest - a.openInterest)
+    .slice(0, 20);
+
+  // Sort puts by OI desc
+  const sortedPuts = [...puts]
+    .filter(p => p.openInterest > 0)
+    .sort((a, b) => b.openInterest - a.openInterest)
+    .slice(0, 10);
+
+  // Find Call Wall (highest OI call)
+  const callWall = sortedCalls[0];
+  const callWallStrike = callWall?.strike || 0;
+
+  // Find Put Wall
+  const putWall = sortedPuts[0];
+  const putWallStrike = putWall?.strike || 0;
+
+  // Find peak GEX strike (near ATM with highest gamma)
+  const atmCalls = calls.filter(c => Math.abs(c.strike - price) / price < 0.15);
+  const peakGEX = atmCalls.reduce((best, c) => {
+    const g = calcGEX(c.strike, c.openInterest, c.impliedVolatility || 0.5, price, true);
+    return g > (best.g || 0) ? { ...c, g } : best;
+  }, {});
+
+  // Total call OI near ATM (within 10%)
+  const nearATMCalls = calls.filter(c => Math.abs(c.strike - price) / price < 0.1);
+  const nearATMOI = nearATMCalls.reduce((s, c) => s + (c.openInterest || 0), 0);
+  const totalCallOI = calls.reduce((s, c) => s + (c.openInterest || 0), 0);
+  const totalPutOI  = puts.reduce((s, p) => s + (p.openInterest || 0), 0);
+  const pcRatio = totalPutOI / (totalCallOI || 1);
+
+  // Volume analysis
+  const totalCallVol = calls.reduce((s, c) => s + (c.volume || 0), 0);
+  const totalPutVol  = puts.reduce((s, p) => s + (p.volume || 0), 0);
+  const volPCRatio   = totalPutVol / (totalCallVol || 1);
+
+  // IV average (ATM)
+  const avgIV = nearATMCalls.length > 0
+    ? nearATMCalls.reduce((s, c) => s + (c.impliedVolatility || 0), 0) / nearATMCalls.length
+    : 0;
+
+  // Price vs Call Wall
+  const pctFromCallWall = ((callWallStrike - price) / price * 100);
+
+  // Gamma squeeze score (0-100)
+  let squeezeScore = 0;
+  if (pcRatio < 0.5) squeezeScore += 30;        // call heavy
+  else if (pcRatio < 0.7) squeezeScore += 15;
+  if (volPCRatio < 0.4) squeezeScore += 20;     // call vol dominates
+  if (nearATMOI / totalCallOI > 0.3) squeezeScore += 20; // OI concentrated near ATM
+  if (pctFromCallWall < 5) squeezeScore += 20;  // price near call wall
+  if (avgIV > 0.6) squeezeScore += 10;          // high IV = market pricing in big move
+
+  // Determine signal
+  let signalType, signalTitle, signalBody;
+  if (squeezeScore >= 70) {
+    signalType = 'badge-squeeze';
+    signalTitle = '⚡ 高度 Gamma Squeeze 風險';
+    signalBody = `Call OI 極度集中，P/C 比率偏低（${pcRatio.toFixed(2)}），Price-to-CallWall 距離僅 ${pctFromCallWall.toFixed(1)}%。造市商 delta hedge 壓力大，若 Call 買盤持續，股價可能形成自我強化的正回饋。但 IV 在 ${(avgIV*100).toFixed(0)}% 高位，一旦 Call 流量降溫，IV crush + delta unwind 的下跌速度可能同樣驚人。`;
+  } else if (squeezeScore >= 45) {
+    signalType = 'badge-warning';
+    signalTitle = '⚠️ 中度 Squeeze 傾向，需觀察';
+    signalBody = `Call 結構偏多，但尚未到達極端擁擠程度（P/C=${pcRatio.toFixed(2)}）。若 ${callWallStrike} 附近出現大量成交量突破，可能觸發造市商追加對沖買盤；否則股價傾向在 Peak GEX $${peakGEX.strike || '—'} 附近震盪。`;
+  } else if (squeezeScore >= 25) {
+    signalType = 'badge-neutral';
+    signalTitle = '➡️ 中性結構，Squeeze 條件不足';
+    signalBody = `Put/Call 比率 ${pcRatio.toFixed(2)} 偏平衡，Call OI 未見極端集中。造市商目前可能處於正 Gamma 區間，對價格有自然穩定作用，劇烈 Gamma Squeeze 概率較低。`;
+  } else {
+    signalType = 'badge-cooling';
+    signalTitle = '❄️ Call 流量降溫，反轉風險升高';
+    signalBody = `P/C 比率 ${pcRatio.toFixed(2)} 偏高，Call 買盤疲弱。若之前有 Squeeze，現在可能進入退潮階段——造市商 delta unwind（賣出對沖股票）可能加速下跌，IV 崩跌風險高。`;
+  }
+
+  // Render metrics
+  const maxOI = Math.max(...sortedCalls.map(c => c.openInterest));
+  document.getElementById('metricsGrid').innerHTML = `
+    <div class="metric-card">
+      <div class="metric-label">Current Price</div>
+      <div class="metric-value blue">$${price.toFixed(2)}</div>
+      <div class="metric-sub">${ticker}</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Call Wall</div>
+      <div class="metric-value red">$${callWallStrike}</div>
+      <div class="metric-sub">${(callWall?.openInterest||0).toLocaleString()} 口 OI · ${pctFromCallWall > 0 ? '+' : ''}${pctFromCallWall.toFixed(1)}% from price</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Put Wall</div>
+      <div class="metric-value green">$${putWallStrike}</div>
+      <div class="metric-sub">${(putWall?.openInterest||0).toLocaleString()} 口 OI</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Peak GEX Strike</div>
+      <div class="metric-value amber">$${peakGEX.strike || '—'}</div>
+      <div class="metric-sub">最強磁吸點</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">P/C OI Ratio</div>
+      <div class="metric-value ${pcRatio < 0.5 ? 'red' : pcRatio > 1 ? 'green' : ''}">${pcRatio.toFixed(2)}</div>
+      <div class="metric-sub">${pcRatio < 0.5 ? '⚡ Call 極重' : pcRatio < 0.7 ? 'Call 偏重' : 'Put/Call 平衡'}</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">ATM Avg IV</div>
+      <div class="metric-value ${avgIV > 0.8 ? 'red' : avgIV > 0.5 ? 'amber' : ''}">${(avgIV*100).toFixed(0)}%</div>
+      <div class="metric-sub">${avgIV > 0.8 ? '極高 — IV crush 風險' : avgIV > 0.5 ? '偏高' : '正常'}</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Squeeze Score</div>
+      <div class="metric-value ${squeezeScore >= 70 ? 'red' : squeezeScore >= 45 ? 'amber' : 'blue'}">${squeezeScore}<span style="font-size:12px;color:var(--text3)">/100</span></div>
+      <div class="metric-sub">綜合 Gamma Squeeze 指數</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Expiry</div>
+      <div class="metric-value" style="font-size:14px">${expiryDate}</div>
+      <div class="metric-sub">分析到期日</div>
+    </div>
+  `;
+
+  // Signal card
+  document.getElementById('signalBadge').className = 'signal-badge ' + signalType;
+  document.getElementById('signalBadge').textContent = signalType.replace('badge-', '').toUpperCase();
+  document.getElementById('signalTitle').textContent = signalTitle;
+  document.getElementById('signalBody').textContent = signalBody;
+
+  // GEX verdict
+  const above = price < callWallStrike;
+  const below = price > putWallStrike;
+  document.getElementById('gexVerdict').innerHTML = `
+    目前股價 <span class="tag tag-amber">$${price.toFixed(0)}</span> 
+    ${above ? `位於 Call Wall <span class="tag tag-red">$${callWallStrike}</span> 下方 ${pctFromCallWall.toFixed(1)}%` : `已突破 Call Wall <span class="tag tag-red">$${callWallStrike}</span>`}，
+    Put Wall 支撐位於 <span class="tag tag-green">$${putWallStrike}</span>。
+    <br><br>
+    ${price > (peakGEX.strike || 0)
+      ? `<b>股價高於 Peak GEX $${peakGEX.strike}</b>：造市商可能處於<span class="tag tag-red">負 Gamma</span>區間——股價每上漲，他們需要<b>買更多</b>現股對沖 → 正回饋 → Gamma Squeeze 條件成立。`
+      : `<b>股價低於 Peak GEX $${peakGEX.strike}</b>：造市商可能處於<span class="tag tag-green">正 Gamma</span>區間——對股價有自然穩定作用，劇烈 Squeeze 概率降低。`
+    }
+    <br><br>
+    如果 <span class="tag tag-amber">$${callWallStrike}</span> 的 Call 買盤繼續增加 → 造市商被迫追買 → 可能突破形成<span class="tag tag-red">自我強化漲勢</span>；
+    若 Call 流量降溫或 IV 下滑 → 造市商開始 unwind → <span class="tag tag-red">急速回檔 + IV 崩跌</span>風險。
+  `;
+
+  // Call table
+  document.getElementById('callTableTitle').textContent =
+    `📞 Call OI 分佈（前20大 Strike）— 到期 ${expiryDate}`;
+  const ctb = document.getElementById('callTableBody');
+  ctb.innerHTML = sortedCalls.map(c => {
+    const isCallWall = c.strike === callWallStrike;
+    const isNearPrice = Math.abs(c.strike - price) / price < 0.03;
+    const volOI = c.openInterest > 0 ? ((c.volume || 0) / c.openInterest).toFixed(2) : '—';
+    const barPct = Math.round(c.openInterest / maxOI * 100);
+    const gexVal = calcGEX(c.strike, c.openInterest, c.impliedVolatility || 0.5, price, true);
+    const rowClass = isCallWall ? 'call-wall-row' : isNearPrice ? 'near-price-row' : '';
+    return `
+      <tr class="${rowClass}">
+        <td>$${c.strike} ${isCallWall ? '🔴 CALL WALL' : isNearPrice ? '📍 ATM' : ''}</td>
+        <td class="bar-cell">
+          <div class="bar-bg" style="width:${barPct}%; background: ${isCallWall ? 'var(--red)' : 'var(--blue)'}"></div>
+          <span class="bar-text">${(c.openInterest).toLocaleString()}</span>
+        </td>
+        <td>${(c.volume || 0).toLocaleString()}</td>
+        <td style="color: ${parseFloat(volOI) > 2 ? 'var(--amber)' : 'inherit'}">${volOI}</td>
+        <td>${c.impliedVolatility ? (c.impliedVolatility * 100).toFixed(0) + '%' : '—'}</td>
+        <td style="color: ${gexVal > 0 ? 'var(--red)' : 'var(--green)'}">${gexVal.toFixed(1)}M</td>
+      </tr>
+    `;
+  }).join('');
+
+  // Put table
+  const maxPutOI = Math.max(...sortedPuts.map(p => p.openInterest));
+  const ptb = document.getElementById('putTableBody');
+  ptb.innerHTML = sortedPuts.map(p => {
+    const isPutWall = p.strike === putWallStrike;
+    const barPct = Math.round(p.openInterest / maxPutOI * 100);
+    return `
+      <tr class="${isPutWall ? 'highlight-row' : ''}">
+        <td>$${p.strike} ${isPutWall ? '🟢 PUT WALL' : ''}</td>
+        <td class="bar-cell">
+          <div class="bar-bg" style="width:${barPct}%; background: var(--green)"></div>
+          <span class="bar-text">${(p.openInterest).toLocaleString()}</span>
+        </td>
+        <td>${(p.volume || 0).toLocaleString()}</td>
+        <td>${p.impliedVolatility ? (p.impliedVolatility * 100).toFixed(0) + '%' : '—'}</td>
+        <td style="color: var(--green)">${isPutWall ? '最強支撐' : p.strike < price ? '下方保護' : '壓力'}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// Auto-load expiries when ticker changes
+document.getElementById('tickerInput').addEventListener('change', loadExpiries);
+document.getElementById('tickerInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') loadExpiries();
+});
+
+// Initial load
+window.addEventListener('load', () => {
+  loadExpiries();
+});
+</script>
+</body>
+</html>

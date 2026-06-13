@@ -1,0 +1,14 @@
+{
+  "symbol": "7769.TW",
+  "model_type": "PPO",
+  "training_accuracy": 85.2,
+  "validation_accuracy": 81.4,
+  "backtest_accuracy": 100,
+  "win_rate": 60.0,
+  "sharpe_ratio": 1.49,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-20 17:58:39",
+  "history": []
+}

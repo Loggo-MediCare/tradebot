@@ -1,0 +1,14 @@
+{
+  "symbol": "6209.TW",
+  "model_type": "PPO",
+  "training_accuracy": 72.0,
+  "validation_accuracy": 67.4,
+  "backtest_accuracy": 50.0,
+  "win_rate": 40.0,
+  "sharpe_ratio": 1.24,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-20 12:40:03",
+  "history": []
+}

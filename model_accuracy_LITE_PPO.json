@@ -1,0 +1,14 @@
+{
+  "symbol": "LITE",
+  "model_type": "PPO",
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 67.1,
+  "win_rate": 57.6,
+  "sharpe_ratio": 1.54,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-06-02 00:32:28",
+  "history": []
+}

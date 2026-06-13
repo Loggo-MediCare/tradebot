@@ -1,0 +1,14 @@
+{
+  "symbol": "MU",
+  "model_type": "PPO",
+  "training_accuracy": 80.0,
+  "validation_accuracy": 78.0,
+  "backtest_accuracy": 100,
+  "win_rate": 100,
+  "sharpe_ratio": 3.2766,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-20 10:40:16",
+  "history": []
+}
