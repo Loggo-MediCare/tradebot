@@ -15,6 +15,7 @@ venv/
 
 # Logs
 *.log
+*.txt
 
 # Backup
 *.bak
