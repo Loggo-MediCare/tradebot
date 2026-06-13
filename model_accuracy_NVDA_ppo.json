@@ -1,7 +1,14 @@
 {
   "symbol": "NVDA",
   "model_type": "PPO",
-  "validation_accuracy": 55.5,
-  "backtest_accuracy": 55.5,
-  "last_updated": "2026-05-20 21:25:37"
+  "training_accuracy": 84.2,
+  "validation_accuracy": 78.9,
+  "backtest_accuracy": 73.5,
+  "win_rate": 70.2,
+  "sharpe_ratio": 1.85,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-01-15 12:02:14",
+  "history": []
 }

@@ -1,8 +1,14 @@
 {
-  "symbol": "2355",
-  "ticker": "2355.TW",
+  "symbol": "2355.TW",
   "model_type": "PPO",
-  "validation_accuracy": 31.74,
-  "backtest_accuracy": 31.74,
-  "last_updated": "2026-05-19 10:12:24"
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 50.0,
+  "win_rate": 40.0,
+  "sharpe_ratio": null,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-19 12:26:04",
+  "history": []
 }

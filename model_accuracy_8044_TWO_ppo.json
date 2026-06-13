@@ -1,8 +1,14 @@
 {
-  "symbol": "8044",
-  "ticker": "8044.TWO",
+  "symbol": "8044.TWO",
   "model_type": "PPO",
-  "validation_accuracy": 25.14,
-  "backtest_accuracy": 25.14,
-  "last_updated": "2026-05-19 10:25:48"
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 6.928792533874514,
+  "win_rate": 40.0,
+  "sharpe_ratio": null,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-21 13:07:56",
+  "history": []
 }

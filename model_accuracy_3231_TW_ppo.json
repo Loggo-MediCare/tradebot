@@ -1,8 +1,14 @@
 {
-  "symbol": "3231",
-  "ticker": "3231.TW",
+  "symbol": "3231.TW",
   "model_type": "PPO",
-  "validation_accuracy": 34.06,
-  "backtest_accuracy": 34.06,
-  "last_updated": "2026-06-08 15:39:52"
+  "training_accuracy": 84.8,
+  "validation_accuracy": 76.8,
+  "backtest_accuracy": 78.6,
+  "win_rate": 56.5,
+  "sharpe_ratio": 1.59,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-01-15 15:53:36",
+  "history": []
 }

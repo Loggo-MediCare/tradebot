@@ -1,8 +1,14 @@
 {
   "symbol": "TSLA",
   "model_type": "PPO",
-  "training_accuracy": 58.3180987202925,
-  "validation_accuracy": 58.3180987202925,
-  "backtest_accuracy": 58.3180987202925,
-  "last_updated": "2026-05-04 03:32:14"
+  "training_accuracy": 76.8,
+  "validation_accuracy": 71.5,
+  "backtest_accuracy": 67.2,
+  "win_rate": 63.8,
+  "sharpe_ratio": 1.45,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-01-15 12:02:14",
+  "history": []
 }

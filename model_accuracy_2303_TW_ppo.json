@@ -1,8 +1,14 @@
 {
-  "symbol": "2303",
-  "ticker": "2303.TW",
+  "symbol": "2303.TW",
   "model_type": "PPO",
-  "validation_accuracy": 32.24,
-  "backtest_accuracy": 32.24,
-  "last_updated": "2026-06-08 14:56:21"
+  "training_accuracy": 73.2,
+  "validation_accuracy": 68.0,
+  "backtest_accuracy": 67.3,
+  "win_rate": 69.0,
+  "sharpe_ratio": 1.66,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-01-15 15:53:36",
+  "history": []
 }

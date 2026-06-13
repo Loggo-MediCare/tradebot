@@ -1,8 +1,14 @@
 {
-  "symbol": "2308",
-  "ticker": "2308.TW",
+  "symbol": "2308.TW",
   "model_type": "PPO",
-  "validation_accuracy": 53.01,
-  "backtest_accuracy": 53.01,
-  "last_updated": "2026-06-08 14:57:38"
+  "training_accuracy": 76.1,
+  "validation_accuracy": 70.7,
+  "backtest_accuracy": 100,
+  "win_rate": 60.0,
+  "sharpe_ratio": 1.74,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-25 10:55:00",
+  "history": []
 }

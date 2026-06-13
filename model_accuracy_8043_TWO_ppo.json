@@ -1,8 +1,14 @@
 {
-  "symbol": "8043",
-  "ticker": "8043.TWO",
+  "symbol": "8043.TWO",
   "model_type": "PPO",
-  "validation_accuracy": 36.33,
-  "backtest_accuracy": 36.33,
-  "last_updated": "2026-05-18 13:21:40"
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 100,
+  "win_rate": 60.0,
+  "sharpe_ratio": null,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-23 16:24:11",
+  "history": []
 }

@@ -1,8 +1,14 @@
 {
   "symbol": "1717.TW",
   "model_type": "PPO",
-  "training_accuracy": 28.990825688073397,
-  "validation_accuracy": 28.990825688073397,
-  "backtest_accuracy": 28.990825688073397,
-  "last_updated": "2026-05-25 01:38:43"
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 100,
+  "win_rate": 60.0,
+  "sharpe_ratio": null,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-06-01 19:59:04",
+  "history": []
 }

@@ -1,8 +1,14 @@
 {
   "symbol": "6438.TW",
   "model_type": "PPO",
-  "training_accuracy": 36.29489603024575,
-  "validation_accuracy": 36.29489603024575,
-  "backtest_accuracy": 36.29489603024575,
-  "last_updated": "2026-04-29 17:34:47"
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 100,
+  "win_rate": 60.0,
+  "sharpe_ratio": null,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-06-01 13:02:54",
+  "history": []
 }

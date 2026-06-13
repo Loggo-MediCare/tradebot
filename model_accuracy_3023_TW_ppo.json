@@ -1,8 +1,14 @@
 {
-  "symbol": "3023",
-  "ticker": "3023.TW",
+  "symbol": "3023.TW",
   "model_type": "PPO",
-  "validation_accuracy": 31.56,
-  "backtest_accuracy": 31.56,
-  "last_updated": "2026-05-19 09:52:00"
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 50.0,
+  "win_rate": 40.0,
+  "sharpe_ratio": null,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-20 08:02:06",
+  "history": []
 }

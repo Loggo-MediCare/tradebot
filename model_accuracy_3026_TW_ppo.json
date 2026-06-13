@@ -1,8 +1,14 @@
 {
-  "symbol": "3026",
-  "ticker": "3026.TW",
+  "symbol": "3026.TW",
   "model_type": "PPO",
-  "validation_accuracy": 20.37,
-  "backtest_accuracy": 20.37,
-  "last_updated": "2026-05-19 15:47:59"
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": null,
+  "win_rate": null,
+  "sharpe_ratio": null,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-06-02 00:32:28",
+  "history": []
 }

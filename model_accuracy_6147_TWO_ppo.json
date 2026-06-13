@@ -3,6 +3,7 @@
   "ticker": "6147.TWO",
   "model_type": "PPO",
   "validation_accuracy": 75.23,
-  "backtest_accuracy": 75.23,
-  "last_updated": "2026-05-18 13:11:15"
+  "backtest_accuracy": 100,
+  "last_updated": "2026-06-02 17:46:22",
+  "win_rate": 60.0
 }

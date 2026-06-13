@@ -1,7 +1,14 @@
 {
   "symbol": "TER",
   "model_type": "PPO",
-  "validation_accuracy": 54.79,
-  "backtest_accuracy": 54.79,
-  "last_updated": "2026-05-19 11:08:53"
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 100,
+  "win_rate": 60.0,
+  "sharpe_ratio": null,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-20 03:53:35",
+  "history": []
 }

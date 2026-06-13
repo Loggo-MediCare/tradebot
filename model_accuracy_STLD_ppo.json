@@ -1,8 +1,14 @@
 {
   "symbol": "STLD",
   "model_type": "PPO",
-  "training_accuracy": 59.04,
-  "validation_accuracy": 59.04,
-  "backtest_accuracy": 59.04,
-  "last_updated": "2026-05-08 17:16:15"
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 100,
+  "win_rate": 60.0,
+  "sharpe_ratio": null,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-06-05 08:04:11",
+  "history": []
 }

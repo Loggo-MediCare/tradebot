@@ -1,7 +1,14 @@
 {
   "symbol": "SNDK",
   "model_type": "PPO",
-  "validation_accuracy": 65.45,
-  "backtest_accuracy": 65.45,
-  "last_updated": "2026-05-21 04:12:05"
+  "training_accuracy": 82.4,
+  "validation_accuracy": 73.4,
+  "backtest_accuracy": 75.1,
+  "win_rate": 69.8,
+  "sharpe_ratio": 1.44,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-01-15 15:53:36",
+  "history": []
 }

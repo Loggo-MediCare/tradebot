@@ -1,8 +1,14 @@
 {
-  "symbol": "3017",
-  "ticker": "3017.TW",
+  "symbol": "3017.TW",
   "model_type": "PPO",
-  "validation_accuracy": 50.09,
-  "backtest_accuracy": 50.09,
-  "last_updated": "2026-05-18 12:38:53"
+  "training_accuracy": 83.0,
+  "validation_accuracy": 80.0,
+  "backtest_accuracy": 50.0,
+  "win_rate": 40.0,
+  "sharpe_ratio": 2.36,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-18 17:15:43",
+  "history": []
 }

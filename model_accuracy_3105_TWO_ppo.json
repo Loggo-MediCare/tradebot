@@ -1,8 +1,14 @@
 {
   "symbol": "3105.TWO",
   "model_type": "PPO",
-  "training_accuracy": 60.73394495412844,
-  "validation_accuracy": 60.73394495412844,
-  "backtest_accuracy": 60.73394495412844,
-  "last_updated": "2026-05-25 00:35:21"
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 50.0,
+  "win_rate": 40.0,
+  "sharpe_ratio": null,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-25 04:57:57",
+  "history": []
 }

@@ -1,8 +1,14 @@
 {
   "symbol": "WDC",
   "model_type": "PPO",
-  "training_accuracy": 49.36014625228519,
-  "validation_accuracy": 49.36014625228519,
-  "backtest_accuracy": 49.36014625228519,
-  "last_updated": "2026-05-04 03:53:17"
+  "training_accuracy": 85.1,
+  "validation_accuracy": 79.9,
+  "backtest_accuracy": 75.5,
+  "win_rate": 69.4,
+  "sharpe_ratio": 2.34,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-01-15 15:53:36",
+  "history": []
 }

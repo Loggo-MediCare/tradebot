@@ -1,8 +1,14 @@
 {
-  "symbol": "6443",
-  "ticker": "6443.TW",
+  "symbol": "6443.TW",
   "model_type": "PPO",
-  "validation_accuracy": 31.74,
-  "backtest_accuracy": 31.74,
-  "last_updated": "2026-05-19 10:15:56"
+  "training_accuracy": 90.1,
+  "validation_accuracy": 80.1,
+  "backtest_accuracy": 69.49429870605469,
+  "win_rate": 60.0,
+  "sharpe_ratio": 2.05,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-20 15:02:10",
+  "history": []
 }

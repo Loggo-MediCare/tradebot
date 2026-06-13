@@ -63,17 +63,7 @@ def fetch_options_chain(symbol, expiry=None):
         raise ValueError(f"無法取得 {symbol} 的選擇權數據，請確認股票代號正確")
 
     if expiry is None:
-        # 永遠跳過今天及已過期的到期日
-        # 理由：當天到期的合約 T≈0，Gamma 計算會失真或無有效 OI
-        from datetime import timezone
-        # 用美東時間判斷「今天」（UTC-4 夏令 / UTC-5 冬令）
-        import datetime as _dt
-        utc_now   = _dt.datetime.now(_dt.timezone.utc)
-        et_offset = _dt.timedelta(hours=-4)   # 夏令 EDT；冬令改 -5
-        et_today  = (utc_now + et_offset).strftime('%Y-%m-%d')
-
-        future = [e for e in all_expiries if e > et_today]
-        target_expiry = future[0] if future else all_expiries[-1]
+        target_expiry = all_expiries[0]
     else:
         # 找最接近指定日期的到期日
         target_expiry = min(all_expiries, key=lambda x: abs(
@@ -98,430 +88,146 @@ def get_current_price(symbol):
 # ==========================================
 def analyze_gex(calls_df, puts_df, spot, expiry_str):
     """
-    Pipeline A — OI Wall（全鏈條，高可信）
-        所有 OI > 0 的合約，不需要 IV 或報價。
-        輸出：Call Wall / Put Wall / OI 分佈。
-
-    Pipeline B — GEX / IV（近期成交，中可信）
-        條件：lastTradeDate 在 5 個交易日內 + (volume>0 或 yfinance IV 有效)
-        IV：yfinance IV → lastPrice 反推 → 跳過（不補值）
-        輸出：net GEX / Peak GEX / ATM IV / Gamma Flip
-        Gamma Flip：只用 |K/spot-1|<30% 的子集 + 二分法精確定位
+    計算每個 Strike 的 GEX，找出：
+    - Call Wall（最大 Call OI）
+    - Put Wall（最大 Put OI）
+    - Peak GEX Strike（Gamma 最大 = 磁吸點）
+    - 淨 GEX（正 = 造市商正 Gamma，負 = 負 Gamma）
     """
-    from math import log, sqrt, exp
-    import datetime as _dt
-
     expiry_dt   = pd.to_datetime(expiry_str)
-    now_dt      = pd.Timestamp.now(tz='UTC').tz_localize(None)                   if pd.Timestamp.now().tzinfo is None else pd.Timestamp.now()
-    now_dt      = pd.Timestamp.now()          # naive local time
-    expiry_naive= expiry_dt.tz_localize(None) if expiry_dt.tzinfo else expiry_dt
+    now_dt      = pd.Timestamp.now()
+    T_years     = max((expiry_dt - now_dt).days / 365, 0.001)
 
-    # T in years using total_seconds for precision
-    delta_t = expiry_naive - now_dt
-    T_years = max(delta_t.total_seconds() / (365.25 * 24 * 3600), 0.5 / 365)
+    results = []
 
-    FRESHNESS_DAYS = 5    # lastTradeDate 超過此天數視為陳舊
-
-    # ── 共用工具 ───────────────────────────────────────────────────────────────
-    def safe_int(val, default=0):
-        try:
-            if val is None or (isinstance(val, float) and pd.isna(val)):
-                return default
-            return int(val)
-        except (TypeError, ValueError):
-            return default
-
-    def safe_float(val, default=None):
-        try:
-            if val is None or (isinstance(val, float) and pd.isna(val)):
-                return default
-            return float(val)
-        except (TypeError, ValueError):
-            return default
-
-    def parse_trade_date(val):
-        """回傳 pd.Timestamp 或 None"""
-        try:
-            if val is None: return None
-            ts = pd.to_datetime(val, utc=False)
-            return ts.tz_localize(None) if ts.tzinfo else ts
-        except Exception:
-            return None
-
-    def is_fresh(last_trade_date_val, cutoff_days=FRESHNESS_DAYS):
-        """True = 在 cutoff_days 內有成交"""
-        ts = parse_trade_date(last_trade_date_val)
-        if ts is None: return False
-        age_days = (now_dt - ts).total_seconds() / 86400
-        return age_days <= cutoff_days
-
-    def bs_ncdf(x):
-        t = 1.0 / (1.0 + 0.2316419 * abs(x))
-        poly = t*(0.319381530 + t*(-0.356563782 + t*(
-               1.781477937 + t*(-1.821255978 + t*1.330274429))))
-        pdf  = exp(-0.5*x*x) / 2.5066282746
-        cdf  = 1.0 - pdf*poly
-        return cdf if x >= 0 else 1.0 - cdf
-
-    def bs_price(S, K, T, sigma, r=0.05, is_call=True):
-        if T <= 0 or sigma <= 0 or K <= 0 or S <= 0: return 0.0
-        d1 = (log(S/K) + (r + 0.5*sigma**2)*T) / (sigma*sqrt(T))
-        d2 = d1 - sigma*sqrt(T)
-        if is_call:
-            return S*bs_ncdf(d1) - K*exp(-r*T)*bs_ncdf(d2)
-        return K*exp(-r*T)*bs_ncdf(-d2) - S*bs_ncdf(-d1)
-
-    def iv_bisect(price, S, K, T, r=0.05, is_call=True, tol=1e-4):
-        if price <= 0 or T <= 0 or K <= 0: return None
-        intrinsic = max(S-K, 0) if is_call else max(K-S, 0)
-        if price < intrinsic*0.99: return None
-        lo, hi = 0.005, 6.0
-        for _ in range(60):
-            mid = (lo+hi)/2
-            est = bs_price(S, K, T, mid, r, is_call)
-            if abs(est-price) < tol: return mid
-            if est < price: lo = mid
-            else:           hi = mid
-        v = (lo+hi)/2
-        return v if 0.01 <= v <= 5.0 else None
-
-    # ══════════════════════════════════════════════════════════════════════════
-    # PIPELINE A — OI Wall（全鏈條，不需 IV）
-    # ══════════════════════════════════════════════════════════════════════════
-    oi_calls, oi_puts = [], []
-
+    # ── Calls ──
     for _, row in calls_df.iterrows():
-        K  = safe_float(row.get('strike', None))
-        oi = safe_int(row.get('openInterest', 0))
-        vl = safe_int(row.get('volume', 0))
-        if K is None or K <= 0 or oi <= 0: continue
-        if K < spot * 0.50: continue   # 極端深度 ITM
-        oi_calls.append({'strike': K, 'oi': oi, 'volume': vl})
+        K   = float(row.get('strike', 0))
+        oi  = int(row.get('openInterest', 0) or 0)
+        vol = int(row.get('volume', 0) or 0)
+        iv  = float(row.get('impliedVolatility', 0) or 0)
+        bid = float(row.get('bid', 0) or 0)
+        ask = float(row.get('ask', 0) or 0)
 
-    for _, row in puts_df.iterrows():
-        K  = safe_float(row.get('strike', None))
-        oi = safe_int(row.get('openInterest', 0))
-        vl = safe_int(row.get('volume', 0))
-        if K is None or K <= 0 or oi <= 0: continue
-        if K < spot * 0.25 or K > spot * 1.05: continue
-        oi_puts.append({'strike': K, 'oi': oi, 'volume': vl})
+        if K <= 0 or oi == 0:
+            continue
 
-    oi_calls_df = pd.DataFrame(oi_calls).sort_values('oi', ascending=False)                   if oi_calls else pd.DataFrame(columns=['strike','oi','volume'])
-    oi_puts_df  = pd.DataFrame(oi_puts).sort_values('oi', ascending=False)                   if oi_puts  else pd.DataFrame(columns=['strike','oi','volume'])
-
-    call_wall_row    = oi_calls_df.iloc[0] if not oi_calls_df.empty else None
-    put_wall_row     = oi_puts_df.iloc[0]  if not oi_puts_df.empty  else None
-    call_wall_strike = float(call_wall_row['strike']) if call_wall_row is not None else 0.0
-    put_wall_strike  = float(put_wall_row['strike'])  if put_wall_row  is not None else 0.0
-    pct_to_call_wall = (call_wall_strike - spot)/spot*100 if call_wall_strike > 0 else 0.0
-
-    total_call_oi    = int(oi_calls_df['oi'].sum())     if not oi_calls_df.empty else 0
-    total_put_oi     = int(oi_puts_df['oi'].sum())      if not oi_puts_df.empty  else 0
-    total_call_vol   = int(oi_calls_df['volume'].sum()) if not oi_calls_df.empty else 0
-    total_put_vol    = int(oi_puts_df['volume'].sum())  if not oi_puts_df.empty  else 0
-    pc_oi_ratio      = total_put_oi  / max(total_call_oi,  1)
-    pc_vol_ratio     = total_put_vol / max(total_call_vol, 1)
-
-    near_atm_call_oi = int(oi_calls_df[
-        oi_calls_df['strike'].between(spot*0.9, spot*1.1)
-    ]['oi'].sum()) if not oi_calls_df.empty else 0
-    atm_concentration = near_atm_call_oi / max(total_call_oi, 1)
-
-    # ══════════════════════════════════════════════════════════════════════════
-    # PIPELINE B — GEX / IV（近期成交，中可信）
-    # 入選條件（全部同時滿足）：
-    #   1. OI > 0
-    #   2. lastTradeDate 在 FRESHNESS_DAYS 內（新鮮度）
-    #   3. volume > 0 OR yfinance IV 有效（非 0.00001 佔位符）
-    # ══════════════════════════════════════════════════════════════════════════
-    gex_results      = []
-    total_raw        = 0
-    valid_iv_cnt     = 0
-    valid_quote_cnt  = 0
-    iv_imputed_count = 0
-    fresh_count      = 0     # lastTradeDate < FRESHNESS_DAYS
-    vol_gt0_count    = 0     # volume > 0
-
-    def parse_for_gex(row, is_call):
-        nonlocal total_raw, valid_iv_cnt, valid_quote_cnt, iv_imputed_count
-        nonlocal fresh_count, vol_gt0_count
-        total_raw += 1
-
-        K      = safe_float(row.get('strike',            None))
-        oi     = safe_int  (row.get('openInterest',      0))
-        vol    = safe_int  (row.get('volume',            0))
-        iv_yf  = safe_float(row.get('impliedVolatility', None))
-        bid    = safe_float(row.get('bid',               None))
-        ask    = safe_float(row.get('ask',               None))
-        last   = safe_float(row.get('lastPrice',         None))
-        ltd    = row.get('lastTradeDate', None)
-
-        # ── 1. 基本門禁 ─────────────────────────────────────────────────────
-        if K is None or K <= 0: return
-        if oi <= 0:             return
-
-        # ── 2. 新鮮度過濾（lastTradeDate）────────────────────────────────────
-        fresh = is_fresh(ltd, FRESHNESS_DAYS)
-        if not fresh:
-            return   # 超過 5 個交易日沒成交，IV 可能是 stale，跳過
-
-        fresh_count += 1
-        if vol > 0: vol_gt0_count += 1
-
-        # ── 3. 需要「近期市場定價」的合約才納入 ──────────────────────────────
-        has_yf_iv  = (iv_yf is not None and 0.01 <= iv_yf <= 3.0)
-        has_volume = (vol > 0)
-        has_last   = (last is not None and last > 0)
-
-        if not has_volume and not has_yf_iv:
-            return  # 無成交量 + 無有效 IV → 跳過
-
-        if not has_last:
-            return  # 連 lastPrice 都沒有，無法反推 IV
-
-        # ── 4. IV 取得（三層，不硬補）───────────────────────────────────────
-        iv_use, iv_label = None, ''
-
-        if has_yf_iv:
-            iv_use   = iv_yf
-            iv_label = 'yf'
-            valid_iv_cnt += 1
-        elif has_volume:
-            iv_imp = iv_bisect(last, spot, K, T_years, is_call=is_call)
-            if iv_imp is not None:
-                iv_use           = iv_imp
-                iv_label         = 'imputed'
-                iv_imputed_count += 1
-                valid_iv_cnt     += 1
-
-        if iv_use is None:
-            return  # 無法取得任何 IV，跳過
-
-        if bid is not None and bid > 0 and ask is not None and ask > 0:
-            valid_quote_cnt += 1
-
+        iv_use  = iv if iv > 0.01 else 0.5
         gamma   = calc_gamma(spot, K, T_years, iv_use)
-        gex_val = calc_gex(oi, gamma, spot, is_call=is_call)
+        gex_val = calc_gex(oi, gamma, spot, is_call=True)
 
-        gex_results.append({
-            'strike':  K,
-            'type':    'call' if is_call else 'put',
-            'oi':      oi,
-            'volume':  vol,
-            'iv':      iv_use,
-            'iv_src':  iv_label,
-            'gamma':   gamma,
-            'gex':     gex_val,
+        results.append({
+            'strike':    K,
+            'type':      'call',
+            'oi':        oi,
+            'volume':    vol,
+            'iv':        iv,
+            'bid':       bid,
+            'ask':       ask,
+            'gamma':     gamma,
+            'gex':       gex_val,
         })
 
-    for _, row in calls_df.iterrows(): parse_for_gex(row, True)
-    for _, row in puts_df.iterrows():  parse_for_gex(row, False)
+    # ── Puts ──
+    for _, row in puts_df.iterrows():
+        K   = float(row.get('strike', 0))
+        oi  = int(row.get('openInterest', 0) or 0)
+        vol = int(row.get('volume', 0) or 0)
+        iv  = float(row.get('impliedVolatility', 0) or 0)
+        bid = float(row.get('bid', 0) or 0)
+        ask = float(row.get('ask', 0) or 0)
 
-    # ── 品質指標計算 ────────────────────────────────────────────────────────
-    n_gex        = len(gex_results)
-    n_imputed    = iv_imputed_count
-    n_yf_iv      = valid_iv_cnt - iv_imputed_count
-    iv_ratio     = valid_iv_cnt    / max(total_raw, 1)
-    quote_ratio  = valid_quote_cnt / max(total_raw, 1)
-    fresh_ratio  = fresh_count     / max(total_raw, 1)
-    vol_gt0_ratio= vol_gt0_count   / max(total_raw, 1)
-    imp_ratio    = n_imputed       / max(n_gex, 1)
-    is_after_hours = (quote_ratio == 0.0)
+        if K <= 0 or oi == 0:
+            continue
 
-    # ── 資料健康判定（最小值原則）──────────────────────────────────────────
-    DATA_QUALITY  = 'OK'
-    quality_notes = []
+        iv_use  = iv if iv > 0.01 else 0.5
+        gamma   = calc_gamma(spot, K, T_years, iv_use)
+        gex_val = calc_gex(oi, gamma, spot, is_call=False)
 
-    # Layer 1 OI Wall
-    if len(oi_calls) < 3 and len(oi_puts) < 3:
-        DATA_QUALITY = 'UNKNOWN'
-        quality_notes.append("OI 鏈條不足，Wall 不可靠")
+        results.append({
+            'strike':    K,
+            'type':      'put',
+            'oi':        oi,
+            'volume':    vol,
+            'iv':        iv,
+            'bid':       bid,
+            'ask':       ask,
+            'gamma':     gamma,
+            'gex':       gex_val,
+        })
 
-    # Layer 2 GEX 合約數
-    if n_gex < 5:
-        DATA_QUALITY = 'UNKNOWN'
-        quality_notes.append(f"GEX 合約數僅 {n_gex}（< 5），不可靠")
-    elif n_gex < 15:
-        if DATA_QUALITY == 'OK': DATA_QUALITY = 'RELAXED'
-        quality_notes.append(f"GEX 合約數 {n_gex}（< 15），量值僅供參考")
+    df = pd.DataFrame(results)
+    if df.empty:
+        return None
 
-    # 新鮮度替代品質指標（取代 bid/ask）
-    if fresh_ratio < 0.15:
-        DATA_QUALITY = 'UNKNOWN'
-        quality_notes.append(f"近期成交比例 {fresh_ratio:.0%}（< 15%），數據可能陳舊")
+    # 各 Strike 淨 GEX
+    net_gex_by_strike = df.groupby('strike')['gex'].sum()
 
-    if vol_gt0_ratio < 0.05:
-        if DATA_QUALITY == 'OK': DATA_QUALITY = 'RELAXED'
-        quality_notes.append(f"今日 volume>0 比例 {vol_gt0_ratio:.0%}（< 5%），流動性低")
+    # Call / Put 分開
+    calls_only = df[df['type'] == 'call'].sort_values('oi', ascending=False)
+    puts_only  = df[df['type'] == 'put'].sort_values('oi', ascending=False)
 
-    # IV 覆蓋率
-    if iv_ratio < 0.10:
-        DATA_QUALITY = 'UNKNOWN'
-        quality_notes.append(f"IV 覆蓋率 {iv_ratio:.0%}（< 10%），GEX 失真")
+    call_wall_row  = calls_only.iloc[0] if not calls_only.empty else None
+    put_wall_row   = puts_only.iloc[0]  if not puts_only.empty  else None
 
-    # 開盤時段 bid/ask 替代判斷
-    if not is_after_hours and quote_ratio < 0.15:
-        DATA_QUALITY = 'UNKNOWN'
-        quality_notes.append(f"開盤時段報價覆蓋率 {quote_ratio:.0%}，數據異常")
-
-    if is_after_hours and DATA_QUALITY == 'OK':
-        quality_notes.append(
-            f"盤後模式：bid/ask=0 正常 | 新鮮度 {fresh_ratio:.0%} | "
-            f"vol>0 {vol_gt0_ratio:.0%}"
-        )
-
-    if imp_ratio > 0.6 and DATA_QUALITY == 'OK':
-        DATA_QUALITY = 'RELAXED'
-        quality_notes.append(
-            f"反推 IV 占 {imp_ratio:.0%}（>{60}%），GEX 方向可信、量值打折"
-        )
-
-    # ── GEX DataFrame ──────────────────────────────────────────────────────
-    GEX_COLS = ['strike','type','oi','volume','iv','iv_src','gamma','gex']
-    gex_df = pd.DataFrame(gex_results, columns=GEX_COLS) if gex_results \
-             else pd.DataFrame(columns=GEX_COLS)
-
-    if gex_df.empty:
-        net_gex_by_strike = pd.Series(dtype=float)
-        total_net_gex     = 0.0
-        peak_gex_strike   = spot
-        avg_atm_iv        = 0.0
+    # Peak GEX Strike：ATM 附近（±15%）淨 GEX 絕對值最大
+    atm_mask = (df['strike'] >= spot * 0.85) & (df['strike'] <= spot * 1.15)
+    atm_df   = df[atm_mask]
+    if not atm_df.empty:
+        peak_gex_strike = net_gex_by_strike[
+            net_gex_by_strike.index.isin(atm_df['strike'])
+        ].abs().idxmax()
     else:
-        net_gex_by_strike = gex_df.groupby('strike')['gex'].sum()
-        meaningful = gex_df[
-            (gex_df['strike'] >= spot*0.30) &
-            (gex_df['strike'] <= spot*2.00)
-        ]
-        total_net_gex = float(meaningful.groupby('strike')['gex'].sum().sum())
+        peak_gex_strike = net_gex_by_strike.abs().idxmax()
 
-        atm_gex = net_gex_by_strike[
-            (net_gex_by_strike.index >= spot*0.85) &
-            (net_gex_by_strike.index <= spot*1.15)
-        ]
-        peak_gex_strike = float(atm_gex.abs().idxmax()) if not atm_gex.empty                           else float(net_gex_by_strike.abs().idxmax())
+    # 總淨 GEX
+    total_net_gex  = net_gex_by_strike.sum()
+    total_call_oi  = int(calls_only['oi'].sum())
+    total_put_oi   = int(puts_only['oi'].sum())
+    total_call_vol = int(calls_only['volume'].sum())
+    total_put_vol  = int(puts_only['volume'].sum())
+    pc_oi_ratio    = total_put_oi  / (total_call_oi  + 1)
+    pc_vol_ratio   = total_put_vol / (total_call_vol + 1)
 
-        # ATM IV：只用近 ATM（±5%）且 IV 有效的近期合約
-        avg_atm_iv = 0.0
-        if 'iv' in gex_df.columns:
-            atm_calls = gex_df[
-                (gex_df['type'] == 'call') &
-                (gex_df['strike'] >= spot*0.95) &
-                (gex_df['strike'] <= spot*1.05) &
-                (gex_df['iv'] >= 0.01)
-            ]
-            if not atm_calls.empty:
-                avg_atm_iv = float(atm_calls['iv'].mean())
-            else:
-                valid_iv_df = gex_df[
-                    (gex_df['type'] == 'call') & (gex_df['iv'] >= 0.01)
-                ]
-                avg_atm_iv = float(valid_iv_df['iv'].median()) \
-                             if not valid_iv_df.empty else 0.0
+    # ATM IV 平均
+    atm_calls = calls_only[
+        (calls_only['strike'] >= spot * 0.95) &
+        (calls_only['strike'] <= spot * 1.05)
+    ]
+    avg_atm_iv = float(atm_calls['iv'].mean()) if not atm_calls.empty else 0
 
-    # ══════════════════════════════════════════════════════════════════════════
-    # Gamma Flip 掃描（改進版）
-    # 1. 只用 |K/spot - 1| < 30% 且在 gex_results 中的子集
-    # 2. 先粗掃（10 元步進）找符號翻轉區間
-    # 3. 再用二分法在區間內精確定位零點
-    # ══════════════════════════════════════════════════════════════════════════
-    gamma_flip       = None
-    gamma_flip_found = False
+    # 近 ATM Call OI 集中度
+    near_atm_call_oi = int(calls_only[
+        calls_only['strike'].between(spot * 0.9, spot * 1.1)
+    ]['oi'].sum())
+    atm_concentration = near_atm_call_oi / (total_call_oi + 1)
 
-    # 子集：只取 ATM ±30% 的合約，減少噪音 + 加速計算
-    flip_subset = [r for r in gex_results
-                   if abs(r['strike'] / spot - 1.0) < 0.30]
-
-    if flip_subset:
-        def net_gex_hypo(hypo_spot):
-            total = 0.0
-            for r in flip_subset:
-                g  = calc_gamma(hypo_spot, r['strike'], T_years, r['iv'])
-                gv = calc_gex(r['oi'], g, hypo_spot, is_call=(r['type']=='call'))
-                total += gv
-            return total
-
-        # 粗掃：spot ±30%，10 元步進
-        scan_lo  = int(spot * 0.70 // 10) * 10
-        scan_hi  = int(spot * 1.30 // 10) * 10 + 10
-        scan_pts = list(range(max(scan_lo, 10), scan_hi + 1, 10))
-
-        # 找所有符號翻轉區間（可能有多個）
-        flip_intervals = []
-        prev_val  = net_gex_hypo(scan_pts[0])
-        prev_sign = 1 if prev_val >= 0 else -1
-        for i in range(1, len(scan_pts)):
-            p    = scan_pts[i]
-            val  = net_gex_hypo(p)
-            sign = 1 if val >= 0 else -1
-            if sign != prev_sign:
-                flip_intervals.append((scan_pts[i-1], p))
-            prev_sign = sign
-            prev_val  = val
-
-        # 二分法精確定位：在每個粗掃區間內精確找零點
-        # 取最靠近 spot 的那個（通常就是最有意義的）
-        precise_flips = []
-        for (lo, hi) in flip_intervals:
-            a, b = float(lo), float(hi)
-            fa = net_gex_hypo(a)
-            for _ in range(30):      # 30 次二分 = 精度約 (hi-lo)/2^30 元
-                mid = (a + b) / 2.0
-                fm  = net_gex_hypo(mid)
-                if abs(fm) < 1.0:    # 接近零就停（GEX 單位 M，誤差 <1M 夠了）
-                    break
-                if (fa >= 0) == (fm >= 0):
-                    a, fa = mid, fm
-                else:
-                    b = mid
-            precise_flips.append((a + b) / 2.0)
-
-        if precise_flips:
-            # 取最靠近 spot 的 flip 點作為主要輸出
-            gamma_flip       = float(min(precise_flips, key=lambda x: abs(x - spot)))
-            gamma_flip_found = True
+    # Call Wall 距離 %
+    call_wall_strike = float(call_wall_row['strike']) if call_wall_row is not None else 0
+    put_wall_strike  = float(put_wall_row['strike'])  if put_wall_row  is not None else 0
+    pct_to_call_wall = (call_wall_strike - spot) / spot * 100 if call_wall_strike > 0 else 0
 
     return {
-        # Layer 1 — 高可信（OI Wall）
-        'oi_calls_df':       oi_calls_df,
-        'oi_puts_df':        oi_puts_df,
-        'call_wall':         call_wall_row,
-        'put_wall':          put_wall_row,
-        'call_wall_strike':  call_wall_strike,
-        'put_wall_strike':   put_wall_strike,
-        'pct_to_call_wall':  pct_to_call_wall,
-        'total_call_oi':     total_call_oi,
-        'total_put_oi':      total_put_oi,
-        'total_call_vol':    total_call_vol,
-        'total_put_vol':     total_put_vol,
-        'pc_oi_ratio':       float(pc_oi_ratio),
-        'pc_vol_ratio':      float(pc_vol_ratio),
-        'atm_concentration': float(atm_concentration),
-        # Layer 2 — 中可信（GEX / IV）
-        'df':                gex_df,
-        'calls_only':        gex_df[gex_df['type']=='call'].sort_values('oi',ascending=False)
-                             if not gex_df.empty and 'type' in gex_df.columns else gex_df,
-        'puts_only':         gex_df[gex_df['type']=='put'].sort_values('oi',ascending=False)
-                             if not gex_df.empty and 'type' in gex_df.columns else gex_df,
+        'df':               df,
+        'calls_only':       calls_only,
+        'puts_only':        puts_only,
         'net_gex_by_strike': net_gex_by_strike,
-        'peak_gex_strike':   float(peak_gex_strike),
-        'gamma_flip':        gamma_flip,
-        'gamma_flip_found':  gamma_flip_found,
-        'total_net_gex':     float(total_net_gex),
-        'avg_atm_iv':        float(avg_atm_iv),
-        # Quality metadata
-        'data_quality':      DATA_QUALITY,
-        'quality_notes':     quality_notes,
-        'valid_contracts':   n_gex,
-        'total_raw':         total_raw,
-        'quote_ratio':       float(quote_ratio),
-        'iv_ratio':          float(iv_ratio),
-        'fresh_ratio':       float(fresh_ratio),
-        'vol_gt0_ratio':     float(vol_gt0_ratio),
-        'imp_ratio':         float(imp_ratio),
-        'n_imputed':         n_imputed,
-        'n_yf_iv':           n_yf_iv,
+        'call_wall':        call_wall_row,
+        'put_wall':         put_wall_row,
+        'call_wall_strike': call_wall_strike,
+        'put_wall_strike':  put_wall_strike,
+        'peak_gex_strike':  float(peak_gex_strike),
+        'total_net_gex':    float(total_net_gex),
+        'total_call_oi':    total_call_oi,
+        'total_put_oi':     total_put_oi,
+        'total_call_vol':   total_call_vol,
+        'total_put_vol':    total_put_vol,
+        'pc_oi_ratio':      float(pc_oi_ratio),
+        'pc_vol_ratio':     float(pc_vol_ratio),
+        'avg_atm_iv':       float(avg_atm_iv),
+        'atm_concentration': float(atm_concentration),
+        'pct_to_call_wall': float(pct_to_call_wall),
     }
-
 
 # ==========================================
 # Squeeze Score 計算
@@ -597,60 +303,12 @@ def calc_squeeze_score(gex_data, spot):
         score += 5
         reasons.append(f"ATM IV {avg_iv:.0%} — 偏高")
 
-    # ── 7. Gamma Flip vs 股價 ─────────────────────────────────────────────────
-    # 正確邏輯：
-    #   Step A: 先用 net_gex(spot) 確認「現在是正還是負 Gamma」
-    #   Step B: 再用 flip 點描述「何時會切換」
-    #   兩者必須一致，不能同時說「正 Gamma」又說「負 Gamma 確認」
-    gamma_flip       = gex_data.get('gamma_flip')
-    gamma_flip_found = gex_data.get('gamma_flip_found', False)
-
-    # Step A：現在的 Gamma 狀態由 net_gex 符號決定（唯一真相）
-    currently_negative_gamma = (net_gex < 0)
-
-    if currently_negative_gamma:
-        # 現在確實是負 Gamma
-        score += 15
-        reasons.append(
-            f"淨 GEX {net_gex:.0f}M（負）— 造市商負 Gamma 模式，追漲追跌"
-        )
-        if gamma_flip_found and gamma_flip is not None:
-            flip_below = gamma_flip < spot
-            if flip_below:
-                warnings.append(
-                    f"Gamma Flip ${gamma_flip:.0f} 在現價下方，"
-                    f"跌破後 Gamma 轉正（造市商重新穩定市場）"
-                )
+    # ── 7. 股價 vs Peak GEX
+    if spot > peak_gex_k:
+        score += 5
+        reasons.append(f"股價 ${spot:.2f} 已超過 Peak GEX ${peak_gex_k:.0f} — 進入負 Gamma 加速區")
     else:
-        # 現在是正 Gamma（net_gex >= 0）
-        warnings.append(
-            f"淨 GEX {net_gex:.0f}M（正）— 造市商正 Gamma，對價格有穩定作用"
-        )
-        if gamma_flip_found and gamma_flip is not None:
-            dist_flip = (gamma_flip - spot) / spot * 100
-            flip_above = gamma_flip > spot
-            if flip_above:
-                if dist_flip < 5:
-                    score += 8
-                    reasons.append(
-                        f"Gamma Flip ${gamma_flip:.0f} 在上方 {dist_flip:.1f}% — "
-                        f"突破後轉為負 Gamma（追漲力道出現）"
-                    )
-                else:
-                    warnings.append(
-                        f"Gamma Flip ${gamma_flip:.0f} 在上方 {dist_flip:.1f}%，"
-                        f"目前仍在正 Gamma 保護範圍內"
-                    )
-            else:
-                # flip 在下方但 net_gex 卻是正 → 掃描邊界問題，忽略
-                warnings.append(
-                    f"Gamma Flip 掃描結果 ${gamma_flip:.0f} 在現價下方，"
-                    f"但淨 GEX 為正——掃描邊界可能有限，以淨 GEX 為準"
-                )
-        else:
-            warnings.append(
-                "掃描範圍內未找到 Gamma Flip——整個區間皆為正 Gamma，波動抑制"
-            )
+        warnings.append(f"股價低於 Peak GEX ${peak_gex_k:.0f} — 仍在正 Gamma 磁吸帶內")
 
     score = max(0, min(100, score))
     return score, reasons, warnings
@@ -659,98 +317,46 @@ def calc_squeeze_score(gex_data, spot):
 # 信號解讀
 # ==========================================
 def interpret_signal(score, gex_data, spot):
-    """
-    輸出三段式劇本——基於實際 GEX 結構，不依賴 Squeeze Score 高低。
-    在報價缺失（盤後）環境下，劇本分析比單一信號更可靠。
-    """
-    cw       = gex_data['call_wall_strike']
-    pw       = gex_data['put_wall_strike']
-    pgk      = gex_data['peak_gex_strike']
-    iv       = gex_data['avg_atm_iv']
-    net      = gex_data['total_net_gex']
-    gf       = gex_data.get('gamma_flip')
-    gf_found = gex_data.get('gamma_flip_found', False)
-    dq       = gex_data.get('data_quality', 'OK')
+    cw  = gex_data['call_wall_strike']
+    pw  = gex_data['put_wall_strike']
+    pgk = gex_data['peak_gex_strike']
+    iv  = gex_data['avg_atm_iv']
+    net = gex_data['total_net_gex']
 
-    # ── 一致性：Gamma 狀態由 net GEX 符號決定 ──────────────────────────────
-    is_neg_gamma = net < 0
-    gamma_label  = f"負 Gamma（淨 GEX {net:.0f}M）" if is_neg_gamma                    else f"正 Gamma（淨 GEX {net:.0f}M）"
-
-    # ── Gamma Flip 描述（與 net_gex 一致）──────────────────────────────────
-    if gf_found and gf is not None:
-        if gf > spot:
-            flip_note = (f"Gamma Flip ${gf:.0f} 在上方 "
-                         f"{(gf-spot)/spot*100:.1f}%——突破後轉負 Gamma")
-        else:
-            flip_note = (f"Gamma Flip ${gf:.0f} 在下方 "
-                         f"{(spot-gf)/spot*100:.1f}%——跌破後轉正 Gamma")
+    if score >= 75:
+        label   = "⚡ SQUEEZE 高風險"
+        verdict = (
+            f"Call OI 極度擁擠，造市商處於負 Gamma 區間，Delta Hedge 追買壓力大。\n"
+            f"      股價一旦突破 ${cw:.0f} 關鍵履約價，避險買盤可能自我強化形成 Gamma Squeeze。\n"
+            f"      但 IV 已在 {iv:.0%} 高位——Squeeze 退潮時 IV crush + delta unwind 的下跌速度同樣驚人。\n"
+            f"      操作：不追高，若已持有可設移動止損；等回落至 Peak GEX ${pgk:.0f} 附近再評估。"
+        )
+    elif score >= 50:
+        label   = "⚠️  WARMING 中度警示"
+        verdict = (
+            f"Call 結構偏多但尚未達極端（P/C={gex_data['pc_oi_ratio']:.2f}）。\n"
+            f"      ${cw:.0f} 若出現大量成交量突破，可能觸發造市商追加 Delta Hedge 買盤。\n"
+            f"      若 Call 流量降溫（Vol/OI 下降），推力會迅速消失，回調與 IV 崩跌風險升高。\n"
+            f"      操作：觀察 ${cw:.0f} 能否有效突破；止損設 Peak GEX ${pgk:.0f} 以下。"
+        )
+    elif score >= 25:
+        label   = "➡️  NEUTRAL 結構中性"
+        verdict = (
+            f"P/C 比率 {gex_data['pc_oi_ratio']:.2f} 偏平衡，淨 GEX {net:.1f}M。\n"
+            f"      造市商目前可能處於正 Gamma 區間，對股價有自然穩定作用。\n"
+            f"      股價傾向在 Peak GEX ${pgk:.0f}（磁吸點）附近震盪。\n"
+            f"      劇烈 Gamma Squeeze 概率低，Put Wall ${pw:.0f} 是主要下方支撐。"
+        )
     else:
-        flip_note = "掃描範圍內無 Gamma Flip（整段皆為正 Gamma）"
-
-    # ── 品質警告前綴 ────────────────────────────────────────────────────────
-    dq_warn = ""
-    if dq == 'UNKNOWN':
-        dq_warn = "\n  ⚠️  資料品質不足（UNKNOWN），以下劇本僅供方向性參考。\n"
-    elif dq == 'RELAXED':
-        dq_warn = "\n  ℹ️  數據為盤後/反推 IV，劇本方向可參考，量值僅供估算。\n"
-
-    # ── IV 說明 ────────────────────────────────────────────────────────────
-    iv_note = ""
-    if iv > 0:
-        iv_note = f"  ATM IV 約 {iv:.0%}（盤後反推估算，方向參考即可）\n"
-
-    # ── 三段式劇本 ──────────────────────────────────────────────────────────
-    # 以 GEX 結構（cw/pgk/pw）為骨架，不依賴 Squeeze Score
-    cw_status = '已突破' if spot >= cw else f'距此 {(cw-spot)/spot*100:.1f}%，尚未確認'
-    atm_band  = '內' if pgk <= spot <= cw else '外'
-    put_oi    = int(gex_data['total_put_oi'])
-
-    scenario_1 = (
-        f"  📈 劇本 1 — 強勢續攻\n"
-        f"     條件：有效突破並站穩 ${cw:.0f}（Call Wall）\n"
-        f"     含義：${cw:.0f} 的 Call 買家全部獲利，造市商被迫大量追買對沖\n"
-        f"     目標：上方無明顯 GEX 牆，動能可自我強化\n"
-        f"     現況：{cw_status}"
-    )
-    scenario_2 = (
-        f"  ↔️  劇本 2 — 震盪整理（目前最貼近）\n"
-        f"     區間：${pgk:.0f}（Peak GEX 磁吸）～ ${cw:.0f}（Call Wall）\n"
-        f"     含義：正 Gamma 環境下造市商在此區間買跌賣漲，自然形成均值回歸\n"
-        f"     {flip_note}\n"
-        f"     現況：{gamma_label}，股價 ${spot:.0f} 在磁吸帶{atm_band}"
-    )
-    scenario_3 = (
-        f"  📉 劇本 3 — 轉弱\n"
-        f"     條件：跌破 ${pgk:.0f} 且站不回來\n"
-        f"     下一支撐：${pw:.0f}（Put Wall，OI {put_oi:,} 口）\n"
-        f"     含義：Call 買盤退潮，IV crush 加速下跌；"
-        f"Put Wall 的造市商買盤在 ${pw:.0f} 有緩衝作用"
-    )
-
-    # ── 信號標籤（仍保留給主輸出用）────────────────────────────────────────
-    if score >= 70:
-        label = "⚡ SQUEEZE 高風險"
-    elif score >= 45:
-        label = "⚠️  WARMING 中度警示"
-    elif score >= 20:
-        label = "➡️  NEUTRAL 結構中性"
-    else:
-        label = "❄️  COOLING Call 退潮"
-
-    verdict = (
-        f"{dq_warn}"
-        f"  當前 Gamma 狀態：{gamma_label}\n"
-        f"{iv_note}"
-        "\n"
-        f"{scenario_1}\n"
-        "\n"
-        f"{scenario_2}\n"
-        "\n"
-        f"{scenario_3}"
-    )
+        label   = "❄️  COOLING Call 退潮"
+        verdict = (
+            f"P/C 比率 {gex_data['pc_oi_ratio']:.2f} 偏高，Call 買盤疲弱。\n"
+            f"      若之前有 Squeeze 行情，現在可能進入退潮——造市商 Delta Unwind（賣出對沖股票）。\n"
+            f"      IV crush 風險高，股價可能快速回落至 Peak GEX ${pgk:.0f} 甚至 Put Wall ${pw:.0f}。\n"
+            f"      操作：不宜做多，已持有者考慮減倉。"
+        )
 
     return label, verdict
-
 
 # ==========================================
 # 列印 Bar（ASCII 視覺化）
@@ -802,27 +408,10 @@ def print_gex_report(symbol, expiry_choice=None):
         gex = analyze_gex(calls_df, puts_df, spot, expiry_used)
         if gex is None:
             print("   ❌ GEX 計算失敗（無有效數據）")
-            print("   💡 Debug：嘗試手動指定下一個到期日，例如：")
-            print(f"      EXPIRY_CHOICE = '{all_expiries[1] if len(all_expiries) > 1 else 'None'}'")
             return None
-        dq      = gex['data_quality']
-        n_gex   = gex['valid_contracts']
-        n_imp   = gex['n_imputed']
-        n_yf    = gex['n_yf_iv']
-        n_calls = len(gex['oi_calls_df'])
-        n_puts  = len(gex['oi_puts_df'])
-        fr      = gex['fresh_ratio']
-        vr      = gex['vol_gt0_ratio']
-        ir      = gex['imp_ratio']
-        print(f"   ✅ [Layer 1 高可信] OI Wall：Call {n_calls} Strike / Put {n_puts} Strike")
-        print(f"   ✅ [Layer 2 中可信] GEX/IV ：{n_gex} 筆近期合約")
-        print(f"      yf IV {n_yf} 筆 | 反推 {n_imp} 筆（{ir:.0%}）| 新鮮度 {fr:.0%} | vol>0 {vr:.0%}")
-        print(f"   📊 資料品質: {dq}  |  IV 覆蓋率: {gex['iv_ratio']:.0%}")
-        for note in gex['quality_notes']:
-            print(f"   ℹ️  {note}")
+        print(f"   ✅ 分析完成，共 {len(gex['df'])} 筆有效合約")
     except Exception as e:
         print(f"   ❌ GEX 計算錯誤: {e}")
-        import traceback; traceback.print_exc()
         return None
 
     # ── 4. Squeeze Score
@@ -833,7 +422,7 @@ def print_gex_report(symbol, expiry_choice=None):
     # 輸出報告
     # ==========================================
     print("\n" + "=" * 80)
-    print("📐 關鍵水平總覽  [🔒 Layer 1 高可信 = OI Wall  |  ⚡ Layer 2 中可信 = GEX/Flip]")
+    print("📐 關鍵水平總覽")
     print("=" * 80)
 
     cw  = gex['call_wall_strike']
@@ -842,27 +431,18 @@ def print_gex_report(symbol, expiry_choice=None):
     cw_oi = int(gex['call_wall']['oi']) if gex['call_wall'] is not None else 0
     pw_oi = int(gex['put_wall']['oi'])  if gex['put_wall']  is not None else 0
 
-    gf        = gex.get('gamma_flip')
-    gf_found  = gex.get('gamma_flip_found', False)
     above_cw  = "⬆ 已突破" if spot >= cw  else f"距 {((cw - spot)/spot*100):+.1f}%"
-    net_sign  = "負Gamma（追漲追跌）" if gex['total_net_gex'] < 0 else "正Gamma（穩定）"
+    above_pgk = "⬆ 高於磁吸點" if spot > pgk else f"距 {((pgk - spot)/spot*100):+.1f}%（磁吸引力向下）"
 
-    print(f"  {'水平':<22} {'價格':>10}  {'說明'}")
-    print(f"  {'─'*22} {'─'*10}  {'─'*40}")
-    print(f"  {'🔴 Call Wall':<22} ${cw:>9.2f}  OI {cw_oi:,} 口  最大上方阻力  {above_cw}")
-    print(f"  {'📍 當前股價':<22} ${spot:>9.2f}  ← 你在這裡  [{net_sign}]")
-    if gf_found and gf is not None:
-        side  = "上方" if gf > spot else "下方"
-        dist  = abs((gf - spot) / spot * 100)
-        flip_regime = "越過後進入負Gamma" if gf > spot else "越過後進入正Gamma"
-        print(f"  {'⚡ Gamma Flip':<22} ${gf:>9.0f}  {side} {dist:.1f}%  {flip_regime}")
-    else:
-        print(f"  {'⚡ Gamma Flip':<22} {'N/A':>10}  掃描範圍內未找到翻轉點")
-    print(f"  {'🟡 Peak GEX（磁吸）':<22} ${pgk:>9.2f}  OI 最大 Strike，非 Flip 點")
-    print(f"  {'🟢 Put Wall':<22} ${pw:>9.2f}  OI {pw_oi:,} 口  最強下方支撐")
+    print(f"  {'水平':<20} {'價格':>10}  {'說明'}")
+    print(f"  {'─'*20} {'─'*10}  {'─'*35}")
+    print(f"  {'🔴 Call Wall':<20} ${cw:>9.2f}  OI {cw_oi:,} 口  最大上方阻力  {above_cw}")
+    print(f"  {'📍 當前股價':<20} ${spot:>9.2f}  ← 你在這裡")
+    print(f"  {'🟡 Peak GEX（磁吸）':<20} ${pgk:>9.2f}  {above_pgk}")
+    print(f"  {'🟢 Put Wall':<20} ${pw:>9.2f}  OI {pw_oi:,} 口  最強下方支撐")
 
     print("\n" + "=" * 80)
-    print("📊 選擇權結構指標  [🔒 OI 來自 Layer 1  |  ⚡ ATM IV 來自 Layer 2]")
+    print("📊 選擇權結構指標")
     print("=" * 80)
     print(f"  {'P/C OI 比率':<28} {gex['pc_oi_ratio']:.3f}  "
           f"{'⚡ Call 極重' if gex['pc_oi_ratio'] < 0.4 else ('Call 偏重' if gex['pc_oi_ratio'] < 0.65 else '平衡')}")
@@ -903,27 +483,20 @@ def print_gex_report(symbol, expiry_choice=None):
 
     # ── Call Wall 明細（前15大）
     print("=" * 80)
-    print(f"📞 Call OI 分佈（前15大 Strike）  到期日: {expiry_used}  [🔒 Layer 1 — 全鏈條 OI]")
+    print(f"📞 Call OI 分佈（前15大 Strike）  到期日: {expiry_used}")
     print("=" * 80)
 
-    # Call Wall 表格：用 Pipeline A（全 OI 鏈條）
-    top_calls   = gex['oi_calls_df'].head(15)
+    top_calls   = gex['calls_only'].head(15)
     max_call_oi = int(top_calls['oi'].max()) if not top_calls.empty else 1
 
     print(f"  {'Strike':>8}  {'OI（口）':>10}  {'OI Bar':<22}  {'Volume':>8}  {'Vol/OI':>6}  {'IV':>6}  {'角色'}")
     print(f"  {'─'*8}  {'─'*10}  {'─'*22}  {'─'*8}  {'─'*6}  {'─'*6}  {'─'*12}")
 
-    # IV lookup from Pipeline B (gex_df) keyed by strike
-    _gex_iv = {}
-    if not gex['df'].empty and 'iv' in gex['df'].columns:
-        for _, _r in gex['df'].iterrows():
-            _gex_iv[float(_r['strike'])] = float(_r['iv'])
-
     for _, row in top_calls.iterrows():
         k       = float(row['strike'])
         oi      = int(row['oi'])
         vol     = int(row['volume'])
-        iv      = _gex_iv.get(float(row['strike']), 0.0)
+        iv      = float(row['iv'])
         vol_oi  = f"{vol/oi:.2f}" if oi > 0 else "—"
         oi_bar  = bar(oi, max_call_oi, width=22)
         role    = ""
@@ -938,11 +511,10 @@ def print_gex_report(symbol, expiry_choice=None):
 
     # ── Put Wall 明細（前10大）
     print("\n" + "=" * 80)
-    print(f"📉 Put OI 分佈（前10大 Strike）  到期日: {expiry_used}  [🔒 Layer 1 — 全鏈條 OI]")
+    print(f"📉 Put OI 分佈（前10大 Strike）  到期日: {expiry_used}")
     print("=" * 80)
 
-    # Put Wall 表格：用 Pipeline A（全 OI 鏈條）
-    top_puts   = gex['oi_puts_df'].head(10)
+    top_puts   = gex['puts_only'].head(10)
     max_put_oi = int(top_puts['oi'].max()) if not top_puts.empty else 1
 
     print(f"  {'Strike':>8}  {'OI（口）':>10}  {'OI Bar':<22}  {'Volume':>8}  {'IV':>6}  {'角色'}")
@@ -952,17 +524,16 @@ def print_gex_report(symbol, expiry_choice=None):
         k      = float(row['strike'])
         oi     = int(row['oi'])
         vol    = int(row['volume'])
-        iv     = _gex_iv.get(float(row['strike']), 0.0)
+        iv     = float(row['iv'])
         oi_bar = bar(oi, max_put_oi, width=22)
         role   = "🟢 PUT WALL" if k == pw else ("📍 下方支撐" if k < spot else "")
         print(f"  ${k:>7.0f}  {oi:>10,}  {oi_bar}  {vol:>8,}  {iv*100:>5.0f}%  {role}")
 
     # ── 淨 GEX by Strike（最重要的10個）
     print("\n" + "=" * 80)
-    print(f"🧲 淨 GEX 分佈（最重要10個 Strike）  [⚡ Layer 2 — {gex['data_quality']}]")
+    print("🧲 淨 GEX 分佈（最重要10個 Strike）")
     print("=" * 80)
     print("   正值 = 造市商正 Gamma（穩定）  |  負值 = 負 Gamma（追漲追跌）")
-    print("   ⚠️  GEX 量值僅供方向性參考，精確數值受 IV 品質影響")
     print()
 
     net_gex_s = gex['net_gex_by_strike'].sort_values(key=abs, ascending=False).head(10)

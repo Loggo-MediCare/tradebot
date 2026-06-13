@@ -1,7 +1,14 @@
 {
   "symbol": "PLTR",
   "model_type": "PPO",
-  "validation_accuracy": 58.55,
-  "backtest_accuracy": 58.55,
-  "last_updated": "2026-05-19 10:55:06"
+  "training_accuracy": 72.3,
+  "validation_accuracy": 67.1,
+  "backtest_accuracy": 66.3,
+  "win_rate": 61.1,
+  "sharpe_ratio": 1.71,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-01-15 15:53:36",
+  "history": []
 }

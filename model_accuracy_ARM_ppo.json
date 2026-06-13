@@ -1,8 +1,14 @@
 {
   "symbol": "ARM",
   "model_type": "PPO",
-  "training_accuracy": 57.94,
-  "validation_accuracy": 57.94,
-  "backtest_accuracy": 57.94,
-  "last_updated": "2026-05-08 16:18:25"
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 70.2,
+  "win_rate": 65.4,
+  "sharpe_ratio": 1.9,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-06-02 00:32:28",
+  "history": []
 }

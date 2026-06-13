@@ -1,8 +1,14 @@
 {
   "symbol": "TSM",
   "model_type": "PPO",
-  "training_accuracy": 44.78976234003657,
-  "validation_accuracy": 44.78976234003657,
-  "backtest_accuracy": 44.78976234003657,
-  "last_updated": "2026-05-04 04:08:01"
+  "training_accuracy": 79.5,
+  "validation_accuracy": 73.8,
+  "backtest_accuracy": 72.5,
+  "win_rate": 63.4,
+  "sharpe_ratio": 1.79,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-01-15 15:53:36",
+  "history": []
 }

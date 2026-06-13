@@ -1,8 +1,14 @@
 {
-  "symbol": "2327",
-  "ticker": "2327.TW",
+  "symbol": "2327.TW",
   "model_type": "PPO",
-  "validation_accuracy": 62.02,
-  "backtest_accuracy": 62.02,
-  "last_updated": "2026-05-18 12:04:02"
+  "training_accuracy": 70.8,
+  "validation_accuracy": 69.0,
+  "backtest_accuracy": 66.5,
+  "win_rate": 61.7,
+  "sharpe_ratio": 2.34,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-01-15 15:53:36",
+  "history": []
 }
