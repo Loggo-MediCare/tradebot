@@ -26,6 +26,9 @@ backups/
 # PDFs
 *.pdf
 
+# Images
+*.png
+
 # Windows
 nul
 
