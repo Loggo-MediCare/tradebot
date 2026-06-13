@@ -1,0 +1,14 @@
+{
+  "symbol": "3033.TW",
+  "model_type": "Hybrid",
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 63.25,
+  "win_rate": 73.12850147883097,
+  "sharpe_ratio": 0.0,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-21 08:36:50",
+  "history": []
+}

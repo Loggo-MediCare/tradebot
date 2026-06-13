@@ -36,6 +36,7 @@ warnings.filterwarnings('ignore')
 # 导入模块
 from dynamic_signal_weights import DynamicWeightCalculator
 from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output, calculate_sentiment_score
+from tavily_news import print_tavily_news
 from candlestick_patterns import analyze_candlestick_patterns, format_pattern_output, get_pattern_score_adjustment
 from ma50_slope_analysis import calculate_ma50_slope, format_ma50_slope_output, get_ma50_slope_score_adjustment
 from model_accuracy_tracker import ModelAccuracyTracker, get_model_accuracy_display
@@ -46,6 +47,7 @@ from pattern_engine import get_pattern_signal
 from volume_surge_detector import get_volume_signal
 from breakout_long_red import get_breakout_long_red_signal
 from chart_visualizer import plot_candlestick, prepare_chart_data
+from backtest_utils import calculate_ppo_backtest_roi, print_ppo_action_line
 
 
 # ==========================================
@@ -429,6 +431,23 @@ def get_trading_signal():
     fmt.print_metric("布林帶", f"${bb_lower:.2f} - ${bb_upper:.2f}")
     fmt.print_metric("量比", f"{volume_ratio:.2f}x", vol_status)
 
+    # ── 動態止損 Trailing Stop = Highest Close(20日) - 1.5 × ATR₁₄ ──────────────
+    try:
+        _tr = pd.DataFrame({
+            'hl': df['high'] - df['low'],
+            'hc': (df['high'] - df['close'].shift(1)).abs(),
+            'lc': (df['low']  - df['close'].shift(1)).abs(),
+        }).max(axis=1)
+        atr_14        = float(_tr.rolling(14).mean().iloc[-1])
+        highest_close = float(df['close'].tail(20).max())
+        trailing_stop = highest_close - (1.5 * atr_14)
+    except Exception:
+        atr_14 = 0.0; highest_close = current_price; trailing_stop = current_price * 0.95
+    triggered = current_price < trailing_stop
+    warn = "⚠️ 已跌破，留意回撤" if triggered else "✅ 未觸發"
+    fmt.print_metric("ATR (14)", f"{atr_14:.2f}")
+    fmt.print_metric("動態止損(參考)", f"${trailing_stop:.2f}  {warn}", "非硬性出場，週MACD<0才是真正警示")
+
     if target_price and num_analysts > 0:
         upside = ((target_price - current_price) / current_price) * 100
         print()
@@ -486,6 +505,13 @@ def get_trading_signal():
         print("   ⚠️ 未找到相關新聞")
         sentiment_result = {'sentiment_score': 0.0, 'news_count': 0, 'sentiment_label': '中性'}
 
+    # ── Tavily 即時新聞 ─────────────────────────────────────────────────────
+    print("\n" + "=" * 80)
+    print("🌐 Alphabet (GOOG) 即時新聞  (Tavily REST API)")
+    print("=" * 80)
+    print_tavily_news('GOOG', 'Alphabet', max_results=5)
+
+
     # ========== AI 模型預測 ==========
     env = ImprovedTradingEnv(df)
     env.current_step = len(df) - 1
@@ -493,6 +519,8 @@ def get_trading_signal():
     
     action, _ = model.predict(obs, deterministic=True)
     action_value = float(action[0]) if isinstance(action, np.ndarray) else float(action)
+    # PPO backtest ROI
+    _ppo_roi, _bh_roi = calculate_ppo_backtest_roi(model, df)
 
     # ========== 生成交易建議 ==========
     weight_calc = DynamicWeightCalculator('GOOG')
@@ -501,6 +529,12 @@ def get_trading_signal():
 
     fmt.print_section("AI 交易信號")
     print(f"   模型輸出動作值: {action_value:+.4f}")
+
+    # Signal tracking variables – set in each branch, used for the final summary
+    final_signal_type = "HOLD"
+    final_signal_text = "持有 (HOLD)"
+    final_strength    = 0.0
+    final_score       = 50
 
     # ========== 處理買入信號 ==========
     if action_value > 0.1:
@@ -609,6 +643,10 @@ def get_trading_signal():
             recommendations.append(f"✓ {reason}")
 
         fmt.print_signal_box(signal_type, adjusted_buy_strength, buy_score, recommendations)
+        final_signal_type = signal_type
+        final_signal_text = signal_text
+        final_strength    = adjusted_buy_strength
+        final_score       = buy_score
 
         # 顯示警告
         if buy_warnings:
@@ -677,6 +715,10 @@ def get_trading_signal():
                 recommendations.append(f"✗ {r}")
 
         fmt.print_signal_box(signal_type, adjusted_strength, sell_score, recommendations)
+        final_signal_type = signal_type
+        final_signal_text = "賣出 (SELL)" if signal_type == "SELL" else "持有 (HOLD)"
+        final_strength    = adjusted_strength
+        final_score       = sell_score
 
     # ========== 處理持有信號 ==========
     else:
@@ -687,6 +729,10 @@ def get_trading_signal():
             f"關注壓力位: ${bb_upper:.2f}"
         ]
         fmt.print_signal_box(signal_type, 0, 50, recommendations)
+        final_signal_type = "HOLD"
+        final_signal_text = "持有 (HOLD)"
+        final_strength    = 0.0
+        final_score       = 50
 
     # ========== 加碼條件摘要 ==========
     add_checker.print_summary()
@@ -700,26 +746,26 @@ def get_trading_signal():
     print("   • 請根據自身風險承受能力做出決策")
     print("═" * 60)
 
-    # ========== 快速摘要 ==========
-    print("\n" + "╔" + "═" * 40 + "╗")
-    print("║        📱 快速摘要                   ║")
-    print("╠" + "═" * 40 + "╣")
-    print(f"║  股票: GOOG (Google)                 ║")
-    print(f"║  日期: {latest_date}                   ║")
-    print(f"║  價格: ${current_price:.2f}                        ║")
-    
-    if action_value > 0.1:
-        if add_checker.can_add_position():
-            print(f"║  信號: 🔥 可加碼 (三條件滿足)        ║")
-        else:
-            met = add_checker.get_conditions_met()
-            print(f"║  信號: 買入 ({met}/3條件滿足)        ║")
-    elif action_value < -0.1:
-        print(f"║  信號: 賣出/持有                     ║")
-    else:
-        print(f"║  信號: 持有                          ║")
-    
-    print("╚" + "═" * 40 + "╝")
+    # ========== 生成 K 線圖 (chart saved inside function like other scripts) ==========
+    try:
+        import yfinance as yf
+        chart_df = yf.Ticker('GOOG').history(period="6mo")
+        chart_df.columns = [c.lower() for c in chart_df.columns]
+        chart_path = "GOOG_chart.png"
+        plot_candlestick(chart_df, "GOOG (Google)", save_path=chart_path)
+    except Exception as e:
+        print(f"   圖表生成失敗: {e}")
+
+    # ========== 快速摘要 (standard format matching all other signal scripts) ==========
+    accuracy_display = get_model_accuracy_display('GOOG')
+    print("\n✅ 信号生成成功!")
+    print(f"\n📱 快速摘要:")
+    print(f"   股票: GOOG (Google)")
+    print(f"   日期: {latest_date}")
+    print(f"   价格: ${current_price:.2f}")
+    print(f"   信号: {final_signal_text}")
+    print(f"   强度: {final_strength:.2f}")
+    print(f"   {accuracy_display}")
 
     return {
         'date': latest_date,
@@ -739,28 +785,12 @@ def get_trading_signal():
 # ==========================================
 if __name__ == "__main__":
     result = get_trading_signal()
-    
-    if result:
-        print("\n✅ 信號生成成功!")
 
+    if result:
         if result['can_add_position']:
             print("\n🔥🔥🔥 重要: 三大加碼條件全部滿足! 🔥🔥🔥")
             print("   ✅ MA50 上升")
             print("   ✅ 結構型態完成")
             print("   ✅ 量能健康")
-
-        # 生成 K 線圖
-        try:
-            import yfinance as yf
-            print("\n📊 生成 K 線圖...")
-            stock = yf.Ticker('GOOG')
-            chart_df = stock.history(period="6mo")
-            chart_df.columns = [c.lower() for c in chart_df.columns]
-
-            chart_path = "GOOG_chart.png"
-            plot_candlestick(chart_df, "GOOG", save_path=chart_path)
-            print(f"   圖表已儲存: {chart_path}")
-        except Exception as e:
-            print(f"   圖表生成失敗: {e}")
     else:
         print("\n❌ 信號生成失敗")

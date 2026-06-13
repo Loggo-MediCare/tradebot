@@ -1,0 +1,14 @@
+{
+  "symbol": "2367.TW",
+  "model_type": "Hybrid",
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 66.42,
+  "win_rate": 92.32216754277547,
+  "sharpe_ratio": 2.5169,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-20 15:12:49",
+  "history": []
+}

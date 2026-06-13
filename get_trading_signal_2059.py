@@ -1,4 +1,4 @@
-"""
+﻿"""
 台股 2059 (川湖) AI 交易信号生成器
 ======================================
 使用训练好的 PPO 模型生成今日交易策略
@@ -25,6 +25,7 @@ warnings.filterwarnings('ignore')
 
 from dynamic_signal_weights import DynamicWeightCalculator
 from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+from tavily_news import print_tavily_news
 from candlestick_patterns import analyze_candlestick_patterns, format_pattern_output, get_pattern_score_adjustment
 from ma50_slope_analysis import calculate_ma50_slope, format_ma50_slope_output, get_ma50_slope_score_adjustment
 from model_accuracy_tracker import ModelAccuracyTracker, get_model_accuracy_display
@@ -36,6 +37,7 @@ from volume_surge_detector import get_volume_signal
 from breakout_long_red import get_breakout_long_red_signal
 from chart_visualizer import plot_candlestick
 from scipy.signal import find_peaks
+from backtest_utils import calculate_ppo_backtest_roi, print_ppo_action_line
 
 
 # ==========================================
@@ -233,7 +235,8 @@ def get_trading_signal():
     print(f"生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
     accuracy_display = get_model_accuracy_display('2059.TW')
-    print(f"模型準確度: {accuracy_display}")
+    if accuracy_display:
+        print(f"模型準確度: {accuracy_display}")
     print("=" * 80)
 
     model_path = r"C:\Users\Silvi\Projects\trading-bot\ppo_2059_tw_improved"
@@ -307,6 +310,8 @@ def get_trading_signal():
     print("\n🧠 AI 模型分析中...")
     action, _ = model.predict(obs, deterministic=True)
     action_value = float(action[0]) if isinstance(action, np.ndarray) else float(action)
+    # PPO backtest ROI
+    _ppo_roi, _bh_roi = calculate_ppo_backtest_roi(model, df)
 
     current_price = float(latest_data['close'])
     rsi = float(latest_data['rsi'])
@@ -361,6 +366,13 @@ def get_trading_signal():
         print("⚠️  未找到相关新闻，情绪分析不可用")
         sentiment_result = {'sentiment_score': 0.0, 'news_count': 0, 'sentiment_label': '中性'}
 
+    # ── Tavily 即時新聞 ─────────────────────────────────────────────────────
+    print("\n" + "=" * 80)
+    print("🌐 川湖 (2059.TW) 即時新聞  (Tavily REST API)")
+    print("=" * 80)
+    print_tavily_news('2059.TW', '川湖', max_results=5)
+
+
     print("\n" + "=" * 80)
     print("📊 蠟燭圖型態分析")
     print("=" * 80)
@@ -400,7 +412,7 @@ def get_trading_signal():
     print("\n" + "=" * 80)
     print("🎯 AI 交易信号")
     print("=" * 80)
-    print(f"模型输出动作值: {action_value:+.4f}")
+    print_ppo_action_line(action_value, _ppo_roi, _bh_roi)
 
     signal = "持有 (HOLD)"
     signal_emoji = "🟡"
@@ -718,3 +730,4 @@ if __name__ == "__main__":
         print(f"   {get_model_accuracy_display('2059.TW')}")
     else:
         print("\n❌ 信号生成失败")
+

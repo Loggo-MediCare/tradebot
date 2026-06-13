@@ -1,0 +1,53 @@
+Traceback (most recent call last):
+  File "C:\Users\Silvi\Projects\trading-bot\train_6585_taiwan_improved.py", line 16, in <module>
+    from stable_baselines3 import PPO
+  File "C:\Users\Silvi\Projects\trading-bot\.venv\Lib\site-packages\stable_baselines3\__init__.py", line 3, in <module>
+    from stable_baselines3.a2c import A2C
+  File "C:\Users\Silvi\Projects\trading-bot\.venv\Lib\site-packages\stable_baselines3\a2c\__init__.py", line 1, in <module>
+    from stable_baselines3.a2c.a2c import A2C
+  File "C:\Users\Silvi\Projects\trading-bot\.venv\Lib\site-packages\stable_baselines3\a2c\a2c.py", line 7, in <module>
+    from stable_baselines3.common.buffers import RolloutBuffer
+  File "C:\Users\Silvi\Projects\trading-bot\.venv\Lib\site-packages\stable_baselines3\common\buffers.py", line 17, in <module>
+    from stable_baselines3.common.utils import get_device
+  File "C:\Users\Silvi\Projects\trading-bot\.venv\Lib\site-packages\stable_baselines3\common\utils.py", line 22, in <module>
+    from torch.utils.tensorboard import SummaryWriter
+  File "C:\Users\Silvi\Projects\trading-bot\.venv\Lib\site-packages\torch\utils\tensorboard\__init__.py", line 12, in <module>
+    from .writer import FileWriter, SummaryWriter
+  File "C:\Users\Silvi\Projects\trading-bot\.venv\Lib\site-packages\torch\utils\tensorboard\writer.py", line 19, in <module>
+    from ._embedding import get_embedding_info, make_mat, make_sprite, make_tsv, write_pbtxt
+  File "C:\Users\Silvi\Projects\trading-bot\.venv\Lib\site-packages\torch\utils\tensorboard\_embedding.py", line 10, in <module>
+    _HAS_GFILE_JOIN = hasattr(tf.io.gfile, "join")
+                              ^^^^^
+  File "C:\Users\Silvi\Projects\trading-bot\.venv\Lib\site-packages\tensorboard\lazy.py", line 65, in __getattr__
+    return getattr(load_once(self), attr_name)
+                   ~~~~~~~~~^^^^^^
+  File "C:\Users\Silvi\Projects\trading-bot\.venv\Lib\site-packages\tensorboard\lazy.py", line 97, in wrapper
+    cache[arg] = f(arg)
+                 ~^^^^^
+  File "C:\Users\Silvi\Projects\trading-bot\.venv\Lib\site-packages\tensorboard\lazy.py", line 50, in load_once
+    module = load_fn()
+  File "C:\Users\Silvi\Projects\trading-bot\.venv\Lib\site-packages\tensorboard\compat\__init__.py", line 45, in tf
+    import tensorflow
+  File "C:\Users\Silvi\Projects\trading-bot\.venv\Lib\site-packages\tensorflow\__init__.py", line 468, in <module>
+    importlib.import_module("keras.src.optimizers")
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Silvi\AppData\Local\Programs\Python\Python313\Lib\importlib\__init__.py", line 88, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Silvi\Projects\trading-bot\.venv\Lib\site-packages\keras\__init__.py", line 7, in <module>
+    from keras import _tf_keras as _tf_keras
+  File "C:\Users\Silvi\Projects\trading-bot\.venv\Lib\site-packages\keras\_tf_keras\__init__.py", line 1, in <module>
+    from keras._tf_keras import keras
+  File "C:\Users\Silvi\Projects\trading-bot\.venv\Lib\site-packages\keras\_tf_keras\keras\__init__.py", line 34, in <module>
+    from keras._tf_keras.keras import preprocessing as preprocessing
+  File "C:\Users\Silvi\Projects\trading-bot\.venv\Lib\site-packages\keras\_tf_keras\keras\preprocessing\__init__.py", line 7, in <module>
+    from keras._tf_keras.keras.preprocessing import image as image
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1322, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 1262, in _find_spec
+  File "<frozen importlib._bootstrap_external>", line 1555, in find_spec
+  File "<frozen importlib._bootstrap_external>", line 1527, in _get_spec
+  File "<frozen importlib._bootstrap_external>", line 1514, in _path_importer_cache
+  File "<frozen importlib._bootstrap_external>", line 1490, in _path_hooks
+  File "<frozen importlib._bootstrap_external>", line 1716, in path_hook_for_FileFinder
+MemoryError

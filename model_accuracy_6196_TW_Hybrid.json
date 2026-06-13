@@ -1,0 +1,14 @@
+{
+  "symbol": "6196.TW",
+  "model_type": "Hybrid",
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 64.73,
+  "win_rate": 81.36,
+  "sharpe_ratio": null,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-06-01 10:54:38",
+  "history": []
+}

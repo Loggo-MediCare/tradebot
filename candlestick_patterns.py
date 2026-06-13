@@ -148,11 +148,14 @@ def analyze_candlestick_patterns(df, days=5):
         # === 3. 十字線 (Doji) - CIO 嚴格標準 ===
         # 條件：實體比例 < 10%
         if row['body_percent'] < 0.1:
-            if row['upper_shadow'] > row['lower_shadow'] * 2:
+            _tr = row['total_range'] + 0.001
+            # 墓碑十字：下影線 < 全幅5%（開收盤≈最低點），上影線長
+            if row['upper_shadow'] > row['lower_shadow'] * 2 and row['lower_shadow'] < _tr * 0.05:
                 doji_type = "墓碑十字"
                 signal = 'bearish'
                 patterns['bearish_signals'].append('墓碑十字')
-            elif row['lower_shadow'] > row['upper_shadow'] * 2:
+            # 蜻蜓十字：上影線 < 全幅5%（開收盤≈最高點），下影線長
+            elif row['lower_shadow'] > row['upper_shadow'] * 2 and row['upper_shadow'] < _tr * 0.05:
                 doji_type = "蜻蜓十字"
                 signal = 'bullish'
                 patterns['bullish_signals'].append('蜻蜓十字')
@@ -302,18 +305,35 @@ def format_pattern_output(patterns):
     # 綜合描述
     output.append(f"   {patterns['pattern_description']}")
 
+    # 建立型態 → 日期 對照表
+    pattern_dates = {}
+    for day in patterns.get('detailed_analysis', []):
+        day_date = day.get('date')
+        if day_date is not None:
+            try:
+                date_str = pd.to_datetime(day_date).strftime('%Y-%m-%d')
+            except Exception:
+                date_str = str(day_date)[:10]
+        else:
+            date_str = '?'
+        for p in day.get('patterns', []):
+            name = p.get('name', '')
+            pattern_dates.setdefault(name, []).append(date_str)
+
     # 詳細列表
     if patterns['bullish_signals']:
         output.append(f"\n   看漲訊號 ({len(patterns['bullish_signals'])}):")
-        for signal in set(patterns['bullish_signals']):
-            count = patterns['bullish_signals'].count(signal)
-            output.append(f"      • {signal} (出現{count}次)")
+        for signal in dict.fromkeys(patterns['bullish_signals']):
+            dates = pattern_dates.get(signal, [])
+            dates_str = ', '.join(dates) if dates else '?'
+            output.append(f"      • {signal} (出現{len(dates)}次，日期: {dates_str})")
 
     if patterns['bearish_signals']:
         output.append(f"\n   看跌訊號 ({len(patterns['bearish_signals'])}):")
-        for signal in set(patterns['bearish_signals']):
-            count = patterns['bearish_signals'].count(signal)
-            output.append(f"      • {signal} (出現{count}次)")
+        for signal in dict.fromkeys(patterns['bearish_signals']):
+            dates = pattern_dates.get(signal, [])
+            dates_str = ', '.join(dates) if dates else '?'
+            output.append(f"      • {signal} (出現{len(dates)}次，日期: {dates_str})")
 
     # 最近型態詳情
     if patterns['detailed_analysis']:

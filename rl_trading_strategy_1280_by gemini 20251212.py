@@ -31,6 +31,7 @@ import warnings
 
 # Suppress warnings for cleaner output
 warnings.filterwarnings('ignore')
+from roi_control import print_roi
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 # === Configuration ===
@@ -388,7 +389,7 @@ print("="*30)
 print(f"Initial Balance: $10,000.00")
 print(f"Final Balance:   ${env.balance:.2f}")
 print(f"Total Profit:    ${final_profit:.2f}")
-print(f"Return (ROI):    {(final_profit/10000)*100:.2f}%")
+print_roi(f"Return (ROI):    {(final_profit/10000)*100:.2f}%")
 print(f"Trades Executed: {len(env.trades_history)}")
 
 if final_profit >= target_profit:

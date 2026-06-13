@@ -1,0 +1,14 @@
+{
+  "symbol": "HTGC",
+  "model_type": "PPO",
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 66.8,
+  "win_rate": 59.2,
+  "sharpe_ratio": 2.1,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-06-02 00:32:28",
+  "history": []
+}

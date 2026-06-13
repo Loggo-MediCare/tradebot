@@ -1,0 +1,14 @@
+{
+  "symbol": "MCHP",
+  "model_type": "PPO",
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 84.72969764709472,
+  "win_rate": 60.0,
+  "sharpe_ratio": null,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-06-04 04:59:14",
+  "history": []
+}

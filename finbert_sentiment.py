@@ -67,6 +67,7 @@ SEARCH_MAPPING = {
     '2385.TW': ('2385.TW', 'Chicony'), # 群光
     '2408.TW': ('2408.TW', 'Nanya'),   # 南亚科
     '2449.TW': ('2449.TW', 'Kingmax'), # 京元电子
+    '2455.TW': ('2455.TW', 'Visual Photonics silicon photonics'), # 全新光電
     '3017.TW': ('3017.TW', 'Qisda'),   # 奇鋐
     '3653.TW': ('3653.TW', 'Chroma'),  # 健策
     '3715.TW': ('3715.TW', 'Epistar'), # 晶電

@@ -33,6 +33,7 @@ warnings.filterwarnings('ignore')
 
 from dynamic_signal_weights import DynamicWeightCalculator
 from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output, calculate_sentiment_score
+from tavily_news import print_tavily_news
 from candlestick_patterns import analyze_candlestick_patterns, format_pattern_output, get_pattern_score_adjustment
 from ma50_slope_analysis import calculate_ma50_slope, format_ma50_slope_output, get_ma50_slope_score_adjustment
 from model_accuracy_tracker import ModelAccuracyTracker, get_model_accuracy_display
@@ -43,6 +44,7 @@ from pattern_engine import get_pattern_signal
 from volume_surge_detector import get_volume_signal
 from breakout_long_red import get_breakout_long_red_signal
 from chart_visualizer import plot_candlestick
+from backtest_utils import calculate_ppo_backtest_roi, print_ppo_action_line
 
 
 class SignalFormatter:
@@ -379,6 +381,13 @@ def get_trading_signal():
         print("   ⚠️ 未找到相關新聞")
         sentiment_result = {'sentiment_score': 0.0, 'news_count': 0, 'sentiment_label': '中性'}
 
+    # ── Tavily 即時新聞 ─────────────────────────────────────────────────────
+    print("\n" + "=" * 80)
+    print("🌐 2417.TW (2417.TW) 即時新聞  (Tavily REST API)")
+    print("=" * 80)
+    print_tavily_news('2417.TW', '2417.TW', max_results=5)
+
+
     env = ImprovedTradingEnv(df)
     env.current_step = len(df) - 1
     obs = env._get_observation()
@@ -401,6 +410,8 @@ def get_trading_signal():
         return None
 
     action_value = float(np.mean(action_values))
+    _ppo_roi, _bh_roi = calculate_ppo_backtest_roi(
+        next((m for m in models if hasattr(m, "policy")), None), df)
     print(f"   {'─'*40}")
     print(f"   集成平均值: {action_value:+.4f}  ({len(action_values)} 個模型)")
 
@@ -409,7 +420,7 @@ def get_trading_signal():
     sell_weights = weight_calc.get_sell_weights()
 
     fmt.print_section("AI 交易信號")
-    print(f"   模型輸出動作值: {action_value:+.4f}")
+    print_ppo_action_line(action_value, _ppo_roi, _bh_roi)
 
     if action_value > 0.1:
         strength = action_value

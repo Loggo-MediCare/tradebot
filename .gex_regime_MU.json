@@ -1,0 +1,31 @@
+{
+  "history": [
+    {
+      "ts": "2026-05-30 04:34:03",
+      "net_gex": 1056.2,
+      "raw": "POSITIVE",
+      "confirmed": "NEUTRAL"
+    },
+    {
+      "ts": "2026-05-30 04:34:17",
+      "net_gex": 1050.1,
+      "raw": "POSITIVE",
+      "confirmed": "POSITIVE"
+    },
+    {
+      "ts": "2026-05-30 04:34:35",
+      "net_gex": 1048.5,
+      "raw": "POSITIVE",
+      "confirmed": "POSITIVE"
+    },
+    {
+      "ts": "2026-05-30 07:11:01",
+      "net_gex": 1199.6,
+      "raw": "POSITIVE",
+      "confirmed": "POSITIVE"
+    }
+  ],
+  "confirmed_regime": "POSITIVE",
+  "pending_regime": null,
+  "pending_count": 0
+}

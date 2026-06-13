@@ -1,0 +1,14 @@
+{
+  "symbol": "2355.TW",
+  "model_type": "DQN",
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 50.0,
+  "win_rate": null,
+  "sharpe_ratio": null,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-19 12:23:05",
+  "history": []
+}

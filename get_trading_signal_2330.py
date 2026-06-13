@@ -1,9 +1,7 @@
-
+﻿
 """
-美股 2330.TW (2330.TWle) AI 交易信号生成器 V2
-台股 2330.TW (南亞) AI 交易信号生成器 V2
+台股 2330.TW (台積電) AI 交易信号生成器 V2
 ========================================
-=======
 
 🔥 加碼條件判斷系統:
    ✅ MA50 上升趨勢
@@ -39,6 +37,7 @@ warnings.filterwarnings('ignore')
 # 导入模块
 from dynamic_signal_weights import DynamicWeightCalculator
 from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output, calculate_sentiment_score
+from tavily_news import print_tavily_news
 from candlestick_patterns import analyze_candlestick_patterns, format_pattern_output, get_pattern_score_adjustment
 from ma50_slope_analysis import calculate_ma50_slope, format_ma50_slope_output, get_ma50_slope_score_adjustment
 from model_accuracy_tracker import ModelAccuracyTracker, get_model_accuracy_display
@@ -49,6 +48,7 @@ from pattern_engine import get_pattern_signal
 from volume_surge_detector import get_volume_signal
 from breakout_long_red import get_breakout_long_red_signal
 from chart_visualizer import plot_candlestick
+from backtest_utils import calculate_ppo_backtest_roi, print_ppo_action_line
 class SignalFormatter:
     """統一的信號輸出格式化器"""
     
@@ -326,7 +326,6 @@ def add_technical_indicators(df):
 # ==========================================
 # 主要交易信號生成
 # ==========================================
-    fmt.print_header("🤖 美股 2330.TW (2330.TWle) AI 交易信号生成器 V2")
 def get_trading_signal():
     """生成今日交易信号 (V2 重寫版)"""
     
@@ -334,15 +333,12 @@ def get_trading_signal():
     add_checker = AddPositionChecker()
     
     # ========== 標題區 ==========
-    fmt.print_header("🤖 台股 2330.TW (南亞) AI " \
-    "交易信号生成器 V2")
-
-    fmt.print_header("🤖 美股 2330.TW (2330.TWle) AI 交易信号生成器 V2")
+    fmt.print_header("🤖 台股 2330.TW (台積電) AI 交易信号生成器 V2")
     print(f"   📅 生成時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"   📊 模型準確度: {get_model_accuracy_display('2330.TW')}")
 
     # ========== 載入模型 ==========
-    model_path = r"C:\Users\Silvi\Projects\trading-bot\ppo_1303_TW_improved"
+    model_path = r"C:\Users\Silvi\Projects\trading-bot\ppo_2330_tw_improved"
     
     try:
         model = PPO.load(model_path)
@@ -421,10 +417,9 @@ def get_trading_signal():
     ma_status = '[多頭]' if sma_10 > sma_30 else '[空頭]'
     vol_status = '[放量]' if volume_ratio > 1.5 else '[縮量]' if volume_ratio < 0.7 else '[正常]'
     
-    fmt.print_metric("股票代碼", "2330.TW (2330.TWle)")
-    fmt.print_metric("當前價格", f"${current_price:.2f}")
-    fmt.print_metric("股票代碼", "2330.TW (南亞)")
-    fmt.print_metric("當前價格", f"NT${current_price:.2f}")
+    fmt.print_metric("股票代碼", "2330.TW (台積電)")
+    print(f"   当前价格: NT${current_price:.2f}")
+    print(f"   今日成交量: {int(current_volume):,}")
     fmt.print_metric("數據日期", latest_date)
     print()
     fmt.print_section("MA50 趨勢分析")
@@ -434,8 +429,6 @@ def get_trading_signal():
 
     fmt.print_metric("RSI (14)", f"{rsi:.2f}", rsi_status)
     fmt.print_metric("MACD", f"{macd:.4f}", macd_status)
-    fmt.print_metric("SMA 10/30", f"${sma_10:.2f} / ${sma_30:.2f}", ma_status)
-    fmt.print_metric("布林帶", f"${bb_lower:.2f} - ${bb_upper:.2f}")
     fmt.print_metric("SMA 10/30", f"NT${sma_10:.2f} / NT${sma_30:.2f}", ma_status)
     fmt.print_metric("布林帶", f"NT${bb_lower:.2f} - NT${bb_upper:.2f}")
     fmt.print_metric("量比", f"{volume_ratio:.2f}x", vol_status)
@@ -503,6 +496,13 @@ def get_trading_signal():
         print("   ⚠️ 未找到相關新聞")
         sentiment_result = {'sentiment_score': 0.0, 'news_count': 0, 'sentiment_label': '中性'}
 
+    # ── Tavily 即時新聞 ─────────────────────────────────────────────────────
+    print("\n" + "=" * 80)
+    print("🌐 台積電 (2330.TW) 即時新聞  (Tavily REST API)")
+    print("=" * 80)
+    print_tavily_news('2330.TW', '台積電', max_results=5)
+
+
     # ========== AI 模型預測 ==========
     env = ImprovedTradingEnv(df)
     env.current_step = len(df) - 1
@@ -510,6 +510,8 @@ def get_trading_signal():
     
     action, _ = model.predict(obs, deterministic=True)
     action_value = float(action[0]) if isinstance(action, np.ndarray) else float(action)
+    # PPO backtest ROI
+    _ppo_roi, _bh_roi = calculate_ppo_backtest_roi(model, df)
 
     # ========== 生成交易建議 ==========
     weight_calc = DynamicWeightCalculator('2330.TW')
@@ -691,7 +693,6 @@ def get_trading_signal():
             recommendations.extend(reasons)
         else:
             recommendations.append(f"建議賣出比例: {suggested_sell_ratio}%")
-            recommendations.append(f"建議價格區間: ${suggested_price_low:.2f} - ${suggested_price_high:.2f}")
             recommendations.append(f"建議價格區間: NT${suggested_price_low:.2f} - NT${suggested_price_high:.2f}")
             for r in reasons[:3]:
                 recommendations.append(f"✗ {r}")
@@ -703,10 +704,8 @@ def get_trading_signal():
         signal_type = "HOLD"
         recommendations = [
             "市場觀望，暫不操作",
-            f"關注支撐位: ${bb_lower:.2f}",
-            f"關注壓力位: ${bb_upper:.2f}"
             f"關注支撐位: NT${bb_lower:.2f}",
-            f"關注壓力位: NT${bb_upper:.2f}"
+            f"關注壓力位: NT${bb_upper:.2f}",
         ]
         fmt.print_signal_box(signal_type, 0, 50, recommendations)
 
@@ -726,22 +725,20 @@ def get_trading_signal():
     print("\n" + "╔" + "═" * 40 + "╗")
     print("║        📱 快速摘要                   ║")
     print("╠" + "═" * 40 + "╣")
-    print(f"║  股票: 2330.TW (2330.TWle)                 ║")
-    print(f"║  股票: 2330.TW (南亞)                ║")
+    print(f"║  股票: 2330.TW (台積電)                 ║")
     print(f"║  日期: {latest_date}                   ║")
-    print(f"║  價格: ${current_price:.2f}                        ║")
     print(f"║  價格: NT${current_price:.2f}                     ║")
     
     if action_value > 0.1:
         if add_checker.can_add_position():
-            print(f"║  信號: 🔥 可加碼 (三條件滿足)        ║")
+            print(f"║  信号: 🔥 可加碼 (三條件滿足)        ║")
         else:
             met = add_checker.get_conditions_met()
-            print(f"║  信號: 買入 ({met}/3條件滿足)        ║")
+            print(f"║  信号: 買入 ({met}/3條件滿足)        ║")
     elif action_value < -0.1:
-        print(f"║  信號: 賣出/持有                     ║")
+        print(f"║  信号: 賣出/持有                     ║")
     else:
-        print(f"║  信號: 持有                          ║")
+        print(f"║  信号: 持有                          ║")
     
     print("╚" + "═" * 40 + "╝")
 

@@ -1,0 +1,14 @@
+{
+  "symbol": "8064.TWO",
+  "model_type": "Hybrid",
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 68.99,
+  "win_rate": 100,
+  "sharpe_ratio": null,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-20 13:01:32",
+  "history": []
+}

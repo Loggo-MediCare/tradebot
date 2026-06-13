@@ -1,0 +1,14 @@
+{
+  "symbol": "5328.TWO",
+  "model_type": "DQN",
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 50.0,
+  "win_rate": null,
+  "sharpe_ratio": null,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-21 11:16:38",
+  "history": []
+}

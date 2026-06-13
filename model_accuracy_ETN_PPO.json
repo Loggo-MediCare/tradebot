@@ -1,0 +1,14 @@
+{
+  "symbol": "ETN",
+  "model_type": "PPO",
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 66.7,
+  "win_rate": 66.1,
+  "sharpe_ratio": 1.61,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-06-02 00:32:28",
+  "history": []
+}

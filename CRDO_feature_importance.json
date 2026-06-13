@@ -1,6 +1,6 @@
 {
   "ticker": "CRDO",
-  "analysis_date": "2026-02-10",
+  "analysis_date": "2026-05-09",
   "model_accuracy": 0.4375,
   "feature_importance": {
     "MA_20": 0.06914550658289818,

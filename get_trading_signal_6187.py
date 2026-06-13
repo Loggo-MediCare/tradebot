@@ -28,6 +28,8 @@ from pattern_engine import get_pattern_signal
 from volume_surge_detector import get_volume_signal
 from breakout_long_red import get_breakout_long_red_signal
 from chart_visualizer import plot_candlestick
+from tavily_news import print_tavily_news
+from backtest_utils import calculate_ppo_backtest_roi, print_ppo_action_line
 
 TICKER = '6187.TWO'
 MODEL_PATH = r"C:\Users\Silvi\Projects\trading-bot\ppo_6187_two_improved"
@@ -182,6 +184,12 @@ def get_trading_signal():
     else:
         print("No news available")
         sentiment_result = {'sentiment_score': 0.0, 'news_count': 0}
+    # ── Tavily 即時新聞 ─────────────────────────────────────────────────────
+    print("\n" + "=" * 80)
+    print("🌐 6187.TWO (6187.TWO) 即時新聞  (Tavily REST API)")
+    print("=" * 80)
+    print_tavily_news('6187.TWO', '6187.TWO', max_results=5)
+
 
     # Candlestick
     print("\n" + "=" * 80)
@@ -211,6 +219,8 @@ def get_trading_signal():
     obs = env._get_observation()
     action, _ = model.predict(obs, deterministic=True)
     action_value = float(action[0]) if isinstance(action, np.ndarray) else float(action)
+    # PPO backtest ROI
+    _ppo_roi, _bh_roi = calculate_ppo_backtest_roi(model, df)
 
     print("\n" + "=" * 80)
     print("AI Trading Signal")

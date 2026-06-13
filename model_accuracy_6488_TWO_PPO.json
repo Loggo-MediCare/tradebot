@@ -1,0 +1,14 @@
+{
+  "symbol": "6488.TWO",
+  "model_type": "PPO",
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 68.1,
+  "win_rate": 63.0,
+  "sharpe_ratio": 1.14,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-06-02 00:32:28",
+  "history": []
+}

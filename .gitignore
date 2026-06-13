@@ -28,3 +28,6 @@ backups/
 
 # Windows
 nul
+
+#sub models
+FinRL-trained-model-repository/

@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "C:\Users\Silvi\Projects\trading-bot\train_3264_taiwan_improved.py", line 16, in <module>
+    from stable_baselines3 import PPO
+  File "C:\Users\Silvi\Projects\trading-bot\.venv\Lib\site-packages\stable_baselines3\__init__.py", line 3, in <module>
+    from stable_baselines3.a2c import A2C
+  File "C:\Users\Silvi\Projects\trading-bot\.venv\Lib\site-packages\stable_baselines3\a2c\__init__.py", line 1, in <module>
+    from stable_baselines3.a2c.a2c import A2C
+  File "C:\Users\Silvi\Projects\trading-bot\.venv\Lib\site-packages\stable_baselines3\a2c\a2c.py", line 3, in <module>
+    import torch as th
+  File "C:\Users\Silvi\Projects\trading-bot\.venv\Lib\site-packages\torch\__init__.py", line 281, in <module>
+    _load_dll_libraries()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\Silvi\Projects\trading-bot\.venv\Lib\site-packages\torch\__init__.py", line 264, in _load_dll_libraries
+    raise err
+OSError: [WinError 1114] 動態連結程式庫 (DLL) 初始化例行程序失敗。 Error loading "C:\Users\Silvi\Projects\trading-bot\.venv\Lib\site-packages\torch\lib\shm.dll" or one of its dependencies.

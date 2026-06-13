@@ -1,6 +1,6 @@
 {
   "ticker": "APLD",
-  "analysis_date": "2026-01-26",
+  "analysis_date": "2026-05-09",
   "model_accuracy": 0.536144578313253,
   "feature_importance": {
     "volatility": 0.08309122188520256,

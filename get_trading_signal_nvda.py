@@ -1,4 +1,4 @@
-"""
+﻿"""
 美股 NVDA (NVIDIA) AI 交易信号生成器
 ======================================
  信号: 卖出 (SELL) 20251222
@@ -60,6 +60,7 @@ from dynamic_signal_weights import DynamicWeightCalculator
 # 导入增强评分模块
 # 导入增强评分模块（含FinBERT情绪分析）
 from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+from tavily_news import print_tavily_news
 from candlestick_patterns import analyze_candlestick_patterns, format_pattern_output, get_pattern_score_adjustment
 # 导入MA50斜率分析模块
 from ma50_slope_analysis import calculate_ma50_slope, format_ma50_slope_output, get_ma50_slope_score_adjustment
@@ -73,6 +74,7 @@ from pattern_engine import get_pattern_signal
 from volume_surge_detector import get_volume_signal
 from breakout_long_red import get_breakout_long_red_signal
 from chart_visualizer import plot_candlestick
+from backtest_utils import calculate_ppo_backtest_roi, print_ppo_action_line
 
 
 # ==========================================
@@ -201,7 +203,8 @@ def get_trading_signal():
 
     # 顯示AI模型準確度
     accuracy_display = get_model_accuracy_display('NVDA')
-    print(f"模型準確度: {accuracy_display}")
+    if accuracy_display:
+        print(f"模型準確度: {accuracy_display}")
     print("=" * 80)
 
     # 1. 加载模型
@@ -286,6 +289,8 @@ def get_trading_signal():
     print("\n🧠 AI 模型分析中...")
     action, _ = model.predict(obs, deterministic=True)
     action_value = float(action[0]) if isinstance(action, np.ndarray) else float(action)
+    # PPO backtest ROI
+    _ppo_roi, _bh_roi = calculate_ppo_backtest_roi(model, df)
 
     # 6. 解析交易信号
     current_price = float(latest_data['close'])
@@ -319,6 +324,23 @@ def get_trading_signal():
     print(f"20日平均量:      {int(avg_volume_20):,}  {'[放量]' if volume_ratio > 1.5 else '[缩量]' if volume_ratio < 0.7 else '[正常]'}")
     print(f"量比:            {volume_ratio:.2f}x")
 
+    # ── 動態止損 Trailing Stop = Highest Close(20日) - 1.5 × ATR₁₄ ──────────────
+    try:
+        _tr = pd.DataFrame({
+            'hl': df['high'] - df['low'],
+            'hc': (df['high'] - df['close'].shift(1)).abs(),
+            'lc': (df['low']  - df['close'].shift(1)).abs(),
+        }).max(axis=1)
+        atr_14        = float(_tr.rolling(14).mean().iloc[-1])
+        highest_close = float(df['close'].tail(20).max())
+        trailing_stop = highest_close - (1.5 * atr_14)
+    except Exception:
+        atr_14 = 0.0; highest_close = current_price; trailing_stop = current_price * 0.95
+    print(f"ATR (14):        {atr_14:.2f}")
+    triggered = current_price < trailing_stop
+    warn = "⚠️ 已跌破，留意回撤" if triggered else "✅ 未觸發"
+    print(f"動態止損(參考): ${trailing_stop:.2f}  {warn}  [非硬性出場，週MACD<0才是真正警示]")
+
     # 7.1 計算MA50斜率
     print("\n" + "=" * 80)
     print("📈 MA50趨勢分析")
@@ -349,6 +371,13 @@ def get_trading_signal():
     else:
         print("⚠️  未找到相关新闻，情绪分析不可用")
         sentiment_result = {'sentiment_score': 0.0, 'news_count': 0, 'sentiment_label': '中性'}
+
+    # ── Tavily 即時新聞 ─────────────────────────────────────────────────────
+    print("\n" + "=" * 80)
+    print("🌐 NVIDIA (NVDA) 即時新聞  (Tavily REST API)")
+    print("=" * 80)
+    print_tavily_news('NVDA', 'NVIDIA', max_results=5)
+
 
 
 
@@ -405,7 +434,7 @@ def get_trading_signal():
     print("\n" + "=" * 80)
     print("🎯 AI 交易信号")
     print("=" * 80)
-    print(f"模型输出动作值: {action_value:+.4f}")
+    print_ppo_action_line(action_value, _ppo_roi, _bh_roi)
 
     if action_value > 0.1:
         signal = "买入 (BUY)"
@@ -837,3 +866,5 @@ if __name__ == "__main__":
         print(f"   {get_model_accuracy_display('NVDA')}")
     else:
         print("\n❌ 信号生成失败")
+
+

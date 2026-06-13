@@ -73,9 +73,9 @@ def download_data(ticker, days=365):
 
 
 #silvia-------------------------------------------------------------------------------------------------------------------
-ticker = 'AVGO'
+ticker = '2442.TW'
 #silvia--------------------------------------------------------------------------------------------------------------------
-df, prices = download_data(ticker, days=365)
+df, prices = download_data(ticker, days=1095)
 
 if df is None:
     sys.exit(1)
@@ -328,7 +328,7 @@ env = ImprovedTradingEnvironment(df_features, feature_cols)
 state_size = len(env.reset())
 agent = ImprovedDQNAgent(state_size)
 
-EPISODES = 20  # More episodes for better learning
+EPISODES = 300  # More episodes for better learning
 BATCH_SIZE = 64  # Larger batch
 
 print(f"\n🎯 Training Agent for {EPISODES} episodes...")
@@ -399,7 +399,11 @@ print("="*60)
 print(f"Initial Balance:  ${10000:,.2f}")
 print(f"Final Balance:    ${env.balance:,.2f}")
 print(f"Total Profit:     ${final_profit:,.2f}")
-print(f"ROI:              {roi:.2f}%")
+try:
+    from roi_control import print_roi
+except ImportError:
+    def print_roi(msg): print(msg)
+print_roi(f"ROI:              {roi:.2f}%")
 print(f"Trades Executed:  {len(env.trades_history)}")
 print(f"Action Counts:    Hold={action_counts[0]}, Buy={action_counts[1]}, Sell={action_counts[2]}")
 print("="*60)

@@ -138,13 +138,16 @@ try:
         doji_threshold = close_price * 0.002  # 0.2% 容差
         if row['Body_Size'] <= doji_threshold:
             doji_type = "標準十字"
+            _tr = row['Total_Range'] + 0.001
 
             # 細分十字線類型
-            if row['Upper_Shadow'] > row['Lower_Shadow'] * 2:
+            # 墓碑十字：下影線 < 全幅5%（開收盤≈最低點），上影線長
+            if row['Upper_Shadow'] > row['Lower_Shadow'] * 2 and row['Lower_Shadow'] < _tr * 0.05:
                 doji_type = "墓碑十字 (Gravestone Doji)"
                 implication = "看跌訊號，買方失守"
                 bearish_signals.append((date_str, doji_type, close_price))
-            elif row['Lower_Shadow'] > row['Upper_Shadow'] * 2:
+            # 蜻蜓十字：上影線 < 全幅5%（開收盤≈最高點），下影線長
+            elif row['Lower_Shadow'] > row['Upper_Shadow'] * 2 and row['Upper_Shadow'] < _tr * 0.05:
                 doji_type = "蜻蜓十字 (Dragonfly Doji)"
                 implication = "看漲訊號，賣方失守"
                 bullish_signals.append((date_str, doji_type, close_price))

@@ -1,6 +1,6 @@
 {
   "ticker": "1471.TW",
-  "analysis_date": "2026-01-28",
+  "analysis_date": "2026-05-09",
   "model_accuracy": 0.5766990291262136,
   "feature_importance": {
     "MA_200": 0.07169098693931064,

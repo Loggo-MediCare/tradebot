@@ -21,11 +21,18 @@ class ModelAccuracyTracker:
         symbol : str
             股票代號 (e.g., "2330.TW", "HTGC")
         model_type : str
-            模型類型 (預設: "PPO")
+            模型類型 ("PPO" or "DQN")
         """
         self.symbol = symbol
         self.model_type = model_type
-        self.accuracy_file = Path(__file__).parent / f"model_accuracy_{symbol.replace('.', '_')}.json"
+        base = Path(__file__).parent
+        # Per-model-type file; fall back to legacy file for PPO backward compat
+        typed_file  = base / f"model_accuracy_{symbol.replace('.', '_')}_{model_type}.json"
+        legacy_file = base / f"model_accuracy_{symbol.replace('.', '_')}.json"
+        if not typed_file.exists() and model_type == "PPO" and legacy_file.exists():
+            # Migrate legacy file to typed name on first access
+            legacy_file.rename(typed_file)
+        self.accuracy_file = typed_file
 
     def load_accuracy_data(self):
         """加載準確度數據"""
@@ -167,6 +174,24 @@ class ModelAccuracyTracker:
 
         return summary
 
+    @staticmethod
+    def roi_to_score(roi_pct):
+        """
+        Convert backtest ROI% to a 0-100 score using log scale.
+        ROI   0%  →  50
+        ROI  20%  →  60
+        ROI  50%  →  68
+        ROI 100%  →  75
+        ROI 200%  →  83
+        ROI 300%  →  88
+        ROI 500%  →  93
+        """
+        import math
+        if roi_pct is None: return None
+        if roi_pct <= -100: return 0
+        score = 50 + 25 * math.log10(1 + max(0, roi_pct) / 50 + 1)
+        return round(min(100, max(0, score)), 2)
+
     def _calculate_overall_score(self, summary):
         """計算綜合評分 (0-100)"""
         scores = []
@@ -272,6 +297,35 @@ class ModelAccuracyTracker:
         return "\n".join(output)
 
 
+def get_best_model_type(symbol):
+    """
+    Compare PPO vs DQN vs XGBoost overall_score.
+    Returns (winner, score_ppo, score_dqn, score_xgb).
+    """
+    scores = {}
+    for mtype in ('PPO', 'DQN', 'XGBoost', 'Hybrid'):
+        s = ModelAccuracyTracker(symbol, mtype).get_accuracy_summary().get('overall_score')
+        scores[mtype] = s
+
+    valid = {k: v for k, v in scores.items() if v is not None}
+    if not valid:
+        return 'PPO', None, None, None, None   # default
+    winner = max(valid, key=valid.get)
+    return winner, scores['PPO'], scores['DQN'], scores['XGBoost'], scores['Hybrid']
+
+
+def get_best_model_display(symbol):
+    """One-line summary: which model wins and scores for all 4."""
+    winner, s_ppo, s_dqn, s_xgb, s_hyb = get_best_model_type(symbol)
+    parts = []
+    if s_ppo is not None: parts.append(f"PPO:{s_ppo:.1f}")
+    if s_dqn is not None: parts.append(f"DQN:{s_dqn:.1f}")
+    if s_xgb is not None: parts.append(f"XGB:{s_xgb:.1f}")
+    if s_hyb is not None: parts.append(f"HYB:{s_hyb:.1f}")
+    scores_str = ' | '.join(parts) if parts else '尚無數據'
+    return f"🏆 最佳模型: {winner}  ({scores_str})"
+
+
 def get_model_accuracy_display(symbol):
     """
     快速獲取模型準確度顯示（用於signal scripts）
@@ -285,21 +339,20 @@ def get_model_accuracy_display(symbol):
     --------
     str: 格式化的準確度信息
     """
-    tracker = ModelAccuracyTracker(symbol)
-    summary = tracker.get_accuracy_summary()
+    winner, s_ppo, s_dqn, s_xgb, s_hyb = get_best_model_type(symbol)
+    scores = {'PPO': s_ppo, 'DQN': s_dqn, 'XGBoost': s_xgb, 'Hybrid': s_hyb}
+    best_score = scores.get(winner)
 
-    if summary['overall_score'] is not None:
-        score = summary['overall_score']
-        if score >= 70:
-            indicator = "🟢"
-        elif score >= 50:
-            indicator = "🟡"
-        else:
-            indicator = "🔴"
-
-        return f"{indicator} AI準確度: {score:.1f}/100"
+    if best_score is not None:
+        indicator = "🟢" if best_score >= 70 else ("🟡" if best_score >= 50 else "🔴")
+        parts = []
+        if s_ppo is not None: parts.append(f"PPO:{s_ppo:.1f}")
+        if s_dqn is not None: parts.append(f"DQN:{s_dqn:.1f}")
+        if s_xgb is not None: parts.append(f"XGB:{s_xgb:.1f}")
+        if s_hyb is not None: parts.append(f"HYB:{s_hyb:.1f}")
+        return f"{indicator} AI準確度: {best_score:.1f}/100 [🏆{winner}] ({' | '.join(parts)})"
     else:
-        return "⚪ AI準確度: 尚無數據"
+        return None
 
 
 # 使用範例

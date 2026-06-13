@@ -1,4 +1,4 @@
-"""
+﻿"""
 台股 2881 (富邦金) AI 交易信号生成器
 ======================================
 使用训练好的 PPO 模型生成今日交易策略
@@ -41,6 +41,7 @@ from pattern_engine import get_pattern_signal
 from volume_surge_detector import get_volume_signal
 from breakout_long_red import get_breakout_long_red_signal
 from chart_visualizer import plot_candlestick
+from backtest_utils import calculate_ppo_backtest_roi, print_ppo_action_line
 
 
 # ==========================================
@@ -170,6 +171,115 @@ def peg_volume_ma_decision(
     return current_signal, None
 
 # ==========================================
+# Tavily 新聞搜尋 (REST API)
+# ==========================================
+TAVILY_API_KEY  = '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'
+TAVILY_ENDPOINT = 'https://api.tavily.com/search'
+
+_TW_NEWS_DOMAINS = [
+    'udn.com', 'money.udn.com', 'moneydj.com',
+    'news.cnyes.com', 'cnyes.com', 'stockfeel.com.tw',
+    'tw.stock.yahoo.com',
+]
+
+def fetch_news_tavily(query: str, max_results: int = 5,
+                      include_domains: list = None, search_depth: str = 'advanced') -> list:
+    import urllib.request, urllib.error, json as _json
+    try:
+        payload = {
+            'api_key':        TAVILY_API_KEY,
+            'query':          query,
+            'search_depth':   search_depth,
+            'max_results':    max_results,
+            'include_answer': False,
+            'include_images': False,
+        }
+        if include_domains:
+            payload['include_domains'] = include_domains
+        req = urllib.request.Request(
+            TAVILY_ENDPOINT,
+            data=_json.dumps(payload).encode('utf-8'),
+            headers={'Content-Type': 'application/json'},
+            method='POST',
+        )
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            data = _json.loads(resp.read().decode('utf-8'))
+            return data.get('results', [])
+    except urllib.error.HTTPError as e:
+        body = ''
+        try: body = e.read().decode('utf-8')[:200]
+        except Exception: pass
+        print(f"  ⚠️  Tavily HTTP {e.code}: {body}")
+        return []
+    except Exception as e:
+        print(f"  ⚠️  Tavily 搜尋失敗: {e}")
+        return []
+
+
+def print_tavily_news_2881(max_results: int = 5):
+    from datetime import datetime as _dt
+    queries = [
+        '富邦金控 2881 台股 新聞',
+        '富邦金 股價 今日',
+        '2881 富邦 金控 法人',
+    ]
+    print(f"\n{'─'*70}")
+    print(f"  📰 2881 富邦金 最新新聞  (Tavily · {_dt.now().strftime('%Y-%m-%d %H:%M')})")
+    print(f"{'─'*70}")
+
+    seen_urls = set()
+    all_articles = []
+    for q in queries:
+        for art in fetch_news_tavily(q, max_results=max_results,
+                                     include_domains=_TW_NEWS_DOMAINS,
+                                     search_depth='advanced'):
+            url = art.get('url', '')
+            if url and url not in seen_urls:
+                seen_urls.add(url)
+                all_articles.append(art)
+        if len(all_articles) >= max_results:
+            break
+
+    if not all_articles:
+        print("  （無搜尋結果）")
+        return 0.0
+
+    BULLISH_WORDS = ['上漲','漲','買進','買入','強','好','利多','突破','成長','獲利','增益','升',
+                     'buy','bullish','surge','growth','profit','strong','beat','positive']
+    BEARISH_WORDS = ['下跌','跌','賣出','空','弱','差','利空','跌破','虧損','衰退','降',
+                     'sell','bearish','drop','loss','weak','miss','negative','decline']
+
+    pos = neg = 0
+    for art in all_articles[:max_results]:
+        title   = (art.get('title')   or '').lower()
+        content = (art.get('content') or '').lower()
+        text    = title + ' ' + content
+        pos += sum(1 for w in BULLISH_WORDS if w in text)
+        neg += sum(1 for w in BEARISH_WORDS if w in text)
+        t   = (art.get('title') or '無標題').strip()[:72]
+        url = (art.get('url')   or '').strip()
+        pub = (art.get('published_date') or '')[:10]
+        pub_str = f'  [{pub}]' if pub else ''
+        print(f"\n  • {t}{pub_str}")
+        if url:
+            print(f"    🔗 {url}")
+
+    total = pos + neg
+    if total == 0:
+        sentiment_score = 0.0
+        sentiment_label = '中性 😐'
+    elif pos > neg:
+        sentiment_score = pos / total
+        sentiment_label = f'偏多 📈 ({pos}正/{neg}負)'
+    else:
+        sentiment_score = -(neg / total)
+        sentiment_label = f'偏空 📉 ({neg}負/{pos}正)'
+
+    print(f"\n  🧠 新聞情緒簡評: {sentiment_label}  (基於關鍵字統計)")
+    print(f"{'─'*70}")
+    return sentiment_score
+
+# ==========================================
 # 技术指标计算
 # ==========================================
 def add_technical_indicators(df):
@@ -208,7 +318,8 @@ def get_trading_signal():
 
     # 顯示AI模型準確度
     accuracy_display = get_model_accuracy_display('2881.TW')
-    print(f"模型準確度: {accuracy_display}")
+    if accuracy_display:
+        print(f"模型準確度: {accuracy_display}")
     print("=" * 80)
 
     # 1. 加载模型
@@ -308,6 +419,8 @@ def get_trading_signal():
     print("\n🧠 AI 模型分析中...")
     action, _ = model.predict(obs, deterministic=True)
     action_value = float(action[0]) if isinstance(action, np.ndarray) else float(action)
+    # PPO backtest ROI
+    _ppo_roi, _bh_roi = calculate_ppo_backtest_roi(model, df)
 
     # 6. 解析交易信号
     current_price = float(latest_data['close'])
@@ -373,6 +486,12 @@ def get_trading_signal():
         print("⚠️  未找到相关新闻，情绪分析不可用")
         sentiment_result = {'sentiment_score': 0.0, 'news_count': 0, 'sentiment_label': '中性'}
 
+    # ── Tavily 即時新聞 ────────────────────────────────────────────────────────
+    print("\n" + "=" * 80)
+    print("🌐 富邦金即時新聞  (Tavily REST API)")
+    print("=" * 80)
+    print_tavily_news_2881(max_results=5)
+
     # 蠟燭圖型態分析
     print("\n" + "=" * 80)
     print("📊 蠟燭圖型態分析")
@@ -425,7 +544,7 @@ def get_trading_signal():
     print("\n" + "=" * 80)
     print("🎯 AI 交易信号")
     print("=" * 80)
-    print(f"模型输出动作值: {action_value:+.4f}")
+    print_ppo_action_line(action_value, _ppo_roi, _bh_roi)
 
     # 初始化变量
     signal = "持有 (HOLD)"

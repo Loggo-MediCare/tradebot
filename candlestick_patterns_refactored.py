@@ -127,11 +127,14 @@ def analyze_candlestick_patterns(df, days=5):
         doji_threshold = row['close'] * 0.0015
         if row['body_size'] <= doji_threshold:
             signal = 'neutral'
-            if row['upper_shadow'] > row['lower_shadow'] * 2:
+            _tr = row['total_range'] + 0.001
+            # 墓碑十字：下影線 < 全幅5%（開收盤≈最低點），上影線長
+            if row['upper_shadow'] > row['lower_shadow'] * 2 and row['lower_shadow'] < _tr * 0.05:
                 doji_type = "墓碑十字"
                 signal = 'bearish'
                 patterns['bearish_signals'].append('墓碑十字')
-            elif row['lower_shadow'] > row['upper_shadow'] * 2:
+            # 蜻蜓十字：上影線 < 全幅5%（開收盤≈最高點），下影線長
+            elif row['lower_shadow'] > row['upper_shadow'] * 2 and row['upper_shadow'] < _tr * 0.05:
                 doji_type = "蜻蜓十字"
                 signal = 'bullish'
                 patterns['bullish_signals'].append('蜻蜓十字')

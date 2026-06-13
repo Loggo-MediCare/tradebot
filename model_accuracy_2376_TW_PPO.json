@@ -1,0 +1,14 @@
+{
+  "symbol": "2376.TW",
+  "model_type": "PPO",
+  "training_accuracy": 79.4,
+  "validation_accuracy": 73.4,
+  "backtest_accuracy": 100,
+  "win_rate": 60.0,
+  "sharpe_ratio": 1.85,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-19 17:41:08",
+  "history": []
+}

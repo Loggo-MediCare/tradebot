@@ -29,6 +29,7 @@ from sklearn.preprocessing import MinMaxScaler
 import warnings
 
 warnings.filterwarnings('ignore')
+from roi_control import print_roi
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 plt.style.use('ggplot')
@@ -391,7 +392,7 @@ print("="*60)
 print(f"初始資金:    ${100000:,.2f}")
 print(f"最終資金:    ${env.balance:,.2f}")
 print(f"總利潤:      ${final_profit:,.2f}")
-print(f"投資回報率:  {roi:.2f}%")
+print_roi(f"投資回報率:  {roi:.2f}%")
 print(f"執行交易:    {len(env.trades_history)} 筆")
 print(f"動作分布:    Hold={action_counts[0]}, Buy={action_counts[1]}, Sell={action_counts[2]}")
 print("="*60)

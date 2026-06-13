@@ -1,5 +1,5 @@
 """
-美股 1303.TW (1303.TWle) AI 交易信号生成器 V2
+台股 1303.TW (南亞) AI 交易信号生成器 V2
 ========================================
 
 🔥 加碼條件判斷系統:
@@ -36,6 +36,7 @@ warnings.filterwarnings('ignore')
 # 导入模块
 from dynamic_signal_weights import DynamicWeightCalculator
 from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output, calculate_sentiment_score
+from tavily_news import print_tavily_news
 from candlestick_patterns import analyze_candlestick_patterns, format_pattern_output, get_pattern_score_adjustment
 from ma50_slope_analysis import calculate_ma50_slope, format_ma50_slope_output, get_ma50_slope_score_adjustment
 from model_accuracy_tracker import ModelAccuracyTracker, get_model_accuracy_display
@@ -46,6 +47,7 @@ from pattern_engine import get_pattern_signal
 from volume_surge_detector import get_volume_signal
 from breakout_long_red import get_breakout_long_red_signal
 from chart_visualizer import plot_candlestick
+from backtest_utils import calculate_ppo_backtest_roi, print_ppo_action_line
 
 
 # ==========================================
@@ -335,12 +337,12 @@ def get_trading_signal():
     add_checker = AddPositionChecker()
     
     # ========== 標題區 ==========
-    fmt.print_header("🤖 美股 1303.TW (1303.TWle) AI 交易信号生成器 V2")
+    fmt.print_header("🤖 台股 1303.TW (南亞) AI 交易信号生成器 V2")
     print(f"   📅 生成時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"   📊 模型準確度: {get_model_accuracy_display('1303.TW')}")
 
     # ========== 載入模型 ==========
-    model_path = r"C:\Users\Silvi\Projects\trading-bot\ppo_1303_TW_improved"
+    model_path = r"C:\Users\Silvi\Projects\trading-bot\ppo_1303_tw_improved"
     
     try:
         model = PPO.load(model_path)
@@ -419,7 +421,7 @@ def get_trading_signal():
     ma_status = '[多頭]' if sma_10 > sma_30 else '[空頭]'
     vol_status = '[放量]' if volume_ratio > 1.5 else '[縮量]' if volume_ratio < 0.7 else '[正常]'
     
-    fmt.print_metric("股票代碼", "1303.TW (1303.TWle)")
+    fmt.print_metric("股票代碼", "1303.TW (南亞)")
     fmt.print_metric("當前價格", f"${current_price:.2f}")
     fmt.print_metric("數據日期", latest_date)
     print()
@@ -486,6 +488,13 @@ def get_trading_signal():
         print("   ⚠️ 未找到相關新聞")
         sentiment_result = {'sentiment_score': 0.0, 'news_count': 0, 'sentiment_label': '中性'}
 
+    # ── Tavily 即時新聞 ─────────────────────────────────────────────────────
+    print("\n" + "=" * 80)
+    print("🌐 南亞 (1303.TW) 即時新聞  (Tavily REST API)")
+    print("=" * 80)
+    print_tavily_news('1303.TW', '南亞', max_results=5)
+
+
     # ========== AI 模型預測 ==========
     env = ImprovedTradingEnv(df)
     env.current_step = len(df) - 1
@@ -493,6 +502,8 @@ def get_trading_signal():
     
     action, _ = model.predict(obs, deterministic=True)
     action_value = float(action[0]) if isinstance(action, np.ndarray) else float(action)
+    # PPO backtest ROI
+    _ppo_roi, _bh_roi = calculate_ppo_backtest_roi(model, df)
 
     # ========== 生成交易建議 ==========
     weight_calc = DynamicWeightCalculator('1303.TW')
@@ -704,7 +715,7 @@ def get_trading_signal():
     print("\n" + "╔" + "═" * 40 + "╗")
     print("║        📱 快速摘要                   ║")
     print("╠" + "═" * 40 + "╣")
-    print(f"║  股票: 1303.TW (1303.TWle)                 ║")
+    print(f"║  股票: 1303.TW (南亞)                       ║")
     print(f"║  日期: {latest_date}                   ║")
     print(f"║  價格: ${current_price:.2f}                        ║")
     

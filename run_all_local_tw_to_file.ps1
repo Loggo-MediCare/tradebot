@@ -11,7 +11,7 @@ Get-Hello
 
 $pythonPath = "C:\Users\Silvi\Projects\trading-bot\.venv\Scripts\python.exe"
 $scriptPath = "C:\Users\Silvi\Projects\trading-bot\run_all_local_tw.py"
-Set-Location "C:\Users\Silvi\Projects\trading-bot"
+Set-Location "C:\Users\Silvi\Projects\trading-bot"                      
 # 生成包含日期和时间的文件名 (格式: taiwan_signals_output_202601061900.txt)
 $timestamp = Get-Date -Format "yyyyMMddHHmm"
 $outputFile = "C:\Users\Silvi\Projects\trading-bot\taiwan_signals_output_$timestamp.txt"

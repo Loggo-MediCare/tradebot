@@ -1,0 +1,14 @@
+{
+  "symbol": "2851.TW",
+  "model_type": "Hybrid",
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 61.15,
+  "win_rate": 63.2275,
+  "sharpe_ratio": 2.6173,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-20 18:01:09",
+  "history": []
+}

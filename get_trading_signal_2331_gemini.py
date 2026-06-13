@@ -64,6 +64,10 @@ except ImportError:
 try:
     from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
 except ImportError:
+    pass
+from tavily_news import print_tavily_news
+from backtest_utils import calculate_ppo_backtest_roi, print_ppo_action_line
+try:
     print("⚠️  警告: 無法載入 finbert_enhanced_scoring，使用簡化評分")
     
     def calculate_enhanced_buy_score_with_sentiment(rsi, macd, macd_signal, sma_10, sma_30, current_price, bb_upper, bb_lower, volume_ratio, ai_action, buy_weights, symbol):
@@ -419,6 +423,8 @@ def get_trading_signal():
         obs = venv.reset()
         action, _ = model.predict(obs, deterministic=True)
         action_value = float(action[0])
+    # PPO backtest ROI
+    _ppo_roi, _bh_roi = calculate_ppo_backtest_roi(model, df)
         print(f"\n🧠 AI 預測動作值: {action_value:+.4f}")
     except Exception as e:
         print(f"❌ 預測失敗: {e}")
@@ -501,7 +507,13 @@ def get_trading_signal():
         print("簡化情緒分析系統")
         print("   情緒評分: 0.0 (中性)")
         sentiment_result = {'sentiment_score': 0.0, 'news_count': 0, 'sentiment_label': '中性'}
-    
+
+    # ── Tavily 即時新聞 ─────────────────────────────────────────────────────
+    print("\n" + "=" * 80)
+    print("🌐 精英 (2331.TW) 即時新聞  (Tavily REST API)")
+    print("=" * 80)
+    print_tavily_news('2331.TW', '精英', max_results=5)
+
     # 9. 蠟燭圖型態分析
     print("\n" + "=" * 80)
     print("📊 蠟燭圖型態分析")

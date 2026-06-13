@@ -1,0 +1,88 @@
+﻿Retrain All TW - 202605091212 | Total: 152
+[1/152] train_1101_taiwan_improved.py - 12:12:51
+  OK
+[2/152] train_1301_taiwan_improved.py - 12:14:24
+  OK
+[3/152] train_1303_taiwan_improved.py - 12:16:05
+  OK
+[4/152] train_1326_taiwan_improved.py - 12:17:46
+  OK
+[5/152] train_1425_taiwan_improved.py - 12:19:26
+  FAIL (exit 1)
+[6/152] train_1471_taiwan_improved.py - 12:19:33
+  OK
+[7/152] train_1519_taiwan_improved.py - 12:21:32
+  FAIL (exit 1)
+[8/152] train_1605_taiwan_improved.py - 12:21:32
+  OK
+[9/152] train_1815_taiwan_improved.py - 12:23:36
+  FAIL (exit 1)
+[10/152] train_2059_taiwan_improved.py - 12:23:44
+  OK
+[11/152] train_2301_taiwan_improved.py - 12:25:50
+  OK
+[12/152] train_2303_taiwan_improved.py - 12:27:55
+  OK
+[13/152] train_2308_taiwan_improved.py - 12:29:51
+  OK
+[14/152] train_2313_taiwan_improved.py - 12:31:37
+  OK
+[15/152] train_2317_taiwan_improved.py - 12:33:24
+  OK
+[16/152] train_2327_taiwan_improved.py - 12:35:10
+  OK
+[17/152] train_2330_taiwan_improved.py - 12:36:57
+  FAIL (exit 1)
+[18/152] train_2337_taiwan_improved.py - 12:36:57
+  FAIL (exit 1)
+[19/152] train_2344_taiwan_improved.py - 12:37:03
+  FAIL (exit 1)
+[20/152] train_2345_taiwan_improved.py - 12:37:10
+  OK
+[21/152] train_2360_taiwan_improved.py - 12:38:54
+  OK
+[22/152] train_2363_taiwan_improved.py - 12:40:42
+  OK
+[23/152] train_2367_taiwan_improved.py - 12:42:31
+  OK
+[24/152] train_2368_taiwan_improved.py - 12:44:15
+  OK
+[25/152] train_2376_taiwan_improved.py - 12:46:32
+  OK
+[26/152] train_2382_taiwan_improved.py - 12:48:19
+  OK
+[27/152] train_2383_taiwan_improved.py - 12:49:42
+  OK
+[28/152] train_2385_taiwan_improved.py - 12:51:08
+  OK
+[29/152] train_2408_taiwan_improved.py - 12:53:34
+  FAIL (exit 1)
+[30/152] train_2409_taiwan_improved.py - 12:53:51
+  OK
+[31/152] train_2417_taiwan_improved.py - 12:58:49
+  OK
+[32/152] train_2431_taiwan_improved.py - 13:03:45
+  OK
+[33/152] train_2449_taiwan_improved.py - 13:08:52
+  OK
+[34/152] train_2451_taiwan_improved.py - 13:13:53
+  OK
+[35/152] train_2454_taiwan_improved.py - 13:20:55
+  OK
+[36/152] train_2478_taiwan_improved.py - 13:25:59
+  FAIL (exit 1)
+[37/152] train_2484_taiwan_improved.py - 13:26:20
+  OK
+[38/152] train_2492_taiwan_improved.py - 13:28:56
+  OK
+[39/152] train_2603_taiwan_improved.py - 13:32:59
+  OK
+[40/152] train_2609_taiwan_improved.py - 13:38:06
+  OK
+[41/152] train_2610_taiwan_improved.py - 13:43:04
+  OK
+[42/152] train_2618_taiwan_improved.py - 13:48:04
+  OK
+[43/152] train_2634_taiwan_improved.py - 13:53:06
+  OK
+[44/152] train_2645_taiwan_improved.py - 13:57:15

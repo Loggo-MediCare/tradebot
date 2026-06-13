@@ -156,7 +156,17 @@
       "Bash(powershell:*)",
       "Bash(.venv\\\\Scripts\\\\python.exe:*)",
       "Bash(.\\\\.venv\\\\Scripts\\\\python.exe:*)",
-      "Bash(.venvScriptspython.exe train_crdo_improved.py)"
+      "Bash(.venvScriptspython.exe train_crdo_improved.py)",
+      "PowerShell(Select-String -Path \"C:\\\\Users\\\\Silvi\\\\Projects\\\\trading-bot\\\\taiwan_signals_output_202606022230.txt\" -Pattern \"2330|台積電|南亞\" | Select-Object -Skip 1 -First 30 | ForEach-Object { $_.LineNumber.ToString\\(\\) + \": \" + $_.Line })",
+      "PowerShell(cd \"C:\\\\Users\\\\Silvi\\\\Projects\\\\trading-bot\"; .\\\\.venv\\\\Scripts\\\\python.exe get_trading_signal_avgo.py 2>$null | Select-String \"价格|信号|強度|准确|RSI|MACD Signal|量比|目標價|快速摘要|AI準確\" | Select-Object -First 20 | ForEach-Object { $_.Line })",
+      "PowerShell(cd \"C:\\\\Users\\\\Silvi\\\\Projects\\\\trading-bot\"; .\\\\.venv\\\\Scripts\\\\python.exe get_trading_signal_sndk.py 2>$null | Select-String \"信号|雙重|買入評分|回購|建议买入|AI 模型强度|技术指标评分|止損|目標|快速摘要|价格:|强度:\" | ForEach-Object { $_.Line })",
+      "PowerShell(cd \"C:\\\\Users\\\\Silvi\\\\Projects\\\\trading-bot\"; .\\\\.venv\\\\Scripts\\\\python.exe get_trading_signal_nvda.py 2>$null | Select-String \"ATR|動態止損|量比\" | ForEach-Object { $_.Line })",
+      "PowerShell(cd \"C:\\\\Users\\\\Silvi\\\\Projects\\\\trading-bot\"; .\\\\.venv\\\\Scripts\\\\python.exe get_trading_signal_mu.py 2>$null | Select-String \"信号:|技术指标评分|Form 4|CEO|建议买入|動態止損|价格:\" | ForEach-Object { $_.Line })",
+      "Bash(tail -60 sig_intc_run.txt)",
+      "Bash(tail -60 sig_mrvl_run.txt)",
+      "PowerShell(\\(Get-Process python -ErrorAction SilentlyContinue\\).Count)",
+      "Bash(ls train_3046* train_5285* train_6834*)",
+      "Bash(Get-ChildItem \"train_3046*\",\"train_5285*\",\"train_6834*\" -ErrorAction SilentlyContinue)"
     ],
     "deny": [],
     "ask": []

@@ -24,6 +24,7 @@ from sklearn.preprocessing import MinMaxScaler
 import warnings
 
 warnings.filterwarnings('ignore')
+from roi_control import print_roi
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 print("🔄 載入改進版防過擬合模型...")
@@ -225,7 +226,7 @@ print("="*60)
 print(f"初始資金:    ${simulator.initial_balance:,.2f}")
 print(f"最終資金:    ${simulator.balance:,.2f}")
 print(f"總利潤:      ${final_profit:,.2f}")
-print(f"投資回報率:  {roi:.2f}%")
+print_roi(f"投資回報率:  {roi:.2f}%")
 print(f"執行交易:    {len(simulator.trades)} 筆")
 print(f"動作分布:    Hold={action_counts[0]}, Buy={action_counts[1]}, Sell={action_counts[2]}")
 print("="*60)

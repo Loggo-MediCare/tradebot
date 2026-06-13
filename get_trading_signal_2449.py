@@ -1,4 +1,4 @@
-"""
+﻿"""
 台股 2449 (京元電子) AI 交易信号生成器
 ======================================
 使用训练好的 PPO 模型生成今日交易策略
@@ -28,6 +28,7 @@ warnings.filterwarnings('ignore')
 from dynamic_signal_weights import DynamicWeightCalculator
 # 导入增强评分模块（含FinBERT情绪分析）
 from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+from tavily_news import print_tavily_news
 from candlestick_patterns import analyze_candlestick_patterns, format_pattern_output, get_pattern_score_adjustment
 # 导入MA50斜率分析模块
 from ma50_slope_analysis import calculate_ma50_slope, format_ma50_slope_output, get_ma50_slope_score_adjustment
@@ -41,6 +42,7 @@ from pattern_engine import get_pattern_signal
 from volume_surge_detector import get_volume_signal
 from breakout_long_red import get_breakout_long_red_signal
 from chart_visualizer import plot_candlestick
+from backtest_utils import calculate_ppo_backtest_roi, print_ppo_action_line
 
 
 # ==========================================
@@ -168,7 +170,8 @@ def get_trading_signal():
 
     # 顯示AI模型準確度
     accuracy_display = get_model_accuracy_display('2449.TW')
-    print(f"模型準確度: {accuracy_display}")
+    if accuracy_display:
+        print(f"模型準確度: {accuracy_display}")
     print("=" * 80)
 
     # 1. 加载模型
@@ -250,6 +253,8 @@ def get_trading_signal():
     print("\n🧠 AI 模型分析中...")
     action, _ = model.predict(obs, deterministic=True)
     action_value = float(action[0]) if isinstance(action, np.ndarray) else float(action)
+    # PPO backtest ROI
+    _ppo_roi, _bh_roi = calculate_ppo_backtest_roi(model, df)
 
     # 6. 解析交易信号
     current_price = float(latest_data['close'])
@@ -314,6 +319,13 @@ def get_trading_signal():
         print("⚠️  未找到相关新闻，情绪分析不可用")
         sentiment_result = {'sentiment_score': 0.0, 'news_count': 0, 'sentiment_label': '中性'}
 
+    # ── Tavily 即時新聞 ─────────────────────────────────────────────────────
+    print("\n" + "=" * 80)
+    print("🌐 京元電子 (2449.TW) 即時新聞  (Tavily REST API)")
+    print("=" * 80)
+    print_tavily_news('2449.TW', '京元電子', max_results=5)
+
+
 
 
     # 蠟燭圖型態分析
@@ -368,7 +380,7 @@ def get_trading_signal():
     print("\n" + "=" * 80)
     print("🎯 AI 交易信号")
     print("=" * 80)
-    print(f"模型输出动作值: {action_value:+.4f}")
+    print_ppo_action_line(action_value, _ppo_roi, _bh_roi)
 
     if action_value > 0.1:
         signal = "买入 (BUY)"
@@ -688,3 +700,4 @@ if __name__ == "__main__":
         print(f"   {get_model_accuracy_display('2449.TW')}")
     else:
         print("\n❌ 信号生成失败")
+

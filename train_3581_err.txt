@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "C:\Users\Silvi\Projects\trading-bot\train_3581_taiwan_improved.py", line 14, in <module>
+    import matplotlib
+  File "C:\Users\Silvi\Projects\trading-bot\.venv\Lib\site-packages\matplotlib\__init__.py", line 157, in <module>
+    from packaging.version import parse as parse_version
+  File "C:\Users\Silvi\Projects\trading-bot\.venv\Lib\site-packages\packaging\version.py", line 10, in <module>
+    from __future__ import annotations
+MemoryError

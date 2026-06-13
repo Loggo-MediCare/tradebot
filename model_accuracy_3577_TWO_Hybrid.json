@@ -1,0 +1,14 @@
+{
+  "symbol": "3577.TWO",
+  "model_type": "Hybrid",
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 61.8,
+  "win_rate": 66.0813328297933,
+  "sharpe_ratio": 1.939,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-21 00:02:38",
+  "history": []
+}

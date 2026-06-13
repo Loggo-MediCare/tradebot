@@ -35,6 +35,7 @@ from sklearn.preprocessing import MinMaxScaler
 import warnings
 
 warnings.filterwarnings('ignore')
+from roi_control import print_roi
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 plt.style.use('ggplot')
@@ -443,7 +444,7 @@ print("="*60)
 print(f"Initial Balance:  ${10000:,.2f}")
 print(f"Final Balance:    ${env.balance:,.2f}")
 print(f"Total Profit:     ${final_profit:,.2f}")
-print(f"ROI:              {roi:.2f}%")
+print_roi(f"ROI:              {roi:.2f}%")
 print(f"Trades Executed:  {len(env.trades_history)}")
 print(f"Action Counts:    Hold={action_counts[0]}, Buy={action_counts[1]}, Sell={action_counts[2]}")
 print(f"\nAverage Q-Values: Hold={avg_q_values[0]:.4f}, Buy={avg_q_values[1]:.4f}, Sell={avg_q_values[2]:.4f}")

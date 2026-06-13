@@ -1,0 +1,14 @@
+{
+  "symbol": "6224.TW",
+  "model_type": "Hybrid",
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 63.06,
+  "win_rate": 72.14636478424073,
+  "sharpe_ratio": 1.961,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-20 23:53:54",
+  "history": []
+}

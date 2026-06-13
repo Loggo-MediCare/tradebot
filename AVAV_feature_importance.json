@@ -1,6 +1,6 @@
 {
   "ticker": "AVAV",
-  "analysis_date": "2026-01-10",
+  "analysis_date": "2026-05-09",
   "model_accuracy": 0.4548872180451128,
   "feature_importance": {
     "MA_200": 0.07372555260644632,

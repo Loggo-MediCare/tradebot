@@ -1,0 +1,14 @@
+{
+  "symbol": "002371.SZ",
+  "model_type": "Hybrid",
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 61.3,
+  "win_rate": 63.87183380126953,
+  "sharpe_ratio": 1.7176,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-20 23:02:43",
+  "history": []
+}

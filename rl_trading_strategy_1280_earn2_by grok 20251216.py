@@ -27,6 +27,7 @@ import torch.optim as optim
 from torch.distributions import Categorical
 import torch.nn.functional as F
 import warnings
+from roi_control import print_roi
 warnings.filterwarnings('ignore')
 plt.style.use('ggplot')
 # Font settings for charts to support Chinese characters
@@ -389,7 +390,7 @@ print("="*60)
 print(f"Initial Balance: ${10000:,.2f}")
 print(f"Final Balance: ${env.balance:,.2f}")
 print(f"Total Profit: ${final_profit:,.2f}")
-print(f"ROI: {roi:.2f}%")
+print_roi(f"ROI: {roi:.2f}%")
 print(f"Trades Executed: {len(env.trades_history)}")
 print(f"Action Counts: Hold={action_counts[0]}, Buy={action_counts[1]}, Sell={action_counts[2]}")
 print("="*60)

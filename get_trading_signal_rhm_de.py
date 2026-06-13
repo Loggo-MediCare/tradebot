@@ -15,6 +15,8 @@ from gymnasium import spaces
 from stable_baselines3 import PPO
 from datetime import datetime
 import warnings
+from tavily_news import print_tavily_news
+from backtest_utils import calculate_ppo_backtest_roi, print_ppo_action_line
 warnings.filterwarnings('ignore')
 
 TICKER = 'RHM_DE'
@@ -134,9 +136,10 @@ def get_trading_signal():
     obs = env._obs()
     action, _ = model.predict(obs, deterministic=True)
     action_val = float(action[0]) if isinstance(action, np.ndarray) else float(action)
+    _ppo_roi, _bh_roi = calculate_ppo_backtest_roi(model, df)
 
     print(f"\n🎯 AI 信号")
-    print(f"动作值: {action_val:+.4f}")
+    print_ppo_action_line(action_val, _ppo_roi, _bh_roi)
 
     if action_val > 0.1:
         signal = "买入 (BUY)"
@@ -151,6 +154,24 @@ def get_trading_signal():
     print(f"{emoji} 信号: {signal}")
     print(f"强度: {abs(action_val):.2f}")
 
+
+    # ── FinBERT 情緒分析 ────────────────────────────────────────────────────
+    print("\n" + "=" * 80)
+    print("📰 市场情绪分析 (FinBERT NLP Engine)")
+    print("=" * 80)
+    from finbert_enhanced_scoring import calculate_sentiment_score, format_sentiment_output
+    sentiment_result = calculate_sentiment_score('RHM_DE', verbose=False)
+    if sentiment_result and sentiment_result['news_count'] > 0:
+        print(format_sentiment_output(sentiment_result))
+    else:
+        print("⚠️  未找到相关新闻，情绪分析不可用")
+        sentiment_result = {'sentiment_score': 0.0, 'news_count': 0, 'sentiment_label': '中性'}
+
+    # ── Tavily 即時新聞 ─────────────────────────────────────────────────────
+    print("\n" + "=" * 80)
+    print("🌐 RHM_DE (RHM_DE) 即時新聞  (Tavily REST API)")
+    print("=" * 80)
+    print_tavily_news('RHM_DE', 'RHM_DE', max_results=5)
     print("\n" + "=" * 60)
     print("⚠️ 风险提示: 本信号仅供参考,不构成投资建议")
     print("=" * 60)

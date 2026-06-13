@@ -1,0 +1,14 @@
+{
+  "symbol": "3090.TW",
+  "model_type": "Hybrid",
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 65.25,
+  "win_rate": 84.542000579834,
+  "sharpe_ratio": 1.5939,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-20 16:18:23",
+  "history": []
+}

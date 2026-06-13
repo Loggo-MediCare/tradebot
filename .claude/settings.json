@@ -2,7 +2,18 @@
   "permissions": {
     "allow": [
       "Bash(..venvScriptspython.exe train_2327_taiwan_improved.py)",
-      "Bash(ren:*)"
+      "Bash(ren:*)",
+      "PowerShell(& \"C:\\\\Users\\\\Silvi\\\\Projects\\\\trading-bot\\\\run_all_WESTERN_us_to_file.ps1\")",
+      "PowerShell(& \"C:\\\\Users\\\\Silvi\\\\Projects\\\\trading-bot\\\\retrain_and_compare_western.ps1\")",
+      "Bash(sed 's/NVDA/IBM/g; s/NVIDIA/IBM/g; s/ppo_nvda_improved/ppo_ibm_improved/g; s/美股 IBM \\(IBM\\)/美股 IBM \\(IBM Common Stock\\)/g; s/NVDA_chart/IBM_chart/g' get_trading_signal_nvda.py)",
+      "Bash(sed 's/NVDA/SMCI/g; s/NVIDIA/Super Micro Computer/g; s/ppo_nvda_improved/ppo_smci_improved/g; s/美股 SMCI \\(SMCI\\)/美股 SMCI \\(Super Micro Computer\\)/g; s/NVDA_chart/SMCI_chart/g' get_trading_signal_nvda.py)",
+      "PowerShell(cd \"C:\\\\Users\\\\Silvi\\\\Projects\\\\trading-bot\"; Write-Output \"=== Checking model files ===\"; Get-Item ppo_tsla_improved.zip, ppo_ba_improved.zip, ppo_amzn_improved.zip -ErrorAction SilentlyContinue | Select-Object Name, LastWriteTime, @{N='Size';E={[int]\\($_.Length/1KB\\)+'KB'}}; Write-Output \"=== ARM model check ===\"; Get-Item ppo_arm_improved.zip -ErrorAction SilentlyContinue | Select-Object Name, LastWriteTime; Write-Output \"=== IBM/SMCI/ORCL model check ===\"; Get-Item ppo_ibm_improved.zip, ppo_smci_improved.zip, ppo_orcl_improved.zip -ErrorAction SilentlyContinue | Select-Object Name, LastWriteTime)",
+      "Bash(rm -f /tmp/test_excel.py /tmp/test_excel2.py /tmp/excel_check.txt /tmp/excel_check2.txt \"c:/Users/Silvi/Projects/trading-bot/test_export.xlsx\" \"c:/Users/Silvi/Projects/trading-bot/test_export2.xlsx\")",
+      "PowerShell(.\\\\.venv\\\\Scripts\\\\python.exe intraday_dashboard.py --tw --workers 3)",
+      "Bash(git ls-remote *)"
+    ],
+    "additionalDirectories": [
+      "\\tmp"
     ]
   }
 }

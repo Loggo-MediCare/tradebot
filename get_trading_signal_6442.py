@@ -36,6 +36,7 @@ warnings.filterwarnings('ignore')
 # 导入模块
 from dynamic_signal_weights import DynamicWeightCalculator
 from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output, calculate_sentiment_score
+from tavily_news import print_tavily_news
 from candlestick_patterns import analyze_candlestick_patterns, format_pattern_output, get_pattern_score_adjustment
 from ma50_slope_analysis import calculate_ma50_slope, format_ma50_slope_output, get_ma50_slope_score_adjustment
 from model_accuracy_tracker import ModelAccuracyTracker, get_model_accuracy_display
@@ -46,6 +47,7 @@ from pattern_engine import get_pattern_signal
 from volume_surge_detector import get_volume_signal
 from breakout_long_red import get_breakout_long_red_signal
 from chart_visualizer import plot_candlestick
+from backtest_utils import calculate_ppo_backtest_roi, print_ppo_action_line
 
 
 # ==========================================
@@ -486,6 +488,13 @@ def get_trading_signal():
         print("   ⚠️ 未找到相關新聞")
         sentiment_result = {'sentiment_score': 0.0, 'news_count': 0, 'sentiment_label': '中性'}
 
+    # ── Tavily 即時新聞 ─────────────────────────────────────────────────────
+    print("\n" + "=" * 80)
+    print("🌐 南亞 (1303.TW) 即時新聞  (Tavily REST API)")
+    print("=" * 80)
+    print_tavily_news('1303.TW', '南亞', max_results=5)
+
+
     # ========== AI 模型預測 ==========
     env = ImprovedTradingEnv(df)
     env.current_step = len(df) - 1
@@ -493,6 +502,8 @@ def get_trading_signal():
     
     action, _ = model.predict(obs, deterministic=True)
     action_value = float(action[0]) if isinstance(action, np.ndarray) else float(action)
+    # PPO backtest ROI
+    _ppo_roi, _bh_roi = calculate_ppo_backtest_roi(model, df)
 
     # ========== 生成交易建議 ==========
     weight_calc = DynamicWeightCalculator('1303.TW')

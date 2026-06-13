@@ -1,4 +1,4 @@
-"""
+﻿"""
 台股 6274 (台燿) AI 交易信号生成器
 ======================================
  信号: 卖出 (SELL) 20251222
@@ -60,6 +60,7 @@ from dynamic_signal_weights import DynamicWeightCalculator
 # 导入增强评分模块
 # 导入增强评分模块（含FinBERT情绪分析）
 from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+from tavily_news import print_tavily_news
 from candlestick_patterns import analyze_candlestick_patterns, format_pattern_output, get_pattern_score_adjustment
 # 导入MA50斜率分析模块
 from ma50_slope_analysis import calculate_ma50_slope, format_ma50_slope_output, get_ma50_slope_score_adjustment
@@ -73,6 +74,7 @@ from pattern_engine import get_pattern_signal
 from volume_surge_detector import get_volume_signal
 from breakout_long_red import get_breakout_long_red_signal
 from chart_visualizer import plot_candlestick
+from backtest_utils import calculate_ppo_backtest_roi, print_ppo_action_line
 
 
 # ==========================================
@@ -200,12 +202,13 @@ def get_trading_signal():
     print(f"生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
     # 顯示AI模型準確度
-    accuracy_display = get_model_accuracy_display('6274.TW')
-    print(f"模型準確度: {accuracy_display}")
+    accuracy_display = get_model_accuracy_display('6274.TWOO')
+    if accuracy_display:
+        print(f"模型準確度: {accuracy_display}")
     print("=" * 80)
 
     # 1. 加载模型
-    model_path = r"C:\Users\Silvi\Projects\trading-bot\ppo_6274_tw_improved"
+    model_path = r"C:\Users\Silvi\Projects\trading-bot\ppo_6274_two_improved"
     print(f"\n📦 加载 AI 模型: {model_path}")
 
     try:
@@ -221,7 +224,7 @@ def get_trading_signal():
         import yfinance as yf
 
         # 使用 period 方式下载，auto_adjust=True 确保价格是最新的
-        df = yf.download('6274.TW', period='90d', progress=False, auto_adjust=True)
+        df = yf.download('6274.TWOO', period='90d', progress=False, auto_adjust=True)
 
         if df.empty:
             print("❌ 无法获取数据")
@@ -244,7 +247,7 @@ def get_trading_signal():
         target_high = None
         recommendation_mean = None
         try:
-            ticker_info = yf.Ticker('6274.TW').info
+            ticker_info = yf.Ticker('6274.TWOO').info
             target_price = ticker_info.get('targetMeanPrice')
             target_high = ticker_info.get('targetHighPrice')
             target_low = ticker_info.get('targetLowPrice')
@@ -286,6 +289,8 @@ def get_trading_signal():
     print("\n🧠 AI 模型分析中...")
     action, _ = model.predict(obs, deterministic=True)
     action_value = float(action[0]) if isinstance(action, np.ndarray) else float(action)
+    # PPO backtest ROI
+    _ppo_roi, _bh_roi = calculate_ppo_backtest_roi(model, df)
 
     # 6. 解析交易信号
     current_price = float(latest_data['close'])
@@ -332,7 +337,7 @@ def get_trading_signal():
     print(f"\n💡 說明: {ma50_slope_info['description']}")
 
     # 7. 初始化动态权重计算器
-    weight_calc = DynamicWeightCalculator('6274.TW')
+    weight_calc = DynamicWeightCalculator('6274.TWOO')
     buy_weights = weight_calc.get_buy_weights()
     sell_weights = weight_calc.get_sell_weights()
 
@@ -342,13 +347,20 @@ def get_trading_signal():
     print("=" * 80)
 
     from finbert_enhanced_scoring import calculate_sentiment_score, format_sentiment_output
-    sentiment_result = calculate_sentiment_score('6274.TW', verbose=False)
+    sentiment_result = calculate_sentiment_score('6274.TWOO', verbose=False)
 
     if sentiment_result and sentiment_result['news_count'] > 0:
         print(format_sentiment_output(sentiment_result))
     else:
         print("⚠️  未找到相关新闻，情绪分析不可用")
         sentiment_result = {'sentiment_score': 0.0, 'news_count': 0, 'sentiment_label': '中性'}
+
+    # ── Tavily 即時新聞 ─────────────────────────────────────────────────────
+    print("\n" + "=" * 80)
+    print("🌐 台燿 (6274.TWOO) 即時新聞  (Tavily REST API)")
+    print("=" * 80)
+    print_tavily_news('6274.TWOO', '台燿', max_results=5)
+
 
 
 
@@ -405,7 +417,7 @@ def get_trading_signal():
     print("\n" + "=" * 80)
     print("🎯 AI 交易信号")
     print("=" * 80)
-    print(f"模型输出动作值: {action_value:+.4f}")
+    print_ppo_action_line(action_value, _ppo_roi, _bh_roi)
 
     if action_value > 0.1:
         signal = "买入 (BUY)"
@@ -428,7 +440,7 @@ def get_trading_signal():
             volume_ratio=volume_ratio,
             ai_action=action_value,
             buy_weights=buy_weights,
-            symbol='6274.TW'
+            symbol='6274.TWOO'
         )
 
         # 加入MA50斜率評分調整
@@ -680,7 +692,7 @@ def get_trading_signal():
             profit_margin_sell = 0
 
             try:
-                ticker_obj = yf.Ticker('6274.TW')
+                ticker_obj = yf.Ticker('6274.TWOO')
                 info = ticker_obj.info
                 net_income_sell = info.get('netIncome', None)
                 profit_margin_sell = info.get('profitMargins', None)
@@ -792,7 +804,7 @@ def get_trading_signal():
 
     return {
         'date': latest_date,
-        'symbol': '6274.TW',
+        'symbol': '6274.TWOO',
         'current_price': current_price,
         'signal': signal,
         'action_value': action_value,
@@ -817,10 +829,10 @@ if __name__ == "__main__":
         # 生成 K 線圖
         try:
             import yfinance as yf
-            chart_df = yf.Ticker("6274.TW").history(period="6mo")
+            chart_df = yf.Ticker("6274.TWOO").history(period="6mo")
             chart_df.columns = [c.lower() for c in chart_df.columns]
             chart_path = "6274_chart.png"
-            plot_candlestick(chart_df, "6274.TW", save_path=chart_path)
+            plot_candlestick(chart_df, "6274.TWOO", save_path=chart_path)
         except Exception as e:
             print(f"   圖表生成失敗: {e}")
 
@@ -834,6 +846,8 @@ if __name__ == "__main__":
 
 
         # 顯示AI模型準確度摘要
-        print(f"   {get_model_accuracy_display('6274.TW')}")
+        print(f"   {get_model_accuracy_display('6274.TWOO')}")
     else:
         print("\n❌ 信号生成失败")
+
+

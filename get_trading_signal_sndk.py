@@ -1,4 +1,4 @@
-"""
+﻿"""
 美股 SNDK (SanDisk) AI 交易信号生成器
 ======================================
  信号: 卖出 (SELL) 20251222
@@ -60,6 +60,7 @@ from dynamic_signal_weights import DynamicWeightCalculator
 # 导入增强评分模块
 # 导入增强评分模块（含FinBERT情绪分析）
 from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+from tavily_news import print_tavily_news
 from candlestick_patterns import analyze_candlestick_patterns, format_pattern_output, get_pattern_score_adjustment
 # 导入MA50斜率分析模块
 from ma50_slope_analysis import calculate_ma50_slope, format_ma50_slope_output, get_ma50_slope_score_adjustment
@@ -73,6 +74,7 @@ from pattern_engine import get_pattern_signal
 from volume_surge_detector import get_volume_signal
 from breakout_long_red import get_breakout_long_red_signal
 from chart_visualizer import plot_candlestick
+from backtest_utils import calculate_ppo_backtest_roi, print_ppo_action_line
 
 
 # ==========================================
@@ -201,7 +203,8 @@ def get_trading_signal():
 
     # 顯示AI模型準確度
     accuracy_display = get_model_accuracy_display('SNDK')
-    print(f"模型準確度: {accuracy_display}")
+    if accuracy_display:
+        print(f"模型準確度: {accuracy_display}")
     print("=" * 80)
 
     # 1. 加载模型
@@ -286,6 +289,8 @@ def get_trading_signal():
     print("\n🧠 AI 模型分析中...")
     action, _ = model.predict(obs, deterministic=True)
     action_value = float(action[0]) if isinstance(action, np.ndarray) else float(action)
+    # PPO backtest ROI
+    _ppo_roi, _bh_roi = calculate_ppo_backtest_roi(model, df)
 
     # 6. 解析交易信号
     current_price = float(latest_data['close'])
@@ -319,6 +324,23 @@ def get_trading_signal():
     print(f"20日平均量:      {int(avg_volume_20):,}  {'[放量]' if volume_ratio > 1.5 else '[缩量]' if volume_ratio < 0.7 else '[正常]'}")
     print(f"量比:            {volume_ratio:.2f}x")
 
+    # ── 動態止損 Trailing Stop = Highest Close(20日) - 1.5 × ATR₁₄ ──────────────
+    try:
+        _tr = pd.DataFrame({
+            'hl': df['high'] - df['low'],
+            'hc': (df['high'] - df['close'].shift(1)).abs(),
+            'lc': (df['low']  - df['close'].shift(1)).abs(),
+        }).max(axis=1)
+        atr_14        = float(_tr.rolling(14).mean().iloc[-1])
+        highest_close = float(df['close'].tail(20).max())
+        trailing_stop = highest_close - (1.5 * atr_14)
+    except Exception:
+        atr_14 = 0.0; highest_close = current_price; trailing_stop = current_price * 0.95
+    print(f"ATR (14):        {atr_14:.2f}")
+    triggered = current_price < trailing_stop
+    warn = "⚠️ 已跌破，留意回撤" if triggered else "✅ 未觸發"
+    print(f"動態止損(參考): ${trailing_stop:.2f}  {warn}  [非硬性出場，週MACD<0才是真正警示]")
+
     # 7.1 計算MA50斜率
     print("\n" + "=" * 80)
     print("📈 MA50趨勢分析")
@@ -349,6 +371,13 @@ def get_trading_signal():
     else:
         print("⚠️  未找到相关新闻，情绪分析不可用")
         sentiment_result = {'sentiment_score': 0.0, 'news_count': 0, 'sentiment_label': '中性'}
+
+    # ── Tavily 即時新聞 ─────────────────────────────────────────────────────
+    print("\n" + "=" * 80)
+    print("🌐 SanDisk (SNDK) 即時新聞  (Tavily REST API)")
+    print("=" * 80)
+    print_tavily_news('SNDK', 'SanDisk', max_results=5)
+
 
 
 
@@ -405,7 +434,7 @@ def get_trading_signal():
     print("\n" + "=" * 80)
     print("🎯 AI 交易信号")
     print("=" * 80)
-    print(f"模型输出动作值: {action_value:+.4f}")
+    print_ppo_action_line(action_value, _ppo_roi, _bh_roi)
 
     if action_value > 0.1:
         signal = "买入 (BUY)"
@@ -503,8 +532,12 @@ def get_trading_signal():
                 if signal_text:
                     buy_reasons.append(f"🚀 {signal_text}")
 
-        buy_score = max(0, min(100, buy_score))  # 限制在0-100之間
+        # 🏢 SNDK 基本面利多：$6B 股份回購計畫（下行風險降低，結構性成長）
+        SNDK_BUYBACK_BONUS = 20
+        buy_score += SNDK_BUYBACK_BONUS
+        buy_reasons.append(f"🏢 $6B 股份回購計畫 — 管理層強調結構性成長，下行風險降低 (+{SNDK_BUYBACK_BONUS}分)")
 
+        buy_score = max(0, min(100, buy_score))  # 限制在0-100之間
 
         # 使用增强评分结果
         reasons = buy_reasons
@@ -569,89 +602,75 @@ def get_trading_signal():
         is_macd_bearish = macd < macd_signal
         is_trending_down = sma_10 < sma_30
 
-        # 🔥🔥🔥 技術面覆蓋邏輯：AI說賣，但技術面全部看多 → 應該買入！
-        # 條件：MACD金叉 + 均線多頭 + MA50上升 + RSI未超買
-        is_macd_bullish = macd > macd_signal
-        is_trending_up = sma_10 > sma_30
-        is_ma50_bullish = ma50_slope_info.get('slope_pct', 0) > 0.1  # MA50斜率 > 0.1%
-        is_rsi_healthy = 30 < rsi < 75
+        # 🔍 雙重確認：使用與買入分支相同的增強評分函數交叉驗證 AI 賣出信號
+        buy_score_check, _, buy_reasons_check, buy_warnings_check, _, _ = calculate_enhanced_buy_score_with_sentiment(
+            rsi=rsi,
+            macd=macd,
+            macd_signal=macd_signal,
+            sma_10=sma_10,
+            sma_30=sma_30,
+            current_price=current_price,
+            bb_upper=bb_upper,
+            bb_lower=bb_lower,
+            volume_ratio=volume_ratio,
+            ai_action=action_value,
+            buy_weights=buy_weights,
+            symbol='SNDK'
+        )
+        # 加入 MA50 斜率補分（與買入分支邏輯一致）
+        ma50_check_adj = get_ma50_slope_score_adjustment(ma50_slope_info)
+        buy_score_check += ma50_check_adj
+        if ma50_check_adj > 0:
+            buy_reasons_check.append(f"MA50趨勢向上 (+{ma50_check_adj}分)")
+        elif ma50_check_adj < 0:
+            buy_warnings_check.append(f"MA50趨勢向下 ({ma50_check_adj}分)")
+        buy_score_check = max(0, min(100, buy_score_check))
 
-        # 新聞情緒正面加分
-        sentiment_bullish = sentiment_result and sentiment_result.get('sentiment_score', 0) > 0.3
+        # 🏢 SNDK 基本面利多加分：$6B 股份回購計畫
+        # 管理層強調新商業模式帶來結構性成長與穩定性 → 下行風險降低
+        SNDK_BUYBACK_BONUS = 20
+        buy_score_check = min(100, buy_score_check + SNDK_BUYBACK_BONUS)
+        buy_reasons_check.append(
+            f"🏢 $6B 股份回購計畫 — 管理層強調結構性成長，下行風險降低 (+{SNDK_BUYBACK_BONUS}分)"
+        )
 
-        # 計算多頭信號數量
-        bullish_signals = sum([is_macd_bullish, is_trending_up, is_ma50_bullish, is_rsi_healthy, sentiment_bullish])
+        # 回購計畫降低下行風險 → 覆蓋門檻從 60 降至 45
+        OVERRIDE_THRESHOLD = 45
 
-        # 如果有4個以上多頭信號 → 覆蓋AI，改為買入!
-        if bullish_signals >= 4:
-            print(f"\n   🔄 技術面覆蓋: AI建議賣出，但{bullish_signals}個技術指標看多，改為買入!")
+        buy_score_check = round(buy_score_check)
 
-            # 重新計算買入評分
-            buy_score = 50  # 基礎分
-            buy_reasons = ["🔄 AI信號覆蓋：技術面強勢"]
-            buy_warnings = ["AI模型原本建議賣出"]
-
-            if is_macd_bullish:
-                buy_score += 10
-                buy_reasons.append("MACD金叉")
-            if is_trending_up:
-                buy_score += 10
-                buy_reasons.append("均線多頭排列")
-            if is_ma50_bullish:
-                buy_score += 10
-                buy_reasons.append(f"MA50強勢上升 ({ma50_slope_info.get('slope_pct', 0):.2f}%)")
-            if is_rsi_healthy:
-                buy_score += 5
-                buy_reasons.append(f"RSI健康 ({rsi:.1f})")
-            if sentiment_bullish:
-                buy_score += 10
-                buy_reasons.append(f"新聞情緒正面 ({sentiment_result.get('sentiment_score', 0):.2f})")
-
-            # 加入進階突破型態評分
-            if advanced_breakout_score > 0:
-                buy_score += advanced_breakout_score
-                for pattern in advanced_breakout_patterns:
-                    signal_text = pattern.get('signal_text', '')
-                    if signal_text:
-                        buy_reasons.append(f"🚀 {signal_text}")
-
-            buy_score = max(0, min(100, buy_score))
-
-            # 輸出買入信號
-            signal = "买入 (BUY - 技術覆蓋)"
+        if buy_score_check >= OVERRIDE_THRESHOLD:
+            print(f"\n   🔍 雙重確認: AI建議賣出，但增強買入評分 {buy_score_check}/100 (含回購加分)，改為買入!")
+            signal = "买入 (BUY - 技術雙重確認)"
             signal_emoji = "🟢"
-            adjusted_buy_strength = buy_score / 100
+            adjusted_buy_strength = buy_score_check / 100
             suggested_buy_ratio = int(adjusted_buy_strength * 100)
             suggested_price_low = current_price * 0.995
             suggested_price_high = current_price * 1.000
 
             print(f"\n{signal_emoji} 信号: {signal}")
             print(f"   AI 模型强度: {strength:.2f} / 1.00 (已覆蓋)")
-            print(f"   技术指标评分: {buy_score} / 100")
+            print(f"   技术指标评分: {buy_score_check} / 100")
             print(f"   综合建议强度: {adjusted_buy_strength:.2f}")
             print(f"   建议买入比例: {suggested_buy_ratio}%")
             print(f"   建议买入价格区间: ${suggested_price_low:.2f} - ${suggested_price_high:.2f}")
 
-            if buy_warnings:
+            if buy_warnings_check:
                 print(f"\n   ⚠️  警告:")
-                for warning in buy_warnings:
+                for warning in buy_warnings_check:
                     print(f"      • {warning}")
 
-            if buy_reasons:
+            if buy_reasons_check:
                 print(f"\n   📌 买入理由:")
-                for i, reason in enumerate(buy_reasons, 1):
+                for i, reason in enumerate(buy_reasons_check, 1):
                     print(f"      {i}. {reason}")
 
             print(f"\n   💡 操作建议:")
-            print(f"      • 技術面強勢，建議買入 {suggested_buy_ratio}%")
+            print(f"      • 技術評分 {buy_score_check}/100，建議買入 {suggested_buy_ratio}%")
             print(f"      • 設置止損: ${current_price * 0.95:.2f} (-5%)")
             print(f"      • 目標價: ${current_price * 1.10:.2f} (+10%)")
 
-        # 設置標記：是否跳過賣出邏輯
-        skip_sell_logic = (bullish_signals >= 4)
-
-        # 正常的賣出邏輯（如果沒有被技術面覆蓋）
-        if not skip_sell_logic:
+        else:
             # 卖出信号评分系统（0-100分）
             sell_score = 0
             reasons = []
@@ -920,3 +939,5 @@ if __name__ == "__main__":
         print(f"   {get_model_accuracy_display('SNDK')}")
     else:
         print("\n❌ 信号生成失败")
+
+

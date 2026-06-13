@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 K線圖表視覺化模組
 ==================
@@ -15,12 +16,70 @@ K線圖表視覺化模組
 """
 
 import os
+import sys
+
+# ── Fix Windows console encoding ──────────────────────────────────────────────
+# Must be done at module level, not just in __main__, because every print()
+# with Chinese text (e.g. "圖表已儲存") will UnicodeEncodeError on a cp950
+# console otherwise.
+if sys.platform == 'win32':
+    import io as _io
+    try:
+        if hasattr(sys.stdout, 'buffer') and \
+                getattr(sys.stdout, 'encoding', '').lower().replace('-', '') != 'utf8':
+            sys.stdout = _io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+        if hasattr(sys.stderr, 'buffer') and \
+                getattr(sys.stderr, 'encoding', '').lower().replace('-', '') != 'utf8':
+            sys.stderr = _io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+    except (AttributeError, TypeError):
+        pass
+
 import numpy as np
 import pandas as pd
 
 # Avoid Tk/Tcl dependency when a GUI backend is unavailable.
 if not os.environ.get("MPLBACKEND"):
     os.environ["MPLBACKEND"] = "Agg"
+
+
+def _configure_cjk_fonts() -> None:
+    """Configure matplotlib to use a CJK-capable font for Chinese characters.
+
+    Separated from the mplfinance import so font setup always runs even if
+    mplfinance is unavailable.  Traditional Chinese fonts (繁體, used in
+    Taiwan) are listed before Simplified Chinese ones.
+    """
+    try:
+        import matplotlib.pyplot as plt
+        from matplotlib import font_manager
+
+        # Ordered by preference: Traditional Chinese (繁體) first for Taiwan
+        cjk_candidates = [
+            'Microsoft JhengHei',   # Windows 繁體中文 (微軟正黑體)  ← was missing
+            'Microsoft YaHei',      # Windows 簡體中文 (微軟雅黑)
+            'PMingLiU',             # Windows 繁體中文 (新細明體)
+            'MingLiU',              # Windows 繁體中文 (細明體)
+            'SimHei',               # Windows 簡體中文
+            'Heiti TC',             # macOS 繁體中文
+            'STHeiti',              # macOS
+            'WenQuanYi Micro Hei',  # Linux
+            'Noto Sans CJK TC',     # Cross-platform 繁體
+            'Noto Sans CJK SC',     # Cross-platform 簡體
+            'Arial Unicode MS',     # macOS broad Unicode fallback
+        ]
+
+        # Filter to fonts actually installed; keep order
+        available = {f.name for f in font_manager.fontManager.ttflist}
+        ranked = [f for f in cjk_candidates if f in available]
+
+        # Use found fonts first, then full candidate list as final fallback
+        plt.rcParams['font.sans-serif'] = (ranked or cjk_candidates) + ['DejaVu Sans']
+        plt.rcParams['axes.unicode_minus'] = False   # prevent □ for minus sign
+    except Exception:
+        pass
+
+
+_configure_cjk_fonts()
 
 try:
     import mplfinance as mpf
@@ -35,9 +94,12 @@ except ImportError:
 # K 線圖繪製
 # ======================================================
 
-def prepare_chart_data(df):
-    """
-    準備圖表數據，計算均線和爆量指標
+def prepare_chart_data(df, macd_foot_shrink_threshold_pct: float = 10.0):
+    """準備圖表數據，計算均線、爆量指標、MACD 與「收腳/跳空」事件。
+
+    macd_foot_shrink_threshold_pct:
+      - 日線 MACD histogram 在負值區間「絕對值縮短」的比例門檻
+        (例如 10 表示縮短 >= 10% 才算有效收腳)
     """
     chart_df = df.copy()
 
@@ -60,35 +122,67 @@ def prepare_chart_data(df):
     chart_df['Vol_MA5'] = chart_df['volume'].rolling(5).mean()
     chart_df['Vol_MA20'] = chart_df['volume'].rolling(20).mean()
 
-    # 爆量判斷 (量比 > 1.5)
-    chart_df['爆量'] = chart_df['volume'] > chart_df['Vol_MA20'] * 1.5
+    # =====================
+    # MACD + Histogram
+    # =====================
+    ema12 = chart_df['close'].ewm(span=12, adjust=False).mean()
+    ema26 = chart_df['close'].ewm(span=26, adjust=False).mean()
+    chart_df['MACD'] = ema12 - ema26
+    chart_df['MACD_Signal'] = chart_df['MACD'].ewm(span=9, adjust=False).mean()
+    chart_df['MACD_Hist'] = chart_df['MACD'] - chart_df['MACD_Signal']
 
-    # 突破判斷
-    chart_df['20日高'] = chart_df['high'].rolling(20).max()
-    chart_df['真突破'] = (chart_df['close'] > chart_df['20日高'].shift(1)) & chart_df['爆量']
-    chart_df['假突破'] = (chart_df['close'] > chart_df['20日高'].shift(1)) & (~chart_df['爆量'])
+    # =====================
+    # 「收腳」(Histogram 仍為負，但絕對值縮短)
+    # =====================
+    prev = chart_df['MACD_Hist'].shift(1)
+    curr = chart_df['MACD_Hist']
+    shrink_pct = (prev.abs() - curr.abs()) / (prev.abs() + 1e-12) * 100
+    chart_df['MACD_FOOT_SHRINK_PCT'] = shrink_pct
+    chart_df['MACD_FOOT'] = (
+        (curr < 0) & (prev < 0) & (curr.abs() < prev.abs()) &
+        (shrink_pct >= float(macd_foot_shrink_threshold_pct))
+    )
+
+    # 「跳空向上」：今天開盤 > 昨天最高
+    if 'open' in chart_df.columns and 'high' in chart_df.columns:
+        chart_df['GAP_UP'] = chart_df['open'] > chart_df['high'].shift(1)
+    else:
+        chart_df['GAP_UP'] = False
+
+    # 「收腳後隔日跳空確認」：昨天收腳 + 今天跳空
+    chart_df['FOOT_GAP_CONFIRM'] = (
+        chart_df['MACD_FOOT'].shift(1).fillna(False).astype(bool)
+        & chart_df['GAP_UP'].fillna(False).astype(bool)
+    )
+
+    # Volume surge (ratio > 1.5x 20-day avg)
+    chart_df['VolSurge'] = chart_df['volume'] > chart_df['Vol_MA20'] * 1.5
+
+    # Breakout detection
+    chart_df['High20'] = chart_df['high'].rolling(20).max()
+    chart_df['TrueBreakout'] = (chart_df['close'] > chart_df['High20'].shift(1)) & chart_df['VolSurge']
+    chart_df['FakeBreakout'] = (chart_df['close'] > chart_df['High20'].shift(1)) & (~chart_df['VolSurge'])
 
     return chart_df
 
 
-def plot_candlestick(df, stock_name="Stock", save_path=None):
-    """
-    繪製 K 線圖 + 均線 + 爆量標記
 
-    Args:
-        df: DataFrame with OHLCV data
-        stock_name: 股票名稱
-        save_path: 儲存路徑 (None 則顯示)
+def plot_candlestick(
+    df,
+    stock_name="Stock",
+    save_path=None,
+    show_macd: bool = True,
+    show_macd_foot: bool = True,
+    macd_foot_shrink_threshold_pct: float = 10.0,
+):
+    """繪製 K 線圖 + 均線 + 爆量標記 + (可選) MACD + 「收腳/跳空」標記。"""
 
-    Returns:
-        DataFrame with calculated indicators
-    """
     if not MPF_AVAILABLE:
         print("mplfinance not available. Cannot plot chart.")
         return None
 
     # 準備數據
-    chart_df = prepare_chart_data(df)
+    chart_df = prepare_chart_data(df, macd_foot_shrink_threshold_pct=macd_foot_shrink_threshold_pct)
 
     # 設定 index 為 datetime
     if 'Date' in chart_df.columns:
@@ -105,51 +199,104 @@ def plot_candlestick(df, stock_name="Stock", save_path=None):
     mc = mpf.make_marketcolors(up='r', down='g', inherit=True)
     style = mpf.make_mpf_style(marketcolors=mc)
 
-    # 設定附加圖層
     apds = []
 
     # 均線
-    if 'MA5' in chart_df.columns:
-        apds.append(mpf.make_addplot(chart_df['MA5'], color='blue', width=0.8))
-    if 'MA10' in chart_df.columns:
-        apds.append(mpf.make_addplot(chart_df['MA10'], color='orange', width=0.8))
-    if 'MA20' in chart_df.columns:
-        apds.append(mpf.make_addplot(chart_df['MA20'], color='purple', width=1.0))
+    apds.append(mpf.make_addplot(chart_df['MA5'], color='blue', width=0.8))
+    apds.append(mpf.make_addplot(chart_df['MA10'], color='orange', width=0.8))
+    apds.append(mpf.make_addplot(chart_df['MA20'], color='purple', width=1.0))
 
     # 成交量均線
     if 'Vol_MA20' in chart_df.columns:
         apds.append(mpf.make_addplot(chart_df['Vol_MA20'], panel=1, color='blue', width=0.8))
 
-    # 爆量標記 (紅色 bar)
-    if '爆量' in chart_df.columns:
-        surge_vol = chart_df['volume'].where(chart_df['爆量'], np.nan)
+    # Volume surge bar overlay
+    if 'VolSurge' in chart_df.columns:
+        surge_vol = chart_df['volume'].where(chart_df['VolSurge'], np.nan)
         apds.append(mpf.make_addplot(surge_vol, panel=1, type='bar', color='red', alpha=0.5))
 
-    # 繪圖
+    # MACD histogram + MACD/Signal lines (panel=2)
+    if show_macd and 'MACD_Hist' in chart_df.columns:
+        hist = chart_df['MACD_Hist']
+        hist_pos = hist.where(hist >= 0, np.nan)
+        hist_neg = hist.where(hist < 0, np.nan)
+        apds.append(mpf.make_addplot(hist_pos, panel=2, type='bar', color='#2ecc71', alpha=0.7, width=0.8))
+        apds.append(mpf.make_addplot(hist_neg, panel=2, type='bar', color='#e74c3c', alpha=0.7, width=0.8))
+        apds.append(mpf.make_addplot(pd.Series(0, index=hist.index), panel=2, color='gray', width=0.5))
+        apds.append(mpf.make_addplot(chart_df['MACD'], panel=2, color='#3498db', width=1.2))
+        apds.append(mpf.make_addplot(chart_df['MACD_Signal'], panel=2, color='#e67e22', width=1.2))
+
+    # 收腳/跳空標記（主圖）
+    if show_macd_foot and 'MACD_FOOT' in chart_df.columns:
+        foot_price = chart_df['low'].where(chart_df['MACD_FOOT'], np.nan)
+        if foot_price.notna().any():
+            apds.append(mpf.make_addplot(foot_price * 0.995, type='scatter', marker='^', markersize=120, color='orange', alpha=0.9))
+
+        confirm_price = chart_df['low'].where(chart_df.get('FOOT_GAP_CONFIRM', False), np.nan)
+        if isinstance(confirm_price, pd.Series) and confirm_price.notna().any():
+            apds.append(mpf.make_addplot(confirm_price * 0.99, type='scatter', marker='*', markersize=180, color='purple', alpha=0.9))
+
     fig_params = {
         'type': 'candle',
         'style': style,
         'volume': True,
-        'title': f'\n{stock_name} K線圖 + 爆量分析',
+        'title': f'\n{stock_name} Candlestick + Volume Surge (MACD / Hist-Foot)',
         'ylabel': 'Price',
         'ylabel_lower': 'Volume',
-        'figsize': (14, 8)
+        'figsize': (14, 10),
+        'addplot': apds,
     }
 
-    if apds:
-        fig_params['addplot'] = apds
+    if show_macd:
+        fig_params['panel_ratios'] = (3, 1, 1)
 
+    # Resolve save path before plotting
     if save_path:
+        from datetime import datetime as _dt
+        _date_str = _dt.now().strftime('%Y%m%d')
+        _base, _ext = os.path.splitext(save_path)
+        if not _base.endswith(f'_{_date_str}'):
+            save_path = f"{_base}_{_date_str}{_ext}"
         if os.path.exists(save_path):
             os.remove(save_path)
-        fig_params['savefig'] = save_path
-        mpf.plot(plot_df, **fig_params)
+
+    fig_params['returnfig'] = True
+    fig, axes = mpf.plot(plot_df, **fig_params)
+
+    # Add legend to MACD panel
+    if show_macd:
+        import matplotlib.patches as _mpatches
+        from matplotlib.lines import Line2D as _Line2D
+        legend_elements = [
+            _Line2D([0], [0], color='#3498db', linewidth=1.2, label='MACD'),
+            _Line2D([0], [0], color='#e67e22', linewidth=1.2, label='Signal'),
+            _mpatches.Patch(facecolor='#2ecc71', alpha=0.7, label='Hist +'),
+            _mpatches.Patch(facecolor='#e74c3c', alpha=0.7, label='Hist -'),
+        ]
+        for ax in reversed(axes):
+            try:
+                if ax.lines or ax.patches:
+                    ax.legend(handles=legend_elements, loc='upper left', fontsize=7, framealpha=0.7)
+                    break
+            except Exception:
+                pass
+
+    if save_path:
+        fig.savefig(save_path, dpi=150, bbox_inches='tight')
         plt.close('all')
         print(f"圖表已儲存: {save_path}")
     else:
-        mpf.plot(plot_df, **fig_params)
+        plt.show()
+        plt.close('all')
 
-    return chart_df[['close', 'volume', 'Vol_MA20', '爆量', '真突破', '假突破']].tail(10)
+    cols = ['close', 'volume', 'Vol_MA20', 'VolSurge', 'TrueBreakout', 'FakeBreakout']
+    for extra in ['MACD', 'MACD_Signal', 'MACD_Hist', 'MACD_FOOT', 'MACD_FOOT_SHRINK_PCT', 'GAP_UP', 'FOOT_GAP_CONFIRM']:
+        if extra in chart_df.columns:
+            cols.append(extra)
+    cols = [c for c in cols if c in chart_df.columns]
+    return chart_df[cols].tail(10)
+
+
 
 
 def plot_smart_k_bars(ticker, start_date='2023-01-01', save=True):
@@ -451,9 +598,8 @@ def analyze_and_plot(ticker, save=False):
 # ======================================================
 
 if __name__ == "__main__":
-    import sys
-    import io
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+    # sys.stdout UTF-8 encoding is already handled at module level above;
+    # no need to re-wrap here (double-wrapping causes a ValueError).
 
     print("=" * 60)
     print("Chart Visualizer Test")
@@ -483,7 +629,7 @@ if __name__ == "__main__":
     chart_df = prepare_chart_data(df)
 
     print("\nChart data summary:")
-    print(chart_df[['close', 'volume', 'Vol_MA20', '爆量', '真突破', '假突破']].tail(10))
+    print(chart_df[['close', 'volume', 'Vol_MA20', 'VolSurge', 'TrueBreakout', 'FakeBreakout']].tail(10))
 
     print("\n" + "=" * 60)
     print("SmartMoneyBot Test (with sample data)")

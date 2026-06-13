@@ -1,4 +1,4 @@
-"""
+﻿"""
 美股 MU (Micron) AI 交易信号生成器
 ======================================
  信号: 卖出 (SELL) 20251222
@@ -60,11 +60,12 @@ from dynamic_signal_weights import DynamicWeightCalculator
 # 导入增强评分模块
 # 导入增强评分模块（含FinBERT情绪分析）
 from finbert_enhanced_scoring import calculate_enhanced_buy_score_with_sentiment, format_sentiment_output
+from tavily_news import print_tavily_news
 from candlestick_patterns import analyze_candlestick_patterns, format_pattern_output, get_pattern_score_adjustment
 # 导入MA50斜率分析模块
 from ma50_slope_analysis import calculate_ma50_slope, format_ma50_slope_output, get_ma50_slope_score_adjustment
 # 导入模型准确度追踪器
-from model_accuracy_tracker import ModelAccuracyTracker, get_model_accuracy_display
+from model_accuracy_tracker import ModelAccuracyTracker, get_model_accuracy_display, get_best_model_type, get_best_model_display
 # 導入結構型態分析模組
 from structure_pattern_analysis import detect_structure_patterns, format_structure_pattern_output, get_structure_score_adjustment
 from triangle_pattern import detect_triangle, triangle_breakout
@@ -73,6 +74,7 @@ from pattern_engine import get_pattern_signal
 from volume_surge_detector import get_volume_signal
 from breakout_long_red import get_breakout_long_red_signal
 from chart_visualizer import plot_candlestick
+from backtest_utils import calculate_ppo_backtest_roi, print_ppo_action_line
 
 
 # ==========================================
@@ -185,8 +187,108 @@ def add_technical_indicators(df):
     df['bb_upper'] = df['bb_middle'] + (df['bb_std'] * 2)
     df['bb_lower'] = df['bb_middle'] - (df['bb_std'] * 2)
 
-    df = df.fillna(method='bfill').fillna(method='ffill')
+    df = df.bfill().ffill()
     return df
+
+# ==========================================
+# 多模型自動選最佳
+# ==========================================
+BASE_DIR   = os.path.dirname(os.path.abspath(__file__))
+SYMBOL     = 'MU'
+PPO_PATH   = os.path.join(BASE_DIR, 'ppo_mu_improved')
+DQN_PATH   = os.path.join(BASE_DIR, 'MU_improved_anti_overfit_model.keras')
+XGB_PATH   = os.path.join(BASE_DIR, 'xgb_mu_model.json')
+HYBRID_PATH= os.path.join(BASE_DIR, 'hybrid_mu_ppo')
+HYBRID_RF  = os.path.join(BASE_DIR, 'hybrid_mu_rf.pkl')
+
+HYBRID_FEATURES = ['sma_10','sma_20','sma_30','sma_50','rsi','macd','macd_signal',
+                   'macd_hist','bb_pos','vol_ratio','atr','volatility','roc_5','roc_10','roc_20']
+
+def _add_hybrid_indicators(df):
+    c = df['close']
+    for w in [10,20,30,50]: df[f'sma_{w}'] = c.rolling(w).mean()
+    e12=c.ewm(span=12,adjust=False).mean(); e26=c.ewm(span=26,adjust=False).mean()
+    d=c.diff(); g=d.where(d>0,0).rolling(14).mean(); l=(-d.where(d<0,0)).rolling(14).mean()
+    df['rsi']=100-(100/(1+g/(l+1e-9)))
+    df['macd']=e12-e26; df['macd_signal']=df['macd'].ewm(span=9,adjust=False).mean()
+    df['macd_hist']=df['macd']-df['macd_signal']
+    m=c.rolling(20).mean(); s=c.rolling(20).std()
+    df['bb_pos']=(c-(m-s*2))/((m+s*2)-(m-s*2)+1e-9)
+    df['vol_ratio']=df['volume']/df['volume'].rolling(20).mean()
+    df['atr']=(df['high']-df['low']).rolling(14).mean()
+    df['volatility']=c.pct_change().rolling(20).std()
+    for p in [5,10,20]: df[f'roc_{p}']=c.pct_change(p)*100
+    return df.bfill().ffill()
+
+def get_signal_from_best_model(df):
+    """Try all 4 models, use best by ROI score. Returns (action_value, model_name)."""
+    import joblib, xgboost as xgb
+    winner, s_ppo, s_dqn, s_xgb, s_hyb = get_best_model_type(SYMBOL)
+    print(f"\n🏆 最佳模型選擇: {winner}  (PPO:{s_ppo} | DQN:{s_dqn} | XGB:{s_xgb} | HYB:{s_hyb})")
+
+    # Try winner first, fall back in order
+    order = [winner] + [m for m in ['Hybrid','XGBoost','PPO','DQN'] if m != winner]
+
+    for mtype in order:
+        try:
+            if mtype == 'Hybrid' and os.path.exists(HYBRID_PATH + '.zip') and os.path.exists(HYBRID_RF):
+                # Load RF + PPO
+                rf_data = joblib.load(HYBRID_RF)
+                rf, rf_scaler = rf_data['rf'], rf_data['scaler']
+                ppo_model = PPO.load(HYBRID_PATH)
+                # Compute hybrid features on latest data
+                df_h = _add_hybrid_indicators(df.copy())
+                df_h = df_h.dropna().reset_index(drop=True)
+                X = rf_scaler.transform(df_h[HYBRID_FEATURES].values)
+                proba = rf.predict_proba(X)   # (N, 3)
+                # Build hybrid obs for last row
+                row = df_h.iloc[-1]
+                price = float(row['close'])
+                tv = 10000  # assume initial
+                obs = np.array([
+                    0, tv, price,
+                    float(row.get('sma_10',0)), float(row.get('sma_30',0)),
+                    float(row.get('rsi',50)), float(row.get('macd',0)),
+                    float(row.get('macd_signal',0)),
+                    float(row.get('bb_pos',0.5))*1000, float(row.get('bb_pos',0.5))*500,
+                    float(row.get('volume',0)), 0, 0, 1,
+                    float(proba[-1][0]), float(proba[-1][1]), float(proba[-1][2]),
+                ], dtype=np.float32)
+                action, _ = ppo_model.predict(obs, deterministic=True)
+                av = float(action[0]) if hasattr(action,'__len__') else float(action)
+                print(f"  ✅ Hybrid RF→PPO 加載成功 (RF P_buy={proba[-1][2]:.2f})")
+                return av, 'Hybrid RF→PPO'
+
+            elif mtype == 'XGBoost' and os.path.exists(XGB_PATH):
+                xgb_model = xgb.XGBClassifier()
+                xgb_model.load_model(XGB_PATH)
+                xgb_scaler   = joblib.load(XGB_PATH.replace('_model.json','_scaler.pkl'))
+                xgb_features = joblib.load(XGB_PATH.replace('_model.json','_features.pkl'))
+                df_x = _add_hybrid_indicators(df.copy()).dropna()
+                feat_cols = [f for f in xgb_features if f in df_x.columns]
+                X = xgb_scaler.transform(df_x[feat_cols].values[-1:])
+                pred = int(xgb_model.predict(X)[0])
+                av = 0.6 if pred == 2 else (-0.6 if pred == 0 else 0.0)
+                proba = xgb_model.predict_proba(X)[0]
+                print(f"  ✅ XGBoost 加載成功 (P_buy={proba[2]:.2f} P_sell={proba[0]:.2f})")
+                return av, 'XGBoost'
+
+            elif mtype == 'PPO' and os.path.exists(PPO_PATH + '.zip'):
+                # Use existing PPO (handled by main function below)
+                return None, 'PPO'
+
+            elif mtype == 'DQN' and os.path.exists(DQN_PATH):
+                import tensorflow as tf
+                dqn_model = tf.keras.models.load_model(DQN_PATH)
+                print(f"  ✅ DQN 加載成功")
+                return None, 'DQN'
+
+        except Exception as e:
+            print(f"  ⚠️  {mtype} 加載失敗: {e}")
+            continue
+
+    return None, 'PPO'  # final fallback
+
 
 # ==========================================
 # 交易信号生成
@@ -196,24 +298,10 @@ def get_trading_signal():
     print("=" * 80)
     print("🤖 美股 MU (Micron) AI 交易信号生成器")
     print("=" * 80)
-   # print(f("生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"生成时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-
-    # 顯示AI模型準確度
-    accuracy_display = get_model_accuracy_display('MU')
-    print(f"模型準確度: {accuracy_display}")
+    print(f"模型準確度: {get_model_accuracy_display('MU')}")
+    print(get_best_model_display('MU'))
     print("=" * 80)
-
-    # 1. 加载模型
-    model_path = r"C:\Users\Silvi\Projects\trading-bot\ppo_mu_improved"
-    print(f"\n📦 加载 AI 模型: {model_path}")
-
-    try:
-        model = PPO.load(model_path)
-        print("✅ 模型加载成功!")
-    except Exception as e:
-        print(f"❌ 模型加载失败: {e}")
-        return None
 
     # 2. 下载最新数据 (使用 period 方式获取更新的数据)
     print("\n📊 下载最新市场数据...")
@@ -235,7 +323,29 @@ def get_trading_signal():
             'Close': 'close', 'Volume': 'volume',
             'Open': 'open', 'High': 'high', 'Low': 'low'
         })
+
+        # 丢弃无效的尾部行（例如 yfinance 可能返回最后一行为 NaN）
+        df = df.dropna(subset=['close'])
+        if df.empty:
+            print("❌ 数据下载后没有有效价格行")
+            return None
+
         df = df.reset_index()
+
+        # 如果今天有未完成的交易日，尝试使用分钟线获取最新价
+        latest_intraday_price = None
+        try:
+            last_daily_date = pd.to_datetime(df['Date'].iloc[-1]).date()
+            today_ny = pd.Timestamp.now(tz='America/New_York').date()
+            if last_daily_date < today_ny:
+                ticker = yf.Ticker('MU')
+                intraday = ticker.history(period='1d', interval='1m')
+                if not intraday.empty and 'Close' in intraday.columns:
+                    intraday = intraday.dropna(subset=['Close'])
+                    if not intraday.empty:
+                        latest_intraday_price = float(intraday['Close'].iloc[-1])
+        except Exception:
+            latest_intraday_price = None
 
         print(f"✅ 成功下载 {len(df)} 天数据")
 
@@ -273,8 +383,13 @@ def get_trading_signal():
     except:
         latest_date = datetime.now().strftime('%Y-%m-%d')
 
-    print(f"✅ 最新数据日期: {latest_date}")
-    print(f"   当前价格: ${float(latest_data['close']):.2f}")
+    current_price = float(latest_data['close'])
+    if latest_intraday_price is not None:
+        current_price = latest_intraday_price
+        print(f"   当前价格 (分钟线最新价): ${current_price:.2f}")
+    else:
+        print(f"   当前价格: ${current_price:.2f}")
+
     print(f"   今日成交量: {int(latest_data['volume']):,}")
 
     # 4. 创建环境并获取观察值
@@ -282,13 +397,30 @@ def get_trading_signal():
     env.current_step = len(df) - 1  # 移到最后一天
     obs = env._get_observation()
 
-    # 5. 使用模型预测
+    # 5. 使用最佳模型預測
     print("\n🧠 AI 模型分析中...")
-    action, _ = model.predict(obs, deterministic=True)
-    action_value = float(action[0]) if isinstance(action, np.ndarray) else float(action)
+    best_av, best_model_name = get_signal_from_best_model(df)
+    if best_av is not None:
+        action_value = best_av
+        print(f"  使用模型: {best_model_name}  動作值: {action_value:+.4f}")
+    else:
+        # Fallback to PPO
+        model_path = PPO_PATH
+        try:
+            model = PPO.load(model_path)
+            action, _ = model.predict(obs, deterministic=True)
+            action_value = float(action[0]) if isinstance(action, np.ndarray) else float(action)
+            # PPO backtest ROI
+            _ppo_roi, _bh_roi = calculate_ppo_backtest_roi(model, df)
+            best_model_name = 'PPO'
+        except Exception as e:
+            print(f"❌ PPO fallback 失敗: {e}")
+            return None
 
     # 6. 解析交易信号
     current_price = float(latest_data['close'])
+    if latest_intraday_price is not None:
+        current_price = latest_intraday_price
     rsi = float(latest_data['rsi'])
     macd = float(latest_data['macd'])
     macd_signal = float(latest_data['macd_signal'])
@@ -319,12 +451,29 @@ def get_trading_signal():
     print(f"20日平均量:      {int(avg_volume_20):,}  {'[放量]' if volume_ratio > 1.5 else '[缩量]' if volume_ratio < 0.7 else '[正常]'}")
     print(f"量比:            {volume_ratio:.2f}x")
 
+    # ── 動態止損 Trailing Stop = Highest Close(20日) - 1.5 × ATR₁₄ ──────────────
+    try:
+        _tr = pd.DataFrame({
+            'hl': df['high'] - df['low'],
+            'hc': (df['high'] - df['close'].shift(1)).abs(),
+            'lc': (df['low']  - df['close'].shift(1)).abs(),
+        }).max(axis=1)
+        atr_14        = float(_tr.rolling(14).mean().iloc[-1])
+        highest_close = float(df['close'].tail(20).max())
+        trailing_stop = highest_close - (1.5 * atr_14)
+    except Exception:
+        atr_14 = 0.0; highest_close = current_price; trailing_stop = current_price * 0.95
+    print(f"ATR (14):        {atr_14:.2f}")
+    triggered = current_price < trailing_stop
+    warn = "⚠️ 已跌破，留意回撤" if triggered else "✅ 未觸發"
+    print(f"動態止損(參考): ${trailing_stop:.2f}  {warn}  [非硬性出場，週MACD<0才是真正警示]")
+
     # 7.1 計算MA50斜率
     print("\n" + "=" * 80)
     print("📈 MA50趨勢分析")
     print("=" * 80)
     ma50_slope_info = calculate_ma50_slope(df['close'], window=50, slope_period=5)
-    print(f"當前MA50:        NT${ma50_slope_info['ma50_current']:.2f}")
+    print(f"當前MA50:        ${ma50_slope_info['ma50_current']:.2f}")
     print(f"MA50斜率:        {ma50_slope_info['slope']:+.6f}")
     print(f"斜率百分比:      {ma50_slope_info['slope_pct']:+.4f}%")
     print(f"趨勢判斷:        {ma50_slope_info['color']} {ma50_slope_info['trend']}")
@@ -350,6 +499,13 @@ def get_trading_signal():
         print("⚠️  未找到相关新闻，情绪分析不可用")
         sentiment_result = {'sentiment_score': 0.0, 'news_count': 0, 'sentiment_label': '中性'}
 
+    # ── Tavily 即時新聞 ─────────────────────────────────────────────────────
+    print("\n" + "=" * 80)
+    print("🌐 Micron (MU) 即時新聞  (Tavily REST API)")
+    print("=" * 80)
+    print_tavily_news('MU', 'Micron', max_results=5)
+
+
 
 
 
@@ -358,16 +514,15 @@ def get_trading_signal():
     print("📊 蠟燭圖型態分析")
     print("=" * 80)
 
+    patterns = None
+    pattern_adjustment = 0
     try:
         patterns = analyze_candlestick_patterns(df, days=5)
         print(format_pattern_output(patterns))
-
-        # 獲取型態評分調整
         pattern_adjustment = get_pattern_score_adjustment(patterns)
         print(f"\n型態評分調整: {pattern_adjustment:+.1f} 分")
     except Exception as e:
         print(f"   ⚠️  型態分析失敗: {e}")
-        pattern_adjustment = 0
 
     # 7.8 結構型態分析 (W底/鍋底)
     print("\n" + "=" * 80)
@@ -405,7 +560,7 @@ def get_trading_signal():
     print("\n" + "=" * 80)
     print("🎯 AI 交易信号")
     print("=" * 80)
-    print(f"模型输出动作值: {action_value:+.4f}")
+    print_ppo_action_line(action_value, _ppo_roi, _bh_roi)
 
     if action_value > 0.1:
         signal = "买入 (BUY)"
@@ -439,6 +594,28 @@ def get_trading_signal():
             buy_reasons.append(f"MA50趨勢向上 (+{ma50_slope_adjustment}分)")
         elif ma50_slope_adjustment < 0:
             buy_warnings.append(f"MA50趨勢向下 ({ma50_slope_adjustment}分)")
+
+        # 蠟燭圖型態評分調整（吊人線、十字星等）
+        if pattern_adjustment != 0 and patterns:
+            buy_score += pattern_adjustment
+            # 整理每個型態及其出現日期
+            pattern_dates = {}
+            for day in patterns.get('detailed_analysis', []):
+                day_date = day.get('date')
+                date_str = pd.to_datetime(day_date).strftime('%Y-%m-%d') if day_date is not None else '?'
+                for p in day.get('patterns', []):
+                    pattern_dates.setdefault(p['name'], []).append(date_str)
+
+            if pattern_adjustment < 0:
+                for name, dates in pattern_dates.items():
+                    sig = next((p for day in patterns['detailed_analysis'] for p in day['patterns'] if p['name'] == name), {})
+                    if sig.get('signal') == 'bearish':
+                        buy_warnings.append(f"🕯️ {name} (日期: {', '.join(dates)}) ({pattern_adjustment:+.0f}分)")
+            else:
+                for name, dates in pattern_dates.items():
+                    sig = next((p for day in patterns['detailed_analysis'] for p in day['patterns'] if p['name'] == name), {})
+                    if sig.get('signal') == 'bullish':
+                        buy_reasons.append(f"🕯️ {name} (日期: {', '.join(dates)}) ({pattern_adjustment:+.0f}分)")
 
         # 三角收斂型態檢測
         if detect_triangle(df):
@@ -503,8 +680,20 @@ def get_trading_signal():
                 if signal_text:
                     buy_reasons.append(f"🚀 {signal_text}")
 
-        buy_score = max(0, min(100, buy_score))  # 限制在0-100之間
+        # ── SEC Form 4 內部人減持扣分 ──────────────────────────────────────────────
+        # Sanjay Mehrotra (CEO) 2026年依 Rule 10b5-1 計畫減持：
+        #   2026/05/01: 賣出 40,000股 @ $536 ≈ $2,145萬
+        #   2026/05/29: 賣出 40,000股 @ $960-975 ≈ $3,846萬
+        #   年度合計: 80,000股，套現約 $5,991萬
+        # 注意：屬預先安排計畫（非臨時決策），CEO仍持有約99萬股（市值約10億美元）
+        MU_INSIDER_DEDUCTION = 12  # 10b5-1計畫減持，非恐慌性賣出，扣分適中
+        buy_score -= MU_INSIDER_DEDUCTION
+        buy_warnings.append(
+            f"📋 CEO Form 4: Sanjay Mehrotra 依10b5-1計畫年迄今減持80,000股(套現~$5,991萬) "
+            f"[-{MU_INSIDER_DEDUCTION}分，非臨時賣出，仍持有~99萬股]"
+        )
 
+        buy_score = max(0, min(100, buy_score))  # 限制在0-100之間
 
         # 使用增强评分结果
         reasons = buy_reasons
@@ -583,6 +772,28 @@ def get_trading_signal():
             sell_score -= abs(ma50_slope_adjustment) * 0.5  # 使用0.5係數減少影響
             if sell_score < 0:
                 sell_score = 0
+
+        # 蠟燭圖型態評分調整（吊人線、十字星等）
+        if pattern_adjustment != 0 and patterns:
+            pattern_dates = {}
+            for day in patterns.get('detailed_analysis', []):
+                day_date = day.get('date')
+                date_str = pd.to_datetime(day_date).strftime('%Y-%m-%d') if day_date is not None else '?'
+                for p in day.get('patterns', []):
+                    pattern_dates.setdefault(p['name'], []).append(date_str)
+
+            if pattern_adjustment < 0:
+                sell_score += abs(pattern_adjustment)
+                for name, dates in pattern_dates.items():
+                    sig = next((p for day in patterns['detailed_analysis'] for p in day['patterns'] if p['name'] == name), {})
+                    if sig.get('signal') == 'bearish':
+                        reasons.append(f"🕯️ {name} (日期: {', '.join(dates)}) ({pattern_adjustment:+.0f}分)")
+            else:
+                sell_score = max(0, sell_score - pattern_adjustment)
+                for name, dates in pattern_dates.items():
+                    sig = next((p for day in patterns['detailed_analysis'] for p in day['patterns'] if p['name'] == name), {})
+                    if sig.get('signal') == 'bullish':
+                        reasons.append(f"🕯️ 蠟燭圖偏多: {name} (日期: {', '.join(dates)}) ({pattern_adjustment:+.0f}分)")
 
         # 1. 分析師目標價判斷 (使用动态权重)
         # 投資官邏輯：修復數據盲點
@@ -744,7 +955,7 @@ def get_trading_signal():
             print(f"   建议卖出价格区间: ${suggested_price_low:.2f} - ${suggested_price_high:.2f}")
 
         if reasons:
-            if signal.startswith("持有"):
+            if signal.startswith("持有"): 
                 print(f"\n   📌 持有理由:")
             else:
                 print(f"\n   📌 卖出理由:")
@@ -837,3 +1048,4 @@ if __name__ == "__main__":
         print(f"   {get_model_accuracy_display('MU')}")
     else:
         print("\n❌ 信号生成失败")
+

@@ -1,0 +1,4 @@
+  File "C:\Users\Silvi\Projects\trading-bot\train_2330_taiwan_improved.py", line 249
+    print("
+          ^
+SyntaxError: unterminated string literal (detected at line 249)

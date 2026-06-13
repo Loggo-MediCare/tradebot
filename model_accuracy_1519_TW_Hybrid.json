@@ -1,0 +1,14 @@
+{
+  "symbol": "1519.TW",
+  "model_type": "Hybrid",
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 61.79,
+  "win_rate": 66.04666666666667,
+  "sharpe_ratio": 1.592,
+  "total_signals": 0,
+  "correct_signals": 0,
+  "live_accuracy": null,
+  "last_updated": "2026-05-20 13:04:32",
+  "history": []
+}
