@@ -77,7 +77,7 @@ def add_indicators(df):
     s = df['close'].rolling(20).std()
     df['bb_upper'] = m + s*2
     df['bb_lower'] = m - s*2
-    return df.fillna(method='bfill').fillna(method='ffill')
+    return df.bfill().ffill()
 
 def get_trading_signal():
     print("=" * 60)

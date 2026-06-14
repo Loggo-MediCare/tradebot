@@ -187,7 +187,7 @@ def add_technical_indicators(df):
     df['bb_upper'] = df['bb_middle'] + (df['bb_std'] * 2)
     df['bb_lower'] = df['bb_middle'] - (df['bb_std'] * 2)
 
-    df = df.fillna(method='bfill').fillna(method='ffill')
+    df = df.bfill().ffill()
     return df
 
 # ==========================================
