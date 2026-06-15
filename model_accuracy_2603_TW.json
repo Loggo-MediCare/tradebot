@@ -1,9 +1,15 @@
 {
-  "symbol": "2603",
-  "ticker": "2603.TW",
-  "model_type": "XGBoost",
-  "training_accuracy": 92.77,
-  "validation_accuracy": 65.34,
-  "backtest_accuracy": 65.34,
-  "last_updated": "2026-05-21 03:26:41"
+  "symbol": "2603.TW",
+  "model_type": "PPO",
+  "training_accuracy": null,
+  "validation_accuracy": null,
+  "backtest_accuracy": 100.0,
+  "backtest_return": 70.62723587036133,
+  "win_rate": 100.0,
+  "sharpe_ratio": null,
+  "total_signals": 556,
+  "correct_signals": 556,
+  "live_accuracy": null,
+  "last_updated": "2026-06-15 21:59:55",
+  "history": []
 }

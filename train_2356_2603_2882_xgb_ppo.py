@@ -1,0 +1,315 @@
+"""
+2356 (英業達 Inventec) / 2603 (長榮 Evergreen Marine) / 2882 (國泰金 Cathay Financial)
+Retrain XGBoost + PPO with fresh data through today.
+Produces an accuracy comparison table (XGBoost vs PPO) for each stock plus an overall summary.
+"""
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+os.environ['MPLBACKEND'] = 'Agg'
+import sys
+import io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
+import numpy as np
+import pandas as pd
+import yfinance as yf
+import gymnasium as gym
+from gymnasium import spaces
+from stable_baselines3 import PPO
+from stable_baselines3.common.vec_env import DummyVecEnv
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report
+import xgboost as xgb
+import joblib
+import json
+from datetime import datetime
+import warnings
+warnings.filterwarnings('ignore')
+
+END_DATE = datetime.now().strftime('%Y-%m-%d')
+
+XGB_FEATURES_FULL = ['rsi', 'macd', 'macd_signal', 'macd_hist', 'bb_position', 'K', 'D',
+                      'obv', 'obv_ma20', 'sma_10', 'sma_30', 'sma_50', 'sma_200',
+                      'volatility', 'atr', 'price_change_5d', 'price_change_10d',
+                      'price_change_20d', 'ma50_slope']
+
+# 2882's live signal loads xgb_2882_tw_model.pkl with this exact 18-feature set (no sma_200) - must match
+XGB_FEATURES_2882 = ['rsi', 'macd', 'macd_signal', 'macd_hist', 'bb_position', 'K', 'D',
+                      'obv', 'obv_ma20', 'sma_10', 'sma_30', 'sma_50',
+                      'volatility', 'atr', 'price_change_5d', 'price_change_10d',
+                      'price_change_20d', 'ma50_slope']
+
+STOCKS = [
+    {'code': '2356', 'name': '英業達 Inventec', 'ticker': '2356.TW',
+     'xgb_features': XGB_FEATURES_FULL, 'xgb_model': 'xgb_2356_tw_model.pkl',
+     'xgb_symbol': '2356.TW', 'xgb_acc_files': ['model_accuracy_2356_TW.json'],
+     'ppo_model': 'ppo_2356_tw_improved',
+     'ppo_symbol': '2356', 'ppo_acc_files': ['model_accuracy_2356.json']},
+    {'code': '2603', 'name': '長榮 Evergreen Marine', 'ticker': '2603.TW',
+     'xgb_features': XGB_FEATURES_FULL, 'xgb_model': 'xgb_2603_tw_model.pkl',
+     'xgb_symbol': '2603.TW', 'xgb_acc_files': ['model_accuracy_2603_TW_XGB.json'],
+     'ppo_model': 'ppo_2603_tw_improved',
+     'ppo_symbol': '2603.TW', 'ppo_acc_files': ['model_accuracy_2603_TW.json']},
+    {'code': '2882', 'name': '國泰金 Cathay Financial', 'ticker': '2882.TW',
+     'xgb_features': XGB_FEATURES_2882, 'xgb_model': 'xgb_2882_tw_model.pkl',
+     'xgb_symbol': '2882.TW', 'xgb_acc_files': ['model_accuracy_2882_XGB.json'],
+     'ppo_model': 'ppo_2882_tw_improved',
+     'ppo_symbol': '2882', 'ppo_acc_files': ['model_accuracy_2882.json', 'model_accuracy_2882_TW.json']},
+]
+
+
+# ============================================================
+# PPO 15-dim continuous-action trading environment (shared)
+# ============================================================
+class ImprovedTradingEnv(gym.Env):
+    def __init__(self, df, initial_balance=10000):
+        super(ImprovedTradingEnv, self).__init__()
+        self.df = df.reset_index(drop=True)
+        self.initial_balance = initial_balance
+        self.action_space = spaces.Box(low=-1.0, high=1.0, shape=(1,), dtype=np.float32)
+        self.observation_space = spaces.Box(low=-np.inf, high=np.inf, shape=(15,), dtype=np.float32)
+        self.reset()
+
+    def reset(self, seed=None, options=None):
+        super().reset(seed=seed)
+        self.current_step = 0
+        self.balance = self.initial_balance
+        self.shares_held = 0
+        self.total_profit = 0
+        self.total_trades = 0
+        return self._get_observation(), {}
+
+    def _get_observation(self):
+        row = self.df.iloc[self.current_step]
+        current_price = float(row['close'])
+        total_value = self.balance + self.shares_held * current_price
+        stock_ratio = (self.shares_held * current_price) / total_value if total_value > 0 else 0
+        cash_ratio = self.balance / total_value if total_value > 0 else 1
+        return np.array([
+            float(self.shares_held), float(self.balance), float(row['close']),
+            float(row['sma_10']), float(row['sma_30']), float(row['sma_50']),
+            float(row['rsi']), float(row['macd']), float(row['macd_signal']),
+            float(row['bb_upper']), float(row['bb_lower']), float(row['volume']),
+            float(self.total_profit), float(stock_ratio), float(cash_ratio)
+        ], dtype=np.float32)
+
+    def step(self, action):
+        action = float(action[0]) if isinstance(action, np.ndarray) else float(action)
+        action = np.clip(action, -1.0, 1.0)
+        current_price = float(self.df.iloc[self.current_step]['close'])
+        old_total_value = self.balance + self.shares_held * current_price
+
+        if action < -0.1:
+            shares_to_sell = int(self.shares_held * abs(action))
+            if shares_to_sell > 0:
+                self.balance += shares_to_sell * current_price
+                self.shares_held -= shares_to_sell
+                self.total_trades += 1
+        elif action > 0.1:
+            max_can_buy = int(self.balance // current_price)
+            shares_to_buy = int(max_can_buy * action)
+            if shares_to_buy > 0:
+                self.balance -= shares_to_buy * current_price
+                self.shares_held += shares_to_buy
+                self.total_trades += 1
+
+        new_total_value = self.balance + self.shares_held * current_price
+        self.total_profit = new_total_value - self.initial_balance
+        profit_reward = self.total_profit / self.initial_balance
+        trade_incentive = 0.01 if abs(action) > 0.1 else 0.0
+        cash_penalty = -0.005 if self.balance > old_total_value * 0.9 else 0.0
+        reward = profit_reward + trade_incentive + cash_penalty
+
+        self.current_step += 1
+        done = self.current_step >= len(self.df) - 1
+        return self._get_observation(), float(reward), done, False, {}
+
+
+def build_dataframe(ticker):
+    df = yf.download(ticker, start='2015-01-01', end=END_DATE, progress=False)
+    if isinstance(df.columns, pd.MultiIndex):
+        df.columns = df.columns.droplevel(1)
+    df = df.rename(columns={'Close': 'close', 'Volume': 'volume', 'Open': 'open',
+                             'High': 'high', 'Low': 'low'}).reset_index()
+
+    df['sma_10'] = df['close'].rolling(10).mean()
+    df['sma_30'] = df['close'].rolling(30).mean()
+    df['sma_50'] = df['close'].rolling(50).mean()
+    df['sma_200'] = df['close'].rolling(200).mean()
+    df['ema_12'] = df['close'].ewm(span=12).mean()
+    df['ema_26'] = df['close'].ewm(span=26).mean()
+    delta = df['close'].diff()
+    gain = delta.where(delta > 0, 0).rolling(14).mean()
+    loss = (-delta.where(delta < 0, 0)).rolling(14).mean()
+    df['rsi'] = 100 - (100 / (1 + gain / (loss + 1e-10)))
+    df['macd'] = df['ema_12'] - df['ema_26']
+    df['macd_signal'] = df['macd'].ewm(span=9).mean()
+    df['macd_hist'] = df['macd'] - df['macd_signal']
+    df['bb_middle'] = df['close'].rolling(20).mean()
+    df['bb_std'] = df['close'].rolling(20).std()
+    df['bb_upper'] = df['bb_middle'] + 2 * df['bb_std']
+    df['bb_lower'] = df['bb_middle'] - 2 * df['bb_std']
+    df['bb_position'] = ((df['close'] - df['bb_lower']) / (df['bb_upper'] - df['bb_lower']) * 100).fillna(50)
+    low_14 = df['low'].rolling(14).min()
+    high_14 = df['high'].rolling(14).max()
+    df['K'] = ((df['close'] - low_14) / (high_14 - low_14) * 100).fillna(50)
+    df['D'] = df['K'].rolling(3).mean()
+    df['obv'] = (np.sign(df['close'].diff()) * df['volume']).fillna(0).cumsum()
+    df['obv_ma20'] = df['obv'].rolling(20).mean()
+    df['volatility'] = df['close'].rolling(20).std() / df['close'].rolling(20).mean()
+    high_low = df['high'] - df['low']
+    high_close = np.abs(df['high'] - df['close'].shift())
+    low_close = np.abs(df['low'] - df['close'].shift())
+    true_range = pd.concat([high_low, high_close, low_close], axis=1).max(axis=1)
+    df['atr'] = true_range.rolling(14).mean()
+    df['price_change_5d'] = df['close'].pct_change(5) * 100
+    df['price_change_10d'] = df['close'].pct_change(10) * 100
+    df['price_change_20d'] = df['close'].pct_change(20) * 100
+    df['ma50_slope'] = df['sma_50'].diff(5) / df['sma_50'].shift(5) * 100
+    df['future_return'] = df['close'].shift(-5) / df['close'] - 1
+    df['target'] = (df['future_return'] > 0.02).astype(int)
+    return df
+
+
+def train_xgboost(df, features, model_file, acc_files, symbol):
+    print("\n" + "=" * 80)
+    print("📊 XGBoost 模型訓練")
+    print("=" * 80)
+    df_clean = df.dropna(subset=features + ['target'])
+    X, y = df_clean[features], df_clean['target']
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
+    print(f"訓練集: {len(X_train)}, 測試集: {len(X_test)}")
+
+    model = xgb.XGBClassifier(
+        max_depth=5, learning_rate=0.05, n_estimators=200,
+        min_child_weight=3, subsample=0.8, colsample_bytree=0.8,
+        objective='binary:logistic', random_state=42, eval_metric='logloss'
+    )
+    model.fit(X_train, y_train)
+
+    train_acc = accuracy_score(y_train, model.predict(X_train))
+    test_acc = accuracy_score(y_test, model.predict(X_test))
+    print(f"訓練準確度: {train_acc*100:.2f}%")
+    print(f"測試準確度: {test_acc*100:.2f}%")
+    print(classification_report(y_test, model.predict(X_test), target_names=['不買', '買入']))
+
+    joblib.dump(model, model_file)
+    print(f"✅ XGBoost 模型已保存: {model_file}")
+
+    for acc_file in acc_files:
+        with open(acc_file, 'w', encoding='utf-8') as f:
+            json.dump({
+                'symbol': symbol,
+                'model_type': 'XGBoost',
+                'training_accuracy': float(train_acc * 100),
+                'validation_accuracy': float(test_acc * 100),
+                'backtest_accuracy': float(test_acc * 100),
+                'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            }, f, ensure_ascii=False, indent=2)
+        print(f"✅ 準確度已更新: {acc_file}")
+
+    return train_acc * 100, test_acc * 100, len(X_test)
+
+
+def train_ppo(df, ppo_model_file, acc_files, symbol):
+    print("\n" + "=" * 80)
+    print("🤖 PPO 模型訓練")
+    print("=" * 80)
+    ppo_features = ['sma_10', 'sma_30', 'sma_50', 'rsi', 'macd', 'macd_signal', 'bb_upper', 'bb_lower', 'close', 'volume']
+    df_ppo = df.bfill().ffill().dropna(subset=ppo_features)
+    split_idx = int(len(df_ppo) * 0.8)
+    train_df = df_ppo.iloc[:split_idx].reset_index(drop=True)
+    test_df = df_ppo.iloc[split_idx:].reset_index(drop=True)
+    print(f"訓練集: {len(train_df)} 天, 測試集: {len(test_df)} 天")
+
+    env = DummyVecEnv([lambda: ImprovedTradingEnv(train_df)])
+    model = PPO('MlpPolicy', env, learning_rate=0.0005, n_steps=2048, batch_size=64,
+                n_epochs=10, gamma=0.99, ent_coef=0.01, verbose=0)
+    print("訓練中... (200,000 步)")
+    model.learn(total_timesteps=200000)
+    model.save(ppo_model_file)
+    print(f"✅ PPO 模型已保存: {ppo_model_file}.zip")
+
+    test_env = ImprovedTradingEnv(test_df)
+    obs, _ = test_env.reset()
+    correct = 0
+    total = 0
+    for _ in range(len(test_df) - 1):
+        action, _ = model.predict(obs, deterministic=True)
+        obs, reward, done, _, _ = test_env.step(action)
+        if abs(action[0]) > 0.15:
+            total += 1
+            correct += (1 if reward > 0 else 0)
+        if done:
+            break
+
+    acc = (correct / total * 100) if total > 0 else 0
+    final_value = test_env.balance + test_env.shares_held * test_df.iloc[-1]['close']
+    ret = (final_value - 10000) / 10000 * 100
+    print(f"✅ PPO 回測準確度: {acc:.2f}% | 回報率: {ret:.2f}% | 交易次數: {test_env.total_trades} | 樣本數: {total}")
+
+    for acc_file in acc_files:
+        with open(acc_file, 'w', encoding='utf-8') as f:
+            json.dump({
+                'symbol': symbol,
+                'model_type': 'PPO',
+                'training_accuracy': None,
+                'validation_accuracy': None,
+                'backtest_accuracy': float(acc),
+                'backtest_return': float(ret),
+                'win_rate': float(acc),
+                'sharpe_ratio': None,
+                'total_signals': int(total),
+                'correct_signals': int(correct),
+                'live_accuracy': None,
+                'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'history': []
+            }, f, ensure_ascii=False, indent=2)
+        print(f"✅ 準確度已更新: {acc_file}")
+
+    return acc, ret, total, test_env.total_trades, len(train_df), len(test_df)
+
+
+if __name__ == '__main__':
+    results = []
+    for stock in STOCKS:
+        code, name, ticker = stock['code'], stock['name'], stock['ticker']
+        print("\n" + "=" * 80)
+        print(f"🚀 {code} ({name}) - XGBoost + PPO 重新訓練")
+        print(f"   數據範圍: 2015-01-01 至 {END_DATE}")
+        print("=" * 80)
+
+        df = build_dataframe(ticker)
+        print(f"✅ 下載 {len(df)} 天數據")
+        print(f"   價格範圍: NT${float(df['close'].min()):.2f} - NT${float(df['close'].max()):.2f}")
+
+        xgb_train_acc, xgb_test_acc, n_test = train_xgboost(
+            df, stock['xgb_features'], stock['xgb_model'], stock['xgb_acc_files'], stock['xgb_symbol'])
+
+        ppo_acc, ppo_ret, ppo_total, ppo_trades, n_train_days, n_test_days = train_ppo(
+            df, stock['ppo_model'], stock['ppo_acc_files'], stock['ppo_symbol'])
+
+        print("\n" + "=" * 80)
+        print(f"📊 {code} ({name}) 模型準確度比較")
+        print("=" * 80)
+        print(f"{'模型':<12} {'訓練準確度':>12} {'測試/回測準確度':>16} {'樣本數':>8}")
+        print(f"{'XGBoost':<12} {xgb_train_acc:>11.2f}% {xgb_test_acc:>15.2f}% {n_test:>8}")
+        print(f"{'PPO':<12} {'N/A':>12} {ppo_acc:>15.2f}% {ppo_total:>8}")
+        print("=" * 80)
+        print(f"PPO 回測期間回報率: {ppo_ret:+.2f}% (測試集 {n_test_days} 天, 交易 {ppo_trades} 次)")
+
+        results.append({
+            'code': code, 'name': name,
+            'xgb_train': xgb_train_acc, 'xgb_test': xgb_test_acc, 'xgb_n': n_test,
+            'ppo_acc': ppo_acc, 'ppo_ret': ppo_ret, 'ppo_n': ppo_total, 'ppo_trades': ppo_trades,
+        })
+
+    print("\n" + "=" * 80)
+    print("📊 2356 / 2603 / 2882 整體比較總表")
+    print("=" * 80)
+    print(f"{'代號':<8} {'XGB訓練':>10} {'XGB測試':>10} {'PPO回測':>10} {'PPO回報率':>10} {'PPO交易':>8}")
+    for r in results:
+        print(f"{r['code']:<8} {r['xgb_train']:>9.2f}% {r['xgb_test']:>9.2f}% {r['ppo_acc']:>9.2f}% {r['ppo_ret']:>+9.2f}% {r['ppo_trades']:>8}")
+    print("=" * 80)
+    print("\n[OK] 2356/2603/2882 重新訓練完成!")

@@ -521,7 +521,7 @@ def get_trading_signal():
     # 顯示AI模型準確度
 
 
-    accuracy_display = get_model_accuracy_display('6485.TWO')
+    accuracy_display = get_model_accuracy_display('6485')
 
 
     print(f"模型準確度: {accuracy_display}")
@@ -533,7 +533,7 @@ def get_trading_signal():
     # 1. 加载模型
 
 
-    model_path = r"C:\Users\Silvi\Projects\trading-bot\ppo_6485_tw_improved"
+    model_path = r"ppo_6485_tw_improved"
 
 
     print(f"\n📦 加载 AI 模型: {model_path}")
@@ -2123,7 +2123,7 @@ if __name__ == "__main__":
         # 顯示AI模型準確度摘要
 
 
-        print(f"   {get_model_accuracy_display('6485.TWO')}")
+        print(f"   {get_model_accuracy_display('6485')}")
 
 
     else:

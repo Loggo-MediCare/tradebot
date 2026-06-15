@@ -1,15 +1,15 @@
 {
-  "symbol": "2882",
+  "symbol": "8271",
   "model_type": "PPO",
-  "training_accuracy": null,
-  "validation_accuracy": null,
+  "training_accuracy": 100.0,
+  "validation_accuracy": 100.0,
   "backtest_accuracy": 100.0,
-  "backtest_return": 143.7574423599243,
+  "backtest_return": 0.0,
   "win_rate": 100.0,
   "sharpe_ratio": null,
   "total_signals": 556,
   "correct_signals": 556,
   "live_accuracy": null,
-  "last_updated": "2026-06-15 22:10:09",
+  "last_updated": "2026-06-15 22:27:50",
   "history": []
 }

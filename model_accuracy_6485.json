@@ -1,0 +1,15 @@
+{
+  "symbol": "6485",
+  "model_type": "PPO",
+  "training_accuracy": 10.251798561151078,
+  "validation_accuracy": 10.251798561151078,
+  "backtest_accuracy": 10.251798561151078,
+  "backtest_return": -3.381305847167969,
+  "win_rate": 10.251798561151078,
+  "sharpe_ratio": null,
+  "total_signals": 556,
+  "correct_signals": 57,
+  "live_accuracy": null,
+  "last_updated": "2026-06-15 19:05:10",
+  "history": []
+}

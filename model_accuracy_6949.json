@@ -1,8 +1,8 @@
 {
-  "symbol": "ARM",
+  "symbol": "6949",
   "model_type": "PPO",
-  "training_accuracy": null,
-  "validation_accuracy": null,
+  "training_accuracy": 0.0,
+  "validation_accuracy": 0.0,
   "backtest_accuracy": 0.0,
   "backtest_return": 0.0,
   "win_rate": 0.0,
@@ -10,6 +10,6 @@
   "total_signals": 0,
   "correct_signals": 0,
   "live_accuracy": null,
-  "last_updated": "2026-06-14 15:30:31",
+  "last_updated": "2026-06-15 21:49:10",
   "history": []
 }

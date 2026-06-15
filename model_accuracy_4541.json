@@ -1,0 +1,15 @@
+{
+  "symbol": "4541",
+  "model_type": "PPO",
+  "training_accuracy": 77.33812949640287,
+  "validation_accuracy": 77.33812949640287,
+  "backtest_accuracy": 77.33812949640287,
+  "backtest_return": 57.92206731796264,
+  "win_rate": 77.33812949640287,
+  "sharpe_ratio": null,
+  "total_signals": 556,
+  "correct_signals": 430,
+  "live_accuracy": null,
+  "last_updated": "2026-06-15 18:22:24",
+  "history": []
+}

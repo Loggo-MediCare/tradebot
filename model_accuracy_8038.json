@@ -1,0 +1,15 @@
+{
+  "symbol": "8038",
+  "model_type": "PPO",
+  "training_accuracy": 100.0,
+  "validation_accuracy": 100.0,
+  "backtest_accuracy": 100.0,
+  "backtest_return": 0.0,
+  "win_rate": 100.0,
+  "sharpe_ratio": null,
+  "total_signals": 554,
+  "correct_signals": 554,
+  "live_accuracy": null,
+  "last_updated": "2026-06-15 22:09:08",
+  "history": []
+}
