@@ -360,7 +360,7 @@ def get_trading_signal():
 
     print(f"   XGBoost 预测: {'买入' if prediction == 1 else '不买/观望'}")
     print(f"   买入概率: {prediction_proba[1]*100:.2f}%")
-    print(f"   XGB Action: {{xgb_action:+.4f}}")
+    print(f"   XGB Action: {xgb_action:+.4f}")
 
     # 5b. PPO 推理
     ppo_action = 0.0
@@ -387,15 +387,15 @@ def get_trading_signal():
             from ppo_backtest_cache import format_ppo_roi_line
             print(format_ppo_roi_line('AMD', 'AMD', 'ppo_amd_improved', df, ppo_action))
         except Exception as e:
-            print(f"   ⚠️  PPO 推理失败: {{e}}")
+            print(f"   ⚠️  PPO 推理失败: {e}")
 
     # 5c. Hybrid 融合 (60% XGB + 40% PPO)
     if ppo_model is not None:
         action_value = 0.6 * xgb_action + 0.4 * ppo_action
-        print(f"\n🔀 Hybrid Action: {{action_value:+.4f}}  (XGB×0.6 + PPO×0.4)")
+        print(f"\n🔀 Hybrid Action: {action_value:+.4f}  (XGB×0.6 + PPO×0.4)")
     else:
         action_value = xgb_action
-        print(f"\n🔀 Action Value (XGB only): {{action_value:+.4f}}")
+        print(f"\n🔀 Action Value (XGB only): {action_value:+.4f}")
 
     ai_muted = should_mute_ai_signal('AMD', threshold=52)
     if ai_muted:
@@ -576,23 +576,24 @@ def get_trading_signal():
         print(f"  5日均值:     {obv_5d_avg:,.0f}")
         print(f"  机构进驻:    {'✅ 是 (OBV持续突破MA20)' if institutional_inflow else '❌ 否 (等待OBV确认)'}")
 
-        # 3. 目标价位区间
-        target_zone_low = 55.0
-        target_zone_high = 60.0
-        distance_to_target = ((target_zone_low - current_price) / current_price) * 100
+        # 3. 目标价位区间 (使用分析師目標價，而非過時的硬編碼數值)
+        if target_price is not None and target_high is not None:
+            target_zone_low = target_price
+            target_zone_high = target_high
+            distance_to_target = ((target_zone_low - current_price) / current_price) * 100
 
-        print(f"\n目标价位分析:")
-        print(f"  当前价格:     ${current_price:.2f}")
-        print(f"  第一目标区:   ${target_zone_low:.2f} - ${target_zone_high:.2f} (分析师中值)")
-        print(f"  潜在空间:     {distance_to_target:+.1f}% {'(已达标)' if distance_to_target <= 0 else '(上涨空间)'}")
+            print(f"\n目标价位分析:")
+            print(f"  当前价格:     ${current_price:.2f}")
+            print(f"  第一目标区:   ${target_zone_low:.2f} - ${target_zone_high:.2f} (分析师中值/最高)")
+            print(f"  潜在空间:     {distance_to_target:+.1f}% {'(已达标)' if distance_to_target <= 0 else '(上涨空间)'}")
 
-        # 如果已接近或超过目标区，降低买入评分
-        if current_price >= target_zone_high:
-            buy_score -= 15
-            buy_warnings.append(f"⚠️ 价格已达第一目标区上限 ${target_zone_high}, 建议获利了结")
-        elif current_price >= target_zone_low:
-            buy_score -= 5
-            buy_warnings.append(f"价格已进入目标区 ${target_zone_low}-{target_zone_high}, 注意压力")
+            # 如果已接近或超过目标区，降低买入评分
+            if current_price >= target_zone_high:
+                buy_score -= 15
+                buy_warnings.append(f"⚠️ 价格已达第一目标区上限 ${target_zone_high:.2f}, 建议获利了结")
+            elif current_price >= target_zone_low:
+                buy_score -= 5
+                buy_warnings.append(f"价格已进入目标区 ${target_zone_low:.2f}-${target_zone_high:.2f}, 注意压力")
 
         print("\n" + "=" * 80)
         # ==========================================
