@@ -4,12 +4,12 @@
   "training_accuracy": 100.0,
   "validation_accuracy": 100.0,
   "backtest_accuracy": 100.0,
-  "backtest_return": 27.755000000000003,
+  "backtest_return": 0.0,
   "win_rate": 100.0,
   "sharpe_ratio": null,
   "total_signals": 108,
   "correct_signals": 108,
   "live_accuracy": null,
-  "last_updated": "2026-06-15 21:59:03",
+  "last_updated": "2026-06-17 10:28:16",
   "history": []
 }

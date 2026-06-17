@@ -1,7 +1,7 @@
 {
   "ticker": "ARM",
-  "analysis_date": "2026-06-14",
-  "model_accuracy": 0.5408163265306123,
+  "analysis_date": "2026-06-16",
+  "model_accuracy": 0.5353535353535354,
   "feature_importance": {
     "sma_50": 0.078748997875049,
     "sma_200": 0.07686955424273043,

@@ -9,6 +9,7 @@ import sys
 import io
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
+import time
 import numpy as np
 import pandas as pd
 import yfinance as yf
@@ -111,10 +112,20 @@ class ImprovedTradingEnv(gym.Env):
         return self._get_observation(), float(reward), done, False, {}
 
 
+def download_with_retry(ticker, retries=5, delay=20):
+    for attempt in range(1, retries + 1):
+        df = yf.download(ticker, start='2015-01-01', end='2026-12-31', progress=False)
+        if not df.empty and len(df) >= 100:
+            return df
+        print(f"  ⚠️  第 {attempt}/{retries} 次下載無資料，{delay}秒後重試...")
+        time.sleep(delay)
+    return df
+
+
 def train_stock(code, ticker):
     print(f"\n{'='*70}\n訓練 {code} ({ticker})\n{'='*70}")
     try:
-        df = yf.download(ticker, start='2015-01-01', end='2026-12-31', progress=False)
+        df = download_with_retry(ticker)
         if df.empty or len(df) < 100:
             print("  ❌ 無資料")
             return None
@@ -200,8 +211,12 @@ if __name__ == '__main__':
     print(f"開始時間: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("=" * 70)
 
+    INTER_STOCK_DELAY = 20  # seconds between stocks to avoid Yahoo Finance TW-market rate limiting
     results = []
-    for code, ticker in STOCKS:
+    for i, (code, ticker) in enumerate(STOCKS):
+        if i > 0:
+            print(f"  ⏳ 等待 {INTER_STOCK_DELAY}s 冷卻（避免 Yahoo Finance 速率限制）...")
+            time.sleep(INTER_STOCK_DELAY)
         r = train_stock(code, ticker)
         results.append(r if r else {'code': code, 'ticker': ticker, 'status': 'FAIL', 'accuracy': None, 'return': None, 'trades': None})
 

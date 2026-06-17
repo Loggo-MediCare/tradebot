@@ -1,15 +1,15 @@
 {
   "symbol": "6265",
   "model_type": "PPO",
-  "training_accuracy": 31.115107913669064,
-  "validation_accuracy": 31.115107913669064,
-  "backtest_accuracy": 31.115107913669064,
-  "backtest_return": 313.4955135154724,
-  "win_rate": 31.115107913669064,
+  "training_accuracy": 28.28828828828829,
+  "validation_accuracy": 28.28828828828829,
+  "backtest_accuracy": 28.28828828828829,
+  "backtest_return": 282.20220602989195,
+  "win_rate": 28.28828828828829,
   "sharpe_ratio": null,
-  "total_signals": 556,
-  "correct_signals": 173,
+  "total_signals": 555,
+  "correct_signals": 157,
   "live_accuracy": null,
-  "last_updated": "2026-06-15 18:54:50",
+  "last_updated": "2026-06-17 09:37:53",
   "history": []
 }
