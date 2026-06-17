@@ -1,8 +1,0 @@
-{
-  "symbol": "8908",
-  "ticker": "8908.TWO",
-  "model_type": "PPO",
-  "validation_accuracy": 10.46,
-  "backtest_accuracy": 10.46,
-  "last_updated": "2026-05-21 04:31:42"
-}

@@ -1,8 +1,0 @@
-{
-  "symbol": "3055",
-  "ticker": "3055.TW",
-  "model_type": "PPO",
-  "validation_accuracy": 38.53,
-  "backtest_accuracy": 38.53,
-  "last_updated": "2026-05-18 17:35:15"
-}

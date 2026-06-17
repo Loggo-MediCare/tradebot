@@ -1,8 +1,0 @@
-{
-  "symbol": "8021",
-  "model_type": "XGBoost",
-  "train_accuracy": 96.35343618513323,
-  "test_accuracy": 52.149532710280376,
-  "backtest_return": 27.365964431762695,
-  "last_updated": "2026-03-19 12:21:54"
-}

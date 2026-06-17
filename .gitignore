@@ -44,5 +44,13 @@ FinRL-trained-model-repository/
 
 # Caches / scratch
 .cache_yfinance/
+.cache_yfinance_names/
+.cache_premarket/
+.cache_earnings/
 TMP/
 0260206T093147Z-1-001/
+
+# Large generated files (exceptions go below with !)
+*.json
+*.zip
+!requirements.txt

@@ -1,8 +1,0 @@
-{
-  "symbol": "VRT",
-  "model_type": "XGBoost",
-  "training_accuracy": 97.44552967693464,
-  "validation_accuracy": 53.753753753753756,
-  "backtest_accuracy": 53.753753753753756,
-  "last_updated": "2026-02-25 19:52:16"
-}

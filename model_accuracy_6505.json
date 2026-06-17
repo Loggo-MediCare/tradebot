@@ -1,9 +1,0 @@
-{
-  "symbol": "6505.TW",
-  "model_type": "XGBoost",
-  "training_accuracy": 98.80294659300183,
-  "validation_accuracy": 70.1657458563536,
-  "backtest_accuracy": 70.1657458563536,
-  "last_updated": "2026-03-10 05:12:51",
-  "notes": "Optimized with 4.0% gain threshold"
-}

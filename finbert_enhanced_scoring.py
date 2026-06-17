@@ -8,10 +8,12 @@ FinBERT 增强评分模块
 import sys
 import io
 import os
+import threading
 # 不要在模块中设置 sys.stdout，由主程序控制
 # sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 _FINBERT_ANALYZER = None
+_FINBERT_LOCK = threading.Lock()
 _SENTIMENT_CACHE = {}
 _GROWTH_CACHE = {}  # ticker → calculate_growth_score_adjustment result
 # 0 表示不截斷（顯示完整標題）
@@ -20,11 +22,13 @@ TOP_NEWS_DISPLAY_COUNT = int(os.getenv("FINBERT_TOP_NEWS_COUNT", "3"))
 
 
 def _get_finbert_analyzer():
-    """延迟初始化并复用 FinBERT 分析器，避免重复加载模型。"""
+    """延迟初始化并复用 FinBERT 分析器 (thread-safe)，避免並行載入觸發 meta-tensor 錯誤。"""
     global _FINBERT_ANALYZER
     if _FINBERT_ANALYZER is None:
-        from finbert_sentiment import FinBERTAnalyzer
-        _FINBERT_ANALYZER = FinBERTAnalyzer()
+        with _FINBERT_LOCK:
+            if _FINBERT_ANALYZER is None:
+                from finbert_sentiment import FinBERTAnalyzer
+                _FINBERT_ANALYZER = FinBERTAnalyzer()
     return _FINBERT_ANALYZER
 
 

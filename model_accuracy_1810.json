@@ -1,8 +1,0 @@
-{
-  "symbol": "1810",
-  "ticker": "1810.HK",
-  "model_type": "XGBoost",
-  "validation_accuracy": 60.78,
-  "backtest_accuracy": 60.78,
-  "last_updated": "2026-05-21 06:50:48"
-}

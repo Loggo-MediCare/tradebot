@@ -1,8 +1,0 @@
-{
-  "symbol": "BA",
-  "model_type": "XGBoost",
-  "training_accuracy": 92.84,
-  "validation_accuracy": 62.81,
-  "backtest_accuracy": 62.81,
-  "last_updated": "2026-05-20 21:41:03"
-}

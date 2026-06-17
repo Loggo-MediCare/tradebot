@@ -1,9 +1,0 @@
-{
-  "symbol": "3055",
-  "ticker": "3055.TW",
-  "model_type": "XGBoost",
-  "training_accuracy": 93.86,
-  "validation_accuracy": 58.8,
-  "backtest_accuracy": 58.8,
-  "last_updated": "2026-05-18 17:30:04"
-}

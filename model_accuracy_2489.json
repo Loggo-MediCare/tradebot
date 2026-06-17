@@ -1,9 +1,0 @@
-{
-  "symbol": "2489.TW",
-  "model_type": "XGBoost",
-  "training_accuracy": 98.75690607734806,
-  "validation_accuracy": 77.16390423572744,
-  "backtest_accuracy": 77.16390423572744,
-  "last_updated": "2026-03-10 06:44:14",
-  "notes": "Optimized with 4.0% gain threshold"
-}

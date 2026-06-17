@@ -1,8 +1,0 @@
-{
-  "symbol": "QUBT",
-  "model_type": "XGBoost",
-  "training_accuracy": 95.90643274853801,
-  "validation_accuracy": 55.83657587548638,
-  "backtest_accuracy": 55.83657587548638,
-  "last_updated": "2026-02-25 19:52:20"
-}

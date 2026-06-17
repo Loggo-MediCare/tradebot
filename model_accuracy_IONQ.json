@@ -1,8 +1,0 @@
-{
-  "symbol": "IONQ",
-  "model_type": "XGBoost",
-  "training_accuracy": 98.69668246445498,
-  "validation_accuracy": 56.872037914691944,
-  "backtest_accuracy": 56.872037914691944,
-  "last_updated": "2026-02-25 19:52:15"
-}

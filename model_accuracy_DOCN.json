@@ -1,9 +1,0 @@
-{
-  "symbol": "DOCN",
-  "model_type": "XGBoost",
-  "training_accuracy": 99.3975903614458,
-  "validation_accuracy": 64.4,
-  "backtest_accuracy": 64.4,
-  "last_updated": "2026-03-11 04:40:03",
-  "notes": "Optimized with 3.5% gain threshold"
-}

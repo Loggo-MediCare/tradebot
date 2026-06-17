@@ -1,9 +1,0 @@
-{
-  "symbol": "1303",
-  "ticker": "1303.TW",
-  "model_type": "XGBoost",
-  "training_accuracy": 94.23,
-  "validation_accuracy": 59.53,
-  "backtest_accuracy": 59.53,
-  "last_updated": "2026-05-21 03:24:19"
-}

@@ -1,8 +1,0 @@
-{
-  "symbol": "3264",
-  "ticker": "3264.TWO",
-  "model_type": "PPO",
-  "validation_accuracy": 33.76,
-  "backtest_accuracy": 33.76,
-  "last_updated": "2026-05-18 17:51:20"
-}

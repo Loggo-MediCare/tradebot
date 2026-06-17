@@ -1,8 +1,0 @@
-{
-  "symbol": "JAZZ",
-  "model_type": "XGBoost",
-  "training_accuracy": 55.37,
-  "validation_accuracy": 49.90,
-  "backtest_accuracy": 49.90,
-  "last_updated": "2026-02-26 05:10:21"
-}

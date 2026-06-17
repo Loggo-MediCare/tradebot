@@ -1,9 +1,0 @@
-{
-  "symbol": "MRNA",
-  "model_type": "XGBoost",
-  "training_accuracy": 98.7611837577426,
-  "validation_accuracy": 60.43956043956044,
-  "backtest_accuracy": 60.43956043956044,
-  "last_updated": "2026-03-04 16:26:36",
-  "notes": "Optimized with 4.0% gain threshold"
-}

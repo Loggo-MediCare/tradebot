@@ -1,8 +1,0 @@
-{
-  "symbol": "6505",
-  "ticker": "6505.TW",
-  "model_type": "PPO",
-  "validation_accuracy": 71.38,
-  "backtest_accuracy": 71.38,
-  "last_updated": "2026-05-21 04:04:33"
-}

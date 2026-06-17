@@ -1,9 +1,0 @@
-{
-  "symbol": "3006.TW",
-  "model_type": "XGBoost",
-  "training_accuracy": 96.59300184162063,
-  "validation_accuracy": 60.11029411764706,
-  "backtest_accuracy": 60.11029411764706,
-  "last_updated": "2026-03-11 04:39:28",
-  "notes": "Optimized with 3.0% gain threshold"
-}

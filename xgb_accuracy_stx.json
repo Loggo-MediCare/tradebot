@@ -1,8 +1,0 @@
-{
-  "symbol": "stx",
-  "model_type": "XGBoost",
-  "train_accuracy": 97.10930442637759,
-  "test_accuracy": 48.375451263537904,
-  "backtest_return": 80.78851959228516,
-  "last_updated": "2026-03-18 08:55:43"
-}

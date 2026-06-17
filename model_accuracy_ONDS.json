@@ -1,9 +1,0 @@
-{
-  "symbol": "onds",
-  "ticker": "ONDS",
-  "model_type": "XGBoost",
-  "training_accuracy": 97.14,
-  "validation_accuracy": 45.59,
-  "backtest_accuracy": 45.59,
-  "last_updated": "2026-05-21 04:58:44"
-}

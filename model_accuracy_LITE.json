@@ -1,8 +1,0 @@
-{
-  "symbol": "LITE",
-  "model_type": "XGBoost",
-  "training_accuracy": 93.52380952380952,
-  "validation_accuracy": 48.09885931558935,
-  "backtest_accuracy": 48.09885931558935,
-  "last_updated": "2026-05-04 03:58:17"
-}

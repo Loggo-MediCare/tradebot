@@ -1,9 +1,0 @@
-{
-  "symbol": "OMC",
-  "model_type": "XGBoost",
-  "training_accuracy": 99.10913140311804,
-  "validation_accuracy": 88.79003558718861,
-  "backtest_accuracy": 88.79003558718861,
-  "last_updated": "2026-03-04 16:26:40",
-  "notes": "Optimized with 4.0% gain threshold"
-}

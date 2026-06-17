@@ -1,8 +1,0 @@
-{
-  "symbol": "ARM",
-  "model_type": "XGBoost",
-  "training_accuracy": 99.74489795918367,
-  "validation_accuracy": 48.484848484848484,
-  "backtest_accuracy": 48.484848484848484,
-  "last_updated": "2026-06-16 08:27:59"
-}

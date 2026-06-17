@@ -38,8 +38,13 @@ except ImportError:
     calculate_sentiment_score = None
 
 
-WATCHLIST_US = ['NVDA', 'AMD', 'TSM', 'AVGO', 'MU', 'PLTR', 'SNDK', 'CRDO', 'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'TSLA']
-WATCHLIST_TW = ['2330.TW', '2317.TW', '2454.TW', '2308.TW', '2327.TW', '2330.TWO']
+WATCHLIST_US = ['NVDA', 'AMD', 'TSM', 'AVGO', 'MU', 'PLTR', 'SNDK', 'CRDO', 'MSFT', 'AAPL', 'AMZN', 'GOOGL', 'SPCX']
+WATCHLIST_TW = [
+    '2330.TW', '2317.TW', '2454.TW', '2308.TW', '2327.TW', '2330.TWO', '5269.TW', '6449.TW',
+    '2303.TW', '2340.TW', '2345.TW', '2360.TW', '2402.TW', '2409.TW', '2426.TW', '2455.TW',
+    '2489.TW', '3008.TW', '3450.TW', '3481.TW', '3665.TW', '3673.TW', '2492.TW',
+    '3081.TWO', '3105.TWO', '3163.TWO', '3234.TWO', '3265.TWO', '3339.TWO', '3374.TWO', '3491.TWO', '3587.TWO',
+]
 
 # 容易出現 Gamma Squeeze 的股票：額外抓選擇權鏈計算 gamma_score
 GAMMA_WATCHLIST = ['AVGO', 'MU', 'NVDA']

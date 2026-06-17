@@ -1,9 +1,0 @@
-{
-  "symbol": "5215",
-  "ticker": "5215.TW",
-  "model_type": "XGBoost",
-  "training_accuracy": 94.09,
-  "validation_accuracy": 79.49,
-  "backtest_accuracy": 79.49,
-  "last_updated": "2026-05-18 17:35:16"
-}

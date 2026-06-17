@@ -1,9 +1,0 @@
-{
-  "symbol": "6472",
-  "ticker": "6472.TW",
-  "model_type": "XGBoost",
-  "training_accuracy": 93.8,
-  "validation_accuracy": 65.3,
-  "backtest_accuracy": 65.3,
-  "last_updated": "2026-05-21 04:01:12"
-}

@@ -1,8 +1,0 @@
-{
-  "symbol": "8927",
-  "ticker": "8927.TWO",
-  "model_type": "PPO",
-  "validation_accuracy": 29.54,
-  "backtest_accuracy": 29.54,
-  "last_updated": "2026-05-21 04:41:56"
-}

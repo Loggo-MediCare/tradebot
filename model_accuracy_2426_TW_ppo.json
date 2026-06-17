@@ -1,8 +1,0 @@
-{
-  "symbol": "2426.TW",
-  "model_type": "PPO",
-  "training_accuracy": 29.867674858223065,
-  "validation_accuracy": 29.867674858223065,
-  "backtest_accuracy": 29.867674858223065,
-  "last_updated": "2026-04-29 15:02:28"
-}

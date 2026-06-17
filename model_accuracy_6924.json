@@ -1,9 +1,0 @@
-{
-  "symbol": "6924",
-  "ticker": "6924.TW",
-  "model_type": "XGBoost",
-  "training_accuracy": 98.02,
-  "validation_accuracy": 64.06,
-  "backtest_accuracy": 64.06,
-  "last_updated": "2026-05-18 13:16:16"
-}

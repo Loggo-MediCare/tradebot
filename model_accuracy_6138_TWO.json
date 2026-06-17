@@ -1,9 +1,0 @@
-{
-  "symbol": "6138",
-  "ticker": "6138.TWO",
-  "model_type": "XGBoost",
-  "training_accuracy": 91.77,
-  "validation_accuracy": 66.24,
-  "backtest_accuracy": 66.24,
-  "last_updated": "2026-05-18 12:12:05"
-}

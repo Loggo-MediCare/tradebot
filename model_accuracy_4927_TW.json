@@ -1,8 +1,0 @@
-{
-  "symbol": "4927.TW",
-  "model_type": "PPO",
-  "training_accuracy": 33.39449541284404,
-  "validation_accuracy": 33.39449541284404,
-  "backtest_accuracy": 33.39449541284404,
-  "last_updated": "2026-05-28 15:49:12"
-}

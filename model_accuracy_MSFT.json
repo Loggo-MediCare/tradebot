@@ -1,8 +1,0 @@
-{
-  "symbol": "MSFT",
-  "model_type": "XGBoost",
-  "training_accuracy": 91.75,
-  "validation_accuracy": 55.61,
-  "backtest_accuracy": 55.61,
-  "last_updated": "2026-05-20 21:30:47"
-}

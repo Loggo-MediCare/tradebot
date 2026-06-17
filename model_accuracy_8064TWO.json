@@ -1,8 +1,0 @@
-{
-  "symbol": "8064.TWO",
-  "model_type": "XGBoost",
-  "validation_accuracy": 54.95,
-  "backtest_accuracy": 54.95,
-  "roi": -19.81,
-  "last_updated": "2026-05-20 11:41:57"
-}

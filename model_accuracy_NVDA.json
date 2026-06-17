@@ -1,8 +1,0 @@
-{
-  "symbol": "NVDA",
-  "model_type": "XGBoost",
-  "training_accuracy": 93.85,
-  "validation_accuracy": 46.32,
-  "backtest_accuracy": 46.32,
-  "last_updated": "2026-05-20 21:20:24"
-}

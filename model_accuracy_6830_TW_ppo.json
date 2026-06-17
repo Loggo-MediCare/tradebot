@@ -1,8 +1,0 @@
-{
-  "symbol": "6830",
-  "ticker": "6830.TW",
-  "model_type": "PPO",
-  "validation_accuracy": 53.33,
-  "backtest_accuracy": 53.33,
-  "last_updated": "2026-05-21 04:15:24"
-}

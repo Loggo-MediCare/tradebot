@@ -1,9 +1,0 @@
-{
-  "symbol": "TPL",
-  "model_type": "XGBoost",
-  "training_accuracy": 94.65478841870824,
-  "validation_accuracy": 71.70818505338077,
-  "backtest_accuracy": 71.70818505338077,
-  "last_updated": "2026-03-04 16:26:48",
-  "notes": "Optimized with 4.0% gain threshold"
-}

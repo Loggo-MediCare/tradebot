@@ -1,8 +1,0 @@
-{
-  "symbol": "6903.TWO",
-  "model_type": "XGBoost",
-  "training_accuracy": 98.51,
-  "validation_accuracy": 48.81,
-  "backtest_accuracy": 48.81,
-  "last_updated": "2026-05-13 10:52:38"
-}

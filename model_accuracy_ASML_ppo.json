@@ -1,7 +1,0 @@
-{
-  "symbol": "ASML",
-  "model_type": "PPO",
-  "validation_accuracy": 60.46,
-  "backtest_accuracy": 60.46,
-  "last_updated": "2026-05-19 10:36:05"
-}

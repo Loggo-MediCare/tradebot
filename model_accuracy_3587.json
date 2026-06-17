@@ -1,9 +1,0 @@
-{
-  "symbol": "3587",
-  "ticker": "3587.TWO",
-  "model_type": "XGBoost",
-  "training_accuracy": 92.95,
-  "validation_accuracy": 68.78,
-  "backtest_accuracy": 68.78,
-  "last_updated": "2026-05-18 17:56:52"
-}

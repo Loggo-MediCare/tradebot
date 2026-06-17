@@ -1,9 +1,0 @@
-{
-  "symbol": "8131",
-  "ticker": "8131.TW",
-  "model_type": "XGBoost",
-  "training_accuracy": 93.18,
-  "validation_accuracy": 61.71,
-  "backtest_accuracy": 61.71,
-  "last_updated": "2026-05-21 04:21:06"
-}

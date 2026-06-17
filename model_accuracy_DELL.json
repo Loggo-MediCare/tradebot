@@ -1,8 +1,0 @@
-{
-  "symbol": "DELL",
-  "model_type": "XGBoost",
-  "training_accuracy": 93.3075221238938,
-  "validation_accuracy": 55.97345132743363,
-  "backtest_accuracy": 55.97345132743363,
-  "last_updated": "2026-05-30 04:53:25"
-}

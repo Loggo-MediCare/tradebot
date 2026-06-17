@@ -1,8 +1,0 @@
-{
-  "symbol": "4991",
-  "ticker": "4991.TWO",
-  "model_type": "PPO",
-  "validation_accuracy": 47.89,
-  "backtest_accuracy": 47.89,
-  "last_updated": "2026-05-19 15:36:13"
-}

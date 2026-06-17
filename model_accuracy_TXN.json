@@ -1,8 +1,0 @@
-{
-  "symbol": "TXN",
-  "model_type": "XGBoost",
-  "training_accuracy": 91.88,
-  "validation_accuracy": 65.44,
-  "backtest_accuracy": 65.44,
-  "last_updated": "2026-05-08 16:19:52"
-}

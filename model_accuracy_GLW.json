@@ -1,9 +1,0 @@
-{
-  "symbol": "GLW",
-  "ticker": "GLW",
-  "model_type": "XGBoost",
-  "training_accuracy": 93.37,
-  "validation_accuracy": 57.02,
-  "backtest_accuracy": 57.02,
-  "last_updated": "2026-05-21 10:22:21"
-}

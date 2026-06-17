@@ -1,9 +1,0 @@
-{
-  "symbol": "3580",
-  "ticker": "3580.TWO",
-  "model_type": "XGBoost",
-  "training_accuracy": 93.64,
-  "validation_accuracy": 66.24,
-  "backtest_accuracy": 66.24,
-  "last_updated": "2026-05-19 10:10:22"
-}

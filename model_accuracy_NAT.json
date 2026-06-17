@@ -1,9 +1,0 @@
-{
-  "symbol": "nat",
-  "ticker": "NAT",
-  "model_type": "XGBoost",
-  "training_accuracy": 91.04,
-  "validation_accuracy": 51.05,
-  "backtest_accuracy": 51.05,
-  "last_updated": "2026-05-21 04:58:41"
-}

@@ -1,9 +1,0 @@
-{
-  "symbol": "CIEN",
-  "model_type": "XGBoost",
-  "training_accuracy": 97.19376391982183,
-  "validation_accuracy": 62.989323843416365,
-  "backtest_accuracy": 62.989323843416365,
-  "last_updated": "2026-03-04 16:27:05",
-  "notes": "Optimized with 4.0% gain threshold"
-}

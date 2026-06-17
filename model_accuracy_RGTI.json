@@ -1,8 +1,0 @@
-{
-  "symbol": "RGTI",
-  "model_type": "XGBoost",
-  "training_accuracy": 98.21428571428571,
-  "validation_accuracy": 51.02040816326531,
-  "backtest_accuracy": 51.02040816326531,
-  "last_updated": "2026-02-25 19:52:24"
-}

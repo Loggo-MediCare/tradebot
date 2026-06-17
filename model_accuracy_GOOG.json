@@ -1,9 +1,0 @@
-{
-  "symbol": "goog",
-  "ticker": "GOOG",
-  "model_type": "XGBoost",
-  "training_accuracy": 93.68,
-  "validation_accuracy": 62.11,
-  "backtest_accuracy": 62.11,
-  "last_updated": "2026-05-21 04:58:39"
-}

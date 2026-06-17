@@ -1,8 +1,0 @@
-{
-  "symbol": "8043.TWO",
-  "model_type": "PPO",
-  "training_accuracy": 37.77372262773723,
-  "validation_accuracy": 37.77372262773723,
-  "backtest_accuracy": 37.77372262773723,
-  "last_updated": "2026-05-28 18:21:21"
-}

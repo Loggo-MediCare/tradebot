@@ -1,9 +1,0 @@
-{
-  "symbol": "2368",
-  "ticker": "2368.TW",
-  "model_type": "XGBoost",
-  "training_accuracy": 91.79,
-  "validation_accuracy": 50.81,
-  "backtest_accuracy": 50.81,
-  "last_updated": "2026-06-08 15:02:32"
-}

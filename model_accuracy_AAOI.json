@@ -1,8 +1,0 @@
-{
-  "symbol": "AAOI",
-  "model_type": "XGBoost",
-  "training_accuracy": 92.89,
-  "validation_accuracy": 54.21,
-  "backtest_accuracy": 54.21,
-  "last_updated": "2026-05-21 03:58:40"
-}

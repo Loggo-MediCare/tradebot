@@ -1,7 +1,0 @@
-{
-  "symbol": "LRCX",
-  "model_type": "PPO",
-  "validation_accuracy": 55.67,
-  "backtest_accuracy": 55.67,
-  "last_updated": "2026-05-19 10:45:37"
-}

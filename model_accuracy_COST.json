@@ -1,8 +1,0 @@
-{
-  "symbol": "COST",
-  "model_type": "XGBoost",
-  "training_accuracy": 93.02,
-  "validation_accuracy": 38.25,
-  "backtest_accuracy": 38.25,
-  "last_updated": "2026-05-20 21:48:48"
-}

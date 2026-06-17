@@ -1,9 +1,0 @@
-{
-  "symbol": "9880.HK",
-  "model_type": "XGBoost",
-  "training_accuracy": 99.76744186046511,
-  "validation_accuracy": 72.22222222222221,
-  "backtest_accuracy": 72.22222222222221,
-  "last_updated": "2026-03-11 04:41:12",
-  "notes": "Optimized with 4.0% gain threshold"
-}

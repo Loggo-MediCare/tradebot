@@ -1,9 +1,0 @@
-{
-  "symbol": "3044",
-  "ticker": "3044.TW",
-  "model_type": "XGBoost",
-  "training_accuracy": 91.55,
-  "validation_accuracy": 65.88,
-  "backtest_accuracy": 65.88,
-  "last_updated": "2026-05-21 03:26:44"
-}

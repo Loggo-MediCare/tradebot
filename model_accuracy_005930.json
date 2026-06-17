@@ -1,9 +1,0 @@
-{
-  "symbol": "005930.KS",
-  "model_type": "XGBoost",
-  "training_accuracy": 97.67335766423358,
-  "validation_accuracy": 74.81751824817519,
-  "backtest_accuracy": 74.81751824817519,
-  "last_updated": "2026-03-11 04:40:10",
-  "notes": "Optimized with 4.0% gain threshold"
-}

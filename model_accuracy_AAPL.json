@@ -1,8 +1,0 @@
-{
-  "symbol": "AAPL",
-  "model_type": "XGBoost",
-  "training_accuracy": 92.23,
-  "validation_accuracy": 65.79,
-  "backtest_accuracy": 65.79,
-  "last_updated": "2026-05-20 21:15:04"
-}

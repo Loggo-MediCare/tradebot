@@ -1,8 +1,0 @@
-{
-  "symbol": "2912.TW",
-  "model_type": "XGBoost",
-  "training_accuracy": 95.93,
-  "validation_accuracy": 88.06,
-  "backtest_accuracy": 88.06,
-  "last_updated": "2026-05-13 10:51:42"
-}

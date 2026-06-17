@@ -1,8 +1,0 @@
-{
-  "symbol": "SNDK",
-  "model_type": "XGBoost",
-  "training_accuracy": 97.53,
-  "validation_accuracy": 60.66,
-  "backtest_accuracy": 60.66,
-  "last_updated": "2026-05-21 04:06:37"
-}

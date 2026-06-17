@@ -1,8 +1,0 @@
-{
-  "symbol": "AMD",
-  "model_type": "XGBoost",
-  "training_accuracy": 92.89,
-  "validation_accuracy": 61.23,
-  "backtest_accuracy": 61.23,
-  "last_updated": "2026-05-21 03:44:19"
-}

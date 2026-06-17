@@ -1,8 +1,0 @@
-{
-  "symbol": "3498",
-  "ticker": "3498.TWO",
-  "model_type": "PPO",
-  "validation_accuracy": 61.47,
-  "backtest_accuracy": 61.47,
-  "last_updated": "2026-05-18 12:55:16"
-}

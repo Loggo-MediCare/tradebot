@@ -1,9 +1,0 @@
-{
-  "symbol": "3036",
-  "ticker": "3036.TW",
-  "model_type": "XGBoost",
-  "training_accuracy": 92.92,
-  "validation_accuracy": 50.09,
-  "backtest_accuracy": 50.09,
-  "last_updated": "2026-06-08 15:29:58"
-}

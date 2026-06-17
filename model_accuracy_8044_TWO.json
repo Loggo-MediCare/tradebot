@@ -1,9 +1,0 @@
-{
-  "symbol": "8044",
-  "ticker": "8044.TWO",
-  "model_type": "XGBoost",
-  "training_accuracy": 93.91,
-  "validation_accuracy": 62.43,
-  "backtest_accuracy": 62.43,
-  "last_updated": "2026-05-19 10:18:18"
-}

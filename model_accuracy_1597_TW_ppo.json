@@ -1,8 +1,0 @@
-{
-  "symbol": "1597",
-  "ticker": "1597.TW",
-  "model_type": "PPO",
-  "validation_accuracy": 33.58,
-  "backtest_accuracy": 33.58,
-  "last_updated": "2026-05-19 15:41:42"
-}

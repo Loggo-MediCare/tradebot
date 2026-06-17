@@ -1,9 +1,0 @@
-{
-  "symbol": "2634",
-  "ticker": "2634.TW",
-  "model_type": "XGBoost",
-  "training_accuracy": 94.73,
-  "validation_accuracy": 65.34,
-  "backtest_accuracy": 65.34,
-  "last_updated": "2026-05-21 03:26:42"
-}

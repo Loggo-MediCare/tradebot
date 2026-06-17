@@ -1,8 +1,0 @@
-{
-  "symbol": "4768",
-  "ticker": "4768.TWO",
-  "model_type": "PPO",
-  "validation_accuracy": 46.08,
-  "backtest_accuracy": 46.08,
-  "last_updated": "2026-05-21 03:55:40"
-}

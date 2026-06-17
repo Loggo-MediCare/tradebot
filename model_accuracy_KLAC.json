@@ -1,8 +1,0 @@
-{
-  "symbol": "KLAC",
-  "model_type": "XGBoost",
-  "training_accuracy": 91.79,
-  "validation_accuracy": 48.95,
-  "backtest_accuracy": 48.95,
-  "last_updated": "2026-05-19 10:36:06"
-}

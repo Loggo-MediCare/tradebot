@@ -1,9 +1,0 @@
-{
-  "symbol": "8210",
-  "ticker": "8210.TW",
-  "model_type": "XGBoost",
-  "training_accuracy": 92.64,
-  "validation_accuracy": 45.19,
-  "backtest_accuracy": 45.19,
-  "last_updated": "2026-05-21 04:21:07"
-}

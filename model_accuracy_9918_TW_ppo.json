@@ -1,8 +1,0 @@
-{
-  "symbol": "9918",
-  "ticker": "9918.TW",
-  "model_type": "PPO",
-  "validation_accuracy": 10.09,
-  "backtest_accuracy": 10.09,
-  "last_updated": "2026-05-21 04:47:25"
-}

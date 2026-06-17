@@ -1,8 +1,0 @@
-{
-  "symbol": "LRCX",
-  "model_type": "XGBoost",
-  "training_accuracy": 92.71,
-  "validation_accuracy": 56.32,
-  "backtest_accuracy": 56.32,
-  "last_updated": "2026-05-19 10:40:40"
-}

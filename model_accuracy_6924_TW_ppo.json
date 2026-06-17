@@ -1,8 +1,0 @@
-{
-  "symbol": "6924",
-  "ticker": "6924.TW",
-  "model_type": "PPO",
-  "validation_accuracy": 43.1,
-  "backtest_accuracy": 43.1,
-  "last_updated": "2026-05-18 13:18:54"
-}

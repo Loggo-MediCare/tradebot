@@ -1,9 +1,0 @@
-{
-  "symbol": "6443",
-  "ticker": "6443.TW",
-  "model_type": "XGBoost",
-  "training_accuracy": 92.86,
-  "validation_accuracy": 68.6,
-  "backtest_accuracy": 68.6,
-  "last_updated": "2026-05-19 10:09:33"
-}

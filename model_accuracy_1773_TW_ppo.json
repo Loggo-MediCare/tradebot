@@ -1,8 +1,0 @@
-{
-  "symbol": "1773",
-  "ticker": "1773.TW",
-  "model_type": "PPO",
-  "validation_accuracy": 64.04,
-  "backtest_accuracy": 64.04,
-  "last_updated": "2026-05-18 12:31:12"
-}

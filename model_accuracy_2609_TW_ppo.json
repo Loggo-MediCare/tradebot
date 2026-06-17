@@ -1,8 +1,0 @@
-{
-  "symbol": "2609",
-  "ticker": "2609.TW",
-  "model_type": "PPO",
-  "validation_accuracy": 70.67,
-  "backtest_accuracy": 70.67,
-  "last_updated": "2026-06-08 15:08:05"
-}

@@ -1,9 +1,0 @@
-{
-  "symbol": "aeva",
-  "ticker": "AEVA",
-  "model_type": "XGBoost",
-  "training_accuracy": 96.05,
-  "validation_accuracy": 54.34,
-  "backtest_accuracy": 54.34,
-  "last_updated": "2026-05-21 04:53:00"
-}

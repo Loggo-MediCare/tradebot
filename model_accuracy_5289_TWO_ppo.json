@@ -1,8 +1,0 @@
-{
-  "symbol": "5289",
-  "ticker": "5289.TWO",
-  "model_type": "PPO",
-  "validation_accuracy": 36.15,
-  "backtest_accuracy": 36.15,
-  "last_updated": "2026-05-18 17:30:03"
-}

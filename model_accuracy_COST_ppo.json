@@ -1,7 +1,0 @@
-{
-  "symbol": "COST",
-  "model_type": "PPO",
-  "validation_accuracy": 26.6,
-  "backtest_accuracy": 26.6,
-  "last_updated": "2026-05-20 21:56:41"
-}

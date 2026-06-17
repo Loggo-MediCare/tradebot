@@ -8,11 +8,11 @@ Gamma Squeeze 機率引擎 (Gamma Squeeze Probability Engine)
   - finbert_enhanced_scoring.py : FinBERT 新聞情緒分析 (calculate_sentiment_score)
 
 評分公式 (0-100，可被 FinBERT 情緒加減分推高/推低，最終夾在 0-100):
-    GEX 翻正 (現價 >= Gamma Flip)      : +20
+    GEX 翻負 (現價 < Gamma Flip，造市商空 Gamma 追漲追跌) : +20
     Call/Put Volume Ratio > 2          : +20
     Chaikin Volatility > 30%           : +10
     RVOL (相對成交量) > 2               : +15
-    現價突破 Call Wall                  : +35
+    現價突破 Call Wall (OTM)            : +35
 
 機率區間:
     < 30   : 無 Gamma Squeeze 風險
@@ -59,13 +59,15 @@ def get_rvol(df, period=20):
     return float(df['Volume'].iloc[-1] / avg_vol)
 
 
-def get_call_put_walls(calls_df, puts_df):
-    """依未平倉量 (Open Interest) 找出 Call Wall / Put Wall"""
+def get_call_put_walls(calls_df, puts_df, spot):
+    """依未平倉量 (Open Interest) 找出 Call Wall / Put Wall (僅考慮價外 OTM 履約價，避免深價內合約的 OI 雜訊)"""
     call_wall = put_wall = None
-    if not calls_df.empty and calls_df['openInterest'].sum() > 0:
-        call_wall = float(calls_df.loc[calls_df['openInterest'].idxmax(), 'strike'])
-    if not puts_df.empty and puts_df['openInterest'].sum() > 0:
-        put_wall = float(puts_df.loc[puts_df['openInterest'].idxmax(), 'strike'])
+    otm_calls = calls_df[calls_df['strike'] > spot]
+    otm_puts = puts_df[puts_df['strike'] < spot]
+    if not otm_calls.empty and otm_calls['openInterest'].sum() > 0:
+        call_wall = float(otm_calls.loc[otm_calls['openInterest'].idxmax(), 'strike'])
+    if not otm_puts.empty and otm_puts['openInterest'].sum() > 0:
+        put_wall = float(otm_puts.loc[otm_puts['openInterest'].idxmax(), 'strike'])
     return call_wall, put_wall
 
 
@@ -136,10 +138,10 @@ def get_gamma_squeeze_score(symbol, verbose=False):
             if found and gamma_flip is not None:
                 gex_positive = spot >= gamma_flip
                 result['gex_positive'] = gex_positive
-                if gex_positive:
+                if not gex_positive:
                     result['score'] += 20
                     result['reasons'].append(
-                        f"現價 ${spot:.2f} >= Gamma Flip ${gamma_flip:.2f} (GEX轉正)")
+                        f"現價 ${spot:.2f} < Gamma Flip ${gamma_flip:.2f} (GEX轉負，造市商追漲追跌)")
         except Exception as e:
             result['reasons'].append(f"Gamma Flip 計算失敗: {e}")
 
@@ -147,7 +149,7 @@ def get_gamma_squeeze_score(symbol, verbose=False):
         try:
             calls_df, puts_df, expiry = _fetch_nearest_chain(symbol)
 
-            call_wall, put_wall = get_call_put_walls(calls_df, puts_df)
+            call_wall, put_wall = get_call_put_walls(calls_df, puts_df, spot)
             result['call_wall'] = call_wall
             result['put_wall'] = put_wall
 

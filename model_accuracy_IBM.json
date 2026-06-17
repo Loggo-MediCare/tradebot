@@ -1,8 +1,0 @@
-{
-  "symbol": "IBM",
-  "model_type": "XGBoost",
-  "training_accuracy": 94.09836065573771,
-  "validation_accuracy": 65.3558052434457,
-  "backtest_accuracy": 65.3558052434457,
-  "last_updated": "2026-05-30 04:53:37"
-}

@@ -1,8 +1,0 @@
-{
-  "symbol": "6727.TWO",
-  "model_type": "PPO",
-  "training_accuracy": 41.81818181818181,
-  "validation_accuracy": 41.81818181818181,
-  "backtest_accuracy": 41.81818181818181,
-  "last_updated": "2026-05-28 16:25:10"
-}

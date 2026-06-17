@@ -1,8 +1,0 @@
-{
-  "symbol": "OUST",
-  "ticker": "OUST",
-  "model_type": "XGBoost",
-  "validation_accuracy": 51.97,
-  "backtest_accuracy": 51.97,
-  "last_updated": "2026-05-21 06:50:47"
-}

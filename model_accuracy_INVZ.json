@@ -1,8 +1,0 @@
-{
-  "symbol": "INVZ",
-  "model_type": "XGBoost",
-  "training_accuracy": 97.0464135021097,
-  "validation_accuracy": 60.75949367088608,
-  "backtest_accuracy": 60.75949367088608,
-  "last_updated": "2026-02-25 19:52:17"
-}

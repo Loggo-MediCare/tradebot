@@ -1,9 +1,0 @@
-{
-  "symbol": "2449",
-  "ticker": "2449.TW",
-  "model_type": "XGBoost",
-  "training_accuracy": 92.1,
-  "validation_accuracy": 60.0,
-  "backtest_accuracy": 60.0,
-  "last_updated": "2026-06-08 15:03:52"
-}

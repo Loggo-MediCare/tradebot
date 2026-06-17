@@ -1,8 +1,0 @@
-{
-  "symbol": "3580",
-  "ticker": "3580.TWO",
-  "model_type": "PPO",
-  "validation_accuracy": 35.6,
-  "backtest_accuracy": 35.6,
-  "last_updated": "2026-05-19 10:16:42"
-}
